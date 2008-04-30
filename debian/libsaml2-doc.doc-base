@@ -1,0 +1,13 @@
+Document: libsaml2-doc
+Title: OpenSAML2 API documentation
+Author: Scott Cantor
+Abstract: Doxygen generated HTML documentation of the OpenSAML2
+ library.
+Section: Apps/Devel
+
+Format: HTML
+Index: /usr/share/doc/libsaml2-doc/html/index.html
+Files: /usr/share/doc/libsaml2-doc/html/*.html
+ /usr/share/doc/libsaml2-doc/html/*.png
+ /usr/share/doc/libsaml2-doc/html/*.gif
+ /usr/share/doc/libsaml2-doc/html/*.css

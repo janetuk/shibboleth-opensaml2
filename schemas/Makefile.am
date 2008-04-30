@@ -1,7 +1,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-pkgxmldir = $(datadir)/xml/@PACKAGE@
+pkgxmldir = $(datadir)/xml/@PACKAGE@2
 
 schemafiles = \
 	cs-sstc-schema-assertion-01.xsd \
