@@ -1,6 +1,6 @@
 opensaml2 (2.0-1) unstable; urgency=low
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+  * Initial release (Closes: #480289)
 
  -- Ferenc Wagner <wferi@niif.hu>  Wed, 30 Apr 2008 12:09:35 +0200
 
