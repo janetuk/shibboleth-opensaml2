@@ -1,6 +1,6 @@
 Source: opensaml2
 Section: libs
-Priority: optional
+Priority: extra
 Maintainer: Debian Shib Team <pkg-shibboleth-devel@lists.alioth.debian.org>
 Uploaders: Russ Allbery <rra@debian.org>, Ferenc Wagner <wferi@niif.hu>
 Build-Depends: debhelper (>= 5), autotools-dev, liblog4cpp5-dev, libxerces27-dev | libxerces28-dev,
@@ -21,6 +21,7 @@ Description: Open source SAML library
 Package: opensaml2-schemas
 Section: text
 Architecture: any
+Conflicts: opensaml-schemas
 Description: OpenSAML development Headers
  OpenSAML is an open source implementation of the OASIS Security Assertion
  Markup Language Specification. It contains a set of open source C++ classes
