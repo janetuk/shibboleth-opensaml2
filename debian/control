@@ -36,8 +36,8 @@ Description: XML schemas for OpenSAML
 Package: libsaml2-dev
 Section: libdevel
 Architecture: any
-Depends: libsaml2 (= ${Source-Version})
-Suggests: libsaml2-doc (= ${Source-Version})
+Depends: libsaml2 (= ${binary:Version})
+Suggests: libsaml2-doc (= ${source:Version})
 Conflicts: libsaml-dev
 Description: Open source SAML library (development)
  OpenSAML is an open source implementation of the OASIS Security Assertion
