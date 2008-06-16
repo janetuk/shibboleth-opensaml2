@@ -22,17 +22,6 @@ Description: Open source SAML library (runtime)
  This package contains the files necessary for running applications that
  use the OpenSAML library.
 
-Package: opensaml2-schemas
-Section: text
-Architecture: any
-Conflicts: opensaml-schemas
-Description: XML schemas for OpenSAML
- OpenSAML is an open source implementation of the OASIS Security Assertion
- Markup Language Specification. It contains a set of open source C++ classes
- that support the SAML 1.0, 1.1, and 2.0 specifications.
- .
- This package contains the XML schema files used by the OpenSAML library.
-
 Package: libsaml2-dev
 Section: libdevel
 Architecture: any
@@ -46,6 +35,17 @@ Description: Open source SAML library (development)
  .
  This package contains the headers and other necessary files to build
  applications or libraries that use or extend the OpenSAML library.
+
+Package: opensaml2-schemas
+Section: text
+Architecture: all
+Conflicts: opensaml-schemas
+Description: XML schemas for OpenSAML
+ OpenSAML is an open source implementation of the OASIS Security Assertion
+ Markup Language Specification. It contains a set of open source C++ classes
+ that support the SAML 1.0, 1.1, and 2.0 specifications.
+ .
+ This package contains the XML schema files used by the OpenSAML library.
 
 Package: libsaml2-doc
 Section: doc
