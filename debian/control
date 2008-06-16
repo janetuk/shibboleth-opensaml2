@@ -14,7 +14,7 @@ Package: libsaml2
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Open source SAML library
+Description: Open source SAML library (runtime)
  OpenSAML is an open source implementation of the OASIS Security Assertion
  Markup Language Specification. It contains a set of open source C++ classes
  that support the SAML 1.0, 1.1, and 2.0 specifications.
@@ -50,7 +50,7 @@ Description: Open source SAML library (development)
 Package: libsaml2-doc
 Section: doc
 Architecture: all
-Description: OpenSAML API Documentation
+Description: Open source SAML library (API docs)
  OpenSAML is an open source implementation of the OASIS Security Assertion
  Markup Language Specification. It contains a set of open source C++ classes
  that support the SAML 1.0, 1.1, and 2.0 specifications.
