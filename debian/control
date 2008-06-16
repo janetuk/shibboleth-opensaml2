@@ -25,7 +25,7 @@ Description: Open source SAML library (runtime)
 Package: libsaml2-dev
 Section: libdevel
 Architecture: any
-Depends: libsaml2 (= ${binary:Version})
+Depends: libsaml2 (= ${binary:Version}), libxmltooling-dev
 Suggests: libsaml2-doc (= ${source:Version})
 Conflicts: libsaml-dev
 Description: Open source SAML library (development)
