@@ -61,8 +61,8 @@ install-stamp:
 	dh_testroot
 	dh_clean -k
 	$(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
-	rm $(CURDIR)/debian/tmp/usr/share/doc/opensaml/{LOG4CPP.LICENSE,{LICENSE,NOTICE}.txt}
-	dh_install -s -i --fail-missing --sourcedir=debian/tmp
+	rm -r $(CURDIR)/debian/tmp/usr/share/doc/opensaml
+	dh_install -s -i --fail-missing
 	touch $@
 
 binary: binary-arch binary-indep
