@@ -3,6 +3,10 @@
 .nf
 .ne \\$1
 ..
+.de Ve \" End verbatim text
+.ft R
+.fi
+..
 .TH SAMLSIGN 1 "2008 Jun 16" Internet2 "OpenSAML manual"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
@@ -17,27 +21,27 @@ samlsign \- sign and verify XML documents
 .B samlsign
 signs or verifies signed XML documents.
 To sign a document, use
-.BR -s .
+.BR \-s .
 To verify a document, omit
-.BR -s .
+.BR \-s .
 One of the
-.BR -c ,
-.BR -R ,
+.BR \-c ,
+.BR \-R ,
 or
-.B -T
+.B \-T
 options are required when verifying.
 Either
-.B -k
+.B \-k
 or
-.B -R
+.B \-R
 is required when signing.
 .PP
 By default,
 .B samlsign
 signs or verifies standard input.  Pass
-.B -u
+.B \-u
 or
-.B -f
+.B \-f
 to retrieve the document from a URL or file path.
 Signed documents are always printed to standard output.
 .SH OPTIONS
@@ -135,7 +139,7 @@ An exception was caught.
 To sign SAML 2.0 metadata, use:
 .PP
 .Vb 1
-\&    samlsign -k /path/to/key -c /path/to/cert -f /path/to/metadata
+\&    samlsign \-k /path/to/key \-c /path/to/cert \-f /path/to/metadata
 .Ve
 .SH AUTHOR
 This manpage were written by Ferenc Wágner and Russ Allbery for Debian
