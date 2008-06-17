@@ -39,7 +39,7 @@ Description: Security Assertion Markup Language library (development)
 Package: opensaml2-tools
 Section: text
 Architecture: any
-Depends: ${shibs:Depends}
+Depends: ${shlibs:Depends}
 Description: Security Assertion Markup Language command-line tools
  OpenSAML is an open source implementation of the OASIS Security Assertion
  Markup Language Specification. It contains a set of open source C++ classes
