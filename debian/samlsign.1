@@ -1,0 +1,146 @@
+.de Vb \" Begin verbatim text
+.ft CW
+.nf
+.ne \\$1
+..
+.TH SAMLSIGN 1 "2008 Jun 16" Internet2 "OpenSAML manual"
+.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
+.\" way too many mistakes in technical documents.
+.if n .ad l
+.nh
+.SH NAME
+samlsign \- sign and verify XML documents
+.SH SYNOPSIS
+.B samlsign
+.RI < options >
+.SH DESCRIPTION
+.B samlsign
+signs or verifies signed XML documents.
+To sign a document, use
+.BR -s .
+To verify a document, omit
+.BR -s .
+One of the
+.BR -c ,
+.BR -R ,
+or
+.B -T
+options are required when verifying.
+Either
+.B -k
+or
+.B -R
+is required when signing.
+.PP
+By default,
+.B samlsign
+signs or verifies standard input.  Pass
+.B -u
+or
+.B -f
+to retrieve the document from a URL or file path.
+Signed documents are always printed to standard output.
+.SH OPTIONS
+.TP
+.BI \-u " URL"
+The URL of the document to sign or verify.
+.TP
+.BI \-f " PATH"
+The full path of the document to sign or verify.
+.TP
+.BI \-id " ID"
+Rather than acting on the entire document, only act on the object with the
+specified
+.IR ID .
+Only that object (with its new signature) will be printed to standard
+output.
+.TP
+.B \-s
+Sign, rather than the default action of verify.
+.TP
+.BI \-k " KEY"
+Specifies the full path to the key to use for signing.
+.TP
+.BI \-c " CERT"
+Specifies the full path to the certificate to use for verification.
+.TP
+.BI \-R " RESOLVER"
+Specifies a credential resolver to use for either signing or verification.
+.TP
+.BI \-T " TRUST"
+Specifies the trust engine for TrustEngine-based verification.
+.TP 
+.BI \-M " METADATA"
+Specifies the metadata for TrustEngine-based verification.
+.TP
+.BI \-i " ISSUER"
+Specifies the issuer for verification.
+.TP
+.BI \-p " PROT"
+Specifies the protocol for TrustEngine-based verification.
+This option allows specification of an arbitrary protocol by name, but
+more commonly one would use one of the options listed below for standard
+protocol names.
+.TP
+.BI \-r " RNAME"
+Specifies the resource name for TrustEngine-based verification.
+This option allows specification of an arbitrary resource name by name,
+but more commonly one would use one of the options listed below for
+standard resource names.
+.TP
+.BI \-ns " RNS"
+Specifies the namespace for TrustEngine-based verification.  If not given,
+the default is SAML20MD_NS.
+.TP
+.B \-saml10
+Use the SAML1.0 protocol for TrustEngine-based verification.
+.TP
+.B \-saml11
+use the SAML1.1 protocol for TrustEngine-based verification.
+.TP
+.B \-saml2
+use the SAML2.0 P NS protocol for TrustEngine-based verification.
+.TP
+.B \-idp
+Set the resouce name to IDPSSODescriptor for TrustEngine-based
+verification.
+.TP
+.B \-aa
+Set the resource name to AttributeAuthorityDescriptor for
+TrustEngine-based verification.
+.TP
+.B \-pdp
+Set the resource name to PDPDescriptor for TrustEngine-based
+verification.
+.TP
+.B \-sp
+Set the resource name to SPSSODescriptor for TrustEngine-based
+verification.
+.SH "EXIT STATUS"
+.TP
+0
+Success.
+.TP
+\-1
+An error in how
+.B samlsign
+was called (incorrect arguments, for example).
+.TP
+\-2
+An error occurred when initializing the configuration.
+.TP
+\-10
+An exception was caught.
+.SH EXAMPLES
+To sign SAML 2.0 metadata, use:
+.PP
+.Vb 1
+\&    samlsign -k /path/to/key -c /path/to/cert -f /path/to/metadata
+.Ve
+.SH AUTHOR
+This manpage were written by Ferenc Wágner and Russ Allbery for Debian
+GNU/Linux.
+.SH COPYRIGHT
+Copyleft (C) 2008 Ferenc Wágner
+.br
+This is free software in the public domain.
