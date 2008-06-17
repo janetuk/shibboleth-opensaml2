@@ -1,6 +1,7 @@
 opensaml2 (2.0-1) unstable; urgency=low
 
+  [ Ferenc Wagner ]
   * Initial release (Closes: #480289)
 
- -- Ferenc Wagner <wferi@niif.hu>  Wed, 30 Apr 2008 12:09:35 +0200
+ -- Russ Allbery <rra@debian.org>  Mon, 16 Jun 2008 21:28:28 -0700
 
