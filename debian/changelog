@@ -1,3 +1,9 @@
+opensaml2 (2.0-2) UNRELEASED; urgency=low
+
+  * Fix watch file for upstream directory structure.
+
+ -- Ferenc Wagner <wferi@niif.hu>  Fri, 22 Aug 2008 15:06:19 +0200
+
 opensaml2 (2.0-1) unstable; urgency=low
 
   [ Ferenc Wagner ]
