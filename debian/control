@@ -26,7 +26,7 @@ Description: Security Assertion Markup Language library (runtime)
 Package: libsaml2-dev
 Section: libdevel
 Architecture: any
-Depends: libsaml2 (= ${binary:Version}), libxmltooling-dev
+Depends: libsaml3 (= ${binary:Version}), libxmltooling-dev
 Suggests: libsaml2-doc (= ${source:Version})
 Conflicts: libsaml-dev
 Description: Security Assertion Markup Language library (development)
