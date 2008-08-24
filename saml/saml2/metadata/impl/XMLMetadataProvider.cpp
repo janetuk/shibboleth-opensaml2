@@ -1,6 +1,6 @@
 /*
  *  Copyright 2001-2007 Internet2
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,7 @@
 
 /**
  * XMLMetadataProvider.cpp
- * 
+ *
  * Supplies metadata from an XML file
  */
 
@@ -46,7 +46,7 @@ namespace opensaml {
         public:
             XMLMetadataProvider(const DOMElement* e)
                 : AbstractMetadataProvider(e), ReloadableXMLFile(e, Category::getInstance(SAML_LOGCAT".MetadataProvider.XML")),
-                    m_object(NULL) {
+                    m_object(NULL), m_maxCacheDuration(m_reloadInterval) {
             }
             virtual ~XMLMetadataProvider() {
                 delete m_object;
@@ -55,7 +55,7 @@ namespace opensaml {
             void init() {
                 load(); // guarantees an exception or the metadata is loaded
             }
-            
+
             const XMLObject* getMetadata() const {
                 return m_object;
             }
@@ -66,9 +66,10 @@ namespace opensaml {
         private:
             using AbstractMetadataProvider::index;
             void index();
-        
+
             XMLObject* m_object;
-        }; 
+            time_t m_maxCacheDuration;
+        };
 
         MetadataProvider* SAML_DLLLOCAL XMLMetadataProviderFactory(const DOMElement* const & e)
         {
@@ -86,10 +87,10 @@ pair<bool,DOMElement*> XMLMetadataProvider::load()
 {
     // Load from source using base class.
     pair<bool,DOMElement*> raw = ReloadableXMLFile::load();
-    
+
     // If we own it, wrap it for now.
     XercesJanitor<DOMDocument> docjanitor(raw.first ? raw.second->getOwnerDocument() : NULL);
-            
+
     // Unmarshall objects, binding the document.
     auto_ptr<XMLObject> xmlObject(XMLObjectBuilder::buildOneFromElement(raw.second, true));
     docjanitor.release();
@@ -98,12 +99,12 @@ pair<bool,DOMElement*> XMLMetadataProvider::load()
         throw MetadataException(
             "Root of metadata instance not recognized: $1", params(1,xmlObject->getElementQName().toString().c_str())
             );
-    
+
     // Preprocess the metadata.
     doFilters(*xmlObject.get());
     xmlObject->releaseThisAndChildrenDOM();
     xmlObject->setDocument(NULL);
-    
+
     // Swap it in.
     bool changed = m_object!=NULL;
     delete m_object;
@@ -111,17 +112,33 @@ pair<bool,DOMElement*> XMLMetadataProvider::load()
     index();
     if (changed)
         emitChangeEvent();
+
+    // If a remote resource, reduce the reload interval if cacheDuration is set.
+    if (!m_local) {
+        const CacheableSAMLObject* cacheable = dynamic_cast<const CacheableSAMLObject*>(m_object);
+        if (cacheable && cacheable->getCacheDuration() && cacheable->getCacheDurationEpoch() < m_maxCacheDuration)
+            m_reloadInterval = cacheable->getCacheDurationEpoch();
+        else
+            m_reloadInterval = m_maxCacheDuration;
+    }
+
     return make_pair(false,(DOMElement*)NULL);
 }
 
 void XMLMetadataProvider::index()
 {
+    time_t exp = SAMLTIME_MAX;
+
     clearDescriptorIndex();
     EntitiesDescriptor* group=dynamic_cast<EntitiesDescriptor*>(m_object);
     if (group) {
-        AbstractMetadataProvider::index(group, SAMLTIME_MAX);
+        if (!m_local && group->getCacheDuration())
+            exp = time_t(NULL) + group->getCacheDurationEpoch();
+        AbstractMetadataProvider::index(group, exp);
         return;
     }
     EntityDescriptor* site=dynamic_cast<EntityDescriptor*>(m_object);
-    AbstractMetadataProvider::index(site, SAMLTIME_MAX);
+    if (!m_local && site->getCacheDuration())
+        exp = time_t(NULL) + site->getCacheDurationEpoch();
+    AbstractMetadataProvider::index(site, exp);
 }
