@@ -6,7 +6,8 @@ opensaml2 (2.1-1) UNRELEASED; urgency=low
     libsaml2-dev and libsaml2-doc have not changed; the "2" in those names
     refers to the major version of the package, not to the SONAME of the
     library.
-  
+  * Require libxmtooling-dev >= 1.1 following the upstream spec file.
+
   [ Ferenc Wagner ]
   * Fix watch file for upstream directory structure.
 
