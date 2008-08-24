@@ -814,13 +814,13 @@ install-data-hook:
 
 opensaml.spec: opensaml.spec.in Makefile
 	rm -f $@.tmp
-	sed < $< > $@.tmp \
+	sed < $@.in > $@.tmp \
 	    -e 's:@-VERSION-@:${VERSION}:'
 	mv $@.tmp $@
 
 pkginfo: pkginfo.in Makefile
 	rm -f $@.tmp
-	sed < $< > $@.tmp \
+	sed < $@.in > $@.tmp \
 	    -e 's:@-VERSION-@:${VERSION}:'
 	mv $@.tmp $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
