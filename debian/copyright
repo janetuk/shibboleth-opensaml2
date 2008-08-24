@@ -3,10 +3,10 @@ Upstream-Author: Internet2
 Packaged-By: Ferenc Wágner <wferi@niif.hu>
 Packaged-Date: Mon, 28 Apr 2008 14:55:31 +0200
 Original-Source-Location:
- http://shibboleth.internet2.edu/downloads/opensaml/cpp/2.0/
+ http://shibboleth.internet2.edu/downloads/opensaml/cpp/2.1/
 
 Files: *
-Copyright: 2001-2007 Internet2
+Copyright: 2001-2008 Internet2
 License: Apache-2.0
 
 Files: acx_pthread.m4
