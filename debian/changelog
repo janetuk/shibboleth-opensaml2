@@ -1,5 +1,13 @@
-opensaml2 (2.0-2) UNRELEASED; urgency=low
+opensaml2 (2.1-1) UNRELEASED; urgency=low
 
+  [ Russ Allbery ]
+  * New upstream bug-fix release.
+  * Bump SONAME of libsaml following upstream's versioning.  The names of
+    libsaml2-dev and libsaml2-doc have not changed; the "2" in those names
+    refers to the major version of the package, not to the SONAME of the
+    library.
+  
+  [ Ferenc Wagner ]
   * Fix watch file for upstream directory structure.
 
  -- Ferenc Wagner <wferi@niif.hu>  Fri, 22 Aug 2008 15:06:19 +0200
