@@ -93,17 +93,18 @@ am_libsaml_la_OBJECTS = SAMLConfig.lo ArtifactMap.lo \
 	ChainingMetadataProvider.lo DynamicMetadataProvider.lo \
 	MetadataImpl.lo MetadataProvider.lo \
 	MetadataSchemaValidators.lo NullMetadataProvider.lo \
-	SignatureMetadataFilter.lo WhitelistMetadataFilter.lo \
-	XMLMetadataProvider.lo SAML2Artifact.lo \
-	SAML2ArtifactType0004.lo SAML2ArtifactDecoder.lo \
-	SAML2ArtifactEncoder.lo SAML2ECPDecoder.lo SAML2ECPEncoder.lo \
-	SAML2MessageDecoder.lo SAML2POSTDecoder.lo SAML2POSTEncoder.lo \
-	SAML2Redirect.lo SAML2RedirectDecoder.lo \
-	SAML2RedirectEncoder.lo SAML2SOAPDecoder.lo \
-	SAML2SOAPEncoder.lo SAML2SOAPClient.lo Assertion20Validator.lo \
-	BrowserSSOProfile20Validator.lo EncryptedKeyResolver.lo \
-	ContentReference.lo SignatureProfileValidator.lo \
-	CommonDomainCookie.lo SAMLConstants.lo
+	SignatureMetadataFilter.lo RequireValidUntilMetadataFilter.lo \
+	WhitelistMetadataFilter.lo XMLMetadataProvider.lo \
+	SAML2Artifact.lo SAML2ArtifactType0004.lo \
+	SAML2ArtifactDecoder.lo SAML2ArtifactEncoder.lo \
+	SAML2ECPDecoder.lo SAML2ECPEncoder.lo SAML2MessageDecoder.lo \
+	SAML2POSTDecoder.lo SAML2POSTEncoder.lo SAML2Redirect.lo \
+	SAML2RedirectDecoder.lo SAML2RedirectEncoder.lo \
+	SAML2SOAPDecoder.lo SAML2SOAPEncoder.lo SAML2SOAPClient.lo \
+	Assertion20Validator.lo BrowserSSOProfile20Validator.lo \
+	EncryptedKeyResolver.lo ContentReference.lo \
+	SignatureProfileValidator.lo CommonDomainCookie.lo \
+	SAMLConstants.lo
 libsaml_la_OBJECTS = $(am_libsaml_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -434,6 +435,7 @@ libsaml_la_SOURCES = \
 	saml2/metadata/impl/MetadataSchemaValidators.cpp \
 	saml2/metadata/impl/NullMetadataProvider.cpp \
 	saml2/metadata/impl/SignatureMetadataFilter.cpp \
+	saml2/metadata/impl/RequireValidUntilMetadataFilter.cpp \
 	saml2/metadata/impl/WhitelistMetadataFilter.cpp \
 	saml2/metadata/impl/XMLMetadataProvider.cpp \
 	saml2/binding/impl/SAML2Artifact.cpp \
@@ -462,7 +464,7 @@ libsaml_la_SOURCES = \
 
 # this is different from the project version
 # http://sources.redhat.com/autobook/autobook/autobook_91.html
-libsaml_la_LDFLAGS = -version-info 2:0:0
+libsaml_la_LDFLAGS = -version-info 3:0:0
 EXTRA_DIST = saml.vcproj zlib resource.h saml.rc
 all: all-am
 
@@ -563,6 +565,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Protocols20SchemaValidators.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ProtocolsImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ProtocolsSchemaValidators.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RequireValidUntilMetadataFilter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SAML1ArtifactDecoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SAML1ArtifactEncoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SAML1MessageDecoder.Plo@am__quote@
@@ -907,6 +910,13 @@ SignatureMetadataFilter.lo: saml2/metadata/impl/SignatureMetadataFilter.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/metadata/impl/SignatureMetadataFilter.cpp' object='SignatureMetadataFilter.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SignatureMetadataFilter.lo `test -f 'saml2/metadata/impl/SignatureMetadataFilter.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/SignatureMetadataFilter.cpp
+
+RequireValidUntilMetadataFilter.lo: saml2/metadata/impl/RequireValidUntilMetadataFilter.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RequireValidUntilMetadataFilter.lo -MD -MP -MF "$(DEPDIR)/RequireValidUntilMetadataFilter.Tpo" -c -o RequireValidUntilMetadataFilter.lo `test -f 'saml2/metadata/impl/RequireValidUntilMetadataFilter.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/RequireValidUntilMetadataFilter.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/RequireValidUntilMetadataFilter.Tpo" "$(DEPDIR)/RequireValidUntilMetadataFilter.Plo"; else rm -f "$(DEPDIR)/RequireValidUntilMetadataFilter.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/metadata/impl/RequireValidUntilMetadataFilter.cpp' object='RequireValidUntilMetadataFilter.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RequireValidUntilMetadataFilter.lo `test -f 'saml2/metadata/impl/RequireValidUntilMetadataFilter.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/RequireValidUntilMetadataFilter.cpp
 
 WhitelistMetadataFilter.lo: saml2/metadata/impl/WhitelistMetadataFilter.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT WhitelistMetadataFilter.lo -MD -MP -MF "$(DEPDIR)/WhitelistMetadataFilter.Tpo" -c -o WhitelistMetadataFilter.lo `test -f 'saml2/metadata/impl/WhitelistMetadataFilter.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/WhitelistMetadataFilter.cpp; \
