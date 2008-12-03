@@ -8,6 +8,8 @@ opensaml2 (2.1-1) UNRELEASED; urgency=low
     library.
   * Build-depend on libxmtooling-dev >= 1.1 following the upstream spec
     file.
+  * Flesh out debian/copyright with entries for build system files and
+    convert to the latest draft of the copyright format proposal.
 
   [ Ferenc Wagner ]
   * Fix watch file for upstream directory structure.
