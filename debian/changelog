@@ -10,6 +10,7 @@ opensaml2 (2.1-1) UNRELEASED; urgency=low
     file.
   * Flesh out debian/copyright with entries for build system files and
     convert to the latest draft of the copyright format proposal.
+  * Remove duplicated Section header in the libsaml3 control stanza.
 
   [ Ferenc Wagner ]
   * Fix watch file for upstream directory structure.
