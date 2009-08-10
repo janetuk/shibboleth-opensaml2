@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="saml"
 	ProjectGUID="{34DE3EA5-EA05-4261-8B63-A850FFB91768}"
 	RootNamespace="saml"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -65,11 +66,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\cpp-xmltooling\$(ConfigurationName)\xmltooling1D.lib xerces-c_2D.lib xsec_1D.lib log4shib1D.lib"
-				OutputFile="$(OutDir)\$(ProjectName)2_1D.dll"
+				AdditionalDependencies="..\..\cpp-xmltooling\$(ConfigurationName)\xmltooling1D.lib xerces-c_3D.lib xsec_1D.lib log4shib1D.lib"
+				OutputFile="$(OutDir)\$(ProjectName)2_2D.dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(TargetDir)$(ProjectName)2D.lib"
 				TargetMachine="1"
 			/>
@@ -90,9 +93,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -146,11 +146,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\cpp-xmltooling\$(PlatformName)\$(ConfigurationName)\xmltooling1D.lib xerces-c_2D.lib xsec_1D.lib log4shib1D.lib"
-				OutputFile="$(OutDir)\$(ProjectName)2_1D.dll"
+				AdditionalDependencies="..\..\cpp-xmltooling\$(PlatformName)\$(ConfigurationName)\xmltooling1D.lib xerces-c_3D.lib xsec_1D.lib log4shib1D.lib"
+				OutputFile="$(OutDir)\$(ProjectName)2_2D.dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(TargetDir)$(ProjectName)2D.lib"
 				TargetMachine="17"
 			/>
@@ -171,9 +173,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -222,13 +221,15 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\cpp-xmltooling\$(ConfigurationName)\xmltooling1.lib xerces-c_2.lib xsec_1.lib log4shib1.lib"
-				OutputFile="$(OutDir)\$(ProjectName)2_1.dll"
+				AdditionalDependencies="..\..\cpp-xmltooling\$(ConfigurationName)\xmltooling1.lib xerces-c_3.lib xsec_1.lib log4shib1.lib"
+				OutputFile="$(OutDir)\$(ProjectName)2_2.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(TargetDir)$(ProjectName)2.lib"
 				TargetMachine="1"
 			/>
@@ -249,9 +250,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -301,13 +299,15 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\cpp-xmltooling\$(PlatformName)\$(ConfigurationName)\xmltooling1.lib xerces-c_2.lib xsec_1.lib log4shib1.lib"
-				OutputFile="$(OutDir)\$(ProjectName)2_1.dll"
+				AdditionalDependencies="..\..\cpp-xmltooling\$(PlatformName)\$(ConfigurationName)\xmltooling1.lib xerces-c_3.lib xsec_1.lib log4shib1.lib"
+				OutputFile="$(OutDir)\$(ProjectName)2_2.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(TargetDir)$(ProjectName)2.lib"
 				TargetMachine="17"
 			/>
@@ -328,9 +328,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -439,14 +436,22 @@
 				<Filter
 					Name="profile"
 					>
-					<File
-						RelativePath=".\saml1\profile\AssertionValidator.cpp"
+					<Filter
+						Name="impl"
 						>
-					</File>
-					<File
-						RelativePath=".\saml1\profile\BrowserSSOProfileValidator.cpp"
-						>
-					</File>
+						<File
+							RelativePath=".\saml1\profile\impl\AssertionValidator.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\saml1\profile\impl\BrowserSSOProfileValidator.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\saml1\profile\impl\SAML1BrowserSSORule.cpp"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 			<Filter
@@ -512,6 +517,10 @@
 						</File>
 						<File
 							RelativePath=".\saml2\metadata\impl\DynamicMetadataProvider.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\saml2\metadata\impl\EntityRoleMetadataFilter.cpp"
 							>
 						</File>
 						<File
@@ -691,86 +700,30 @@
 				<Filter
 					Name="profile"
 					>
-					<File
-						RelativePath=".\saml2\profile\Assertion20Validator.cpp"
+					<Filter
+						Name="impl"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
+						<File
+							RelativePath=".\saml2\profile\impl\Assertion20Validator.cpp"
 							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Debug|x64"
+						</File>
+						<File
+							RelativePath=".\saml2\profile\impl\BearerConfirmationRule.cpp"
 							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
+						</File>
+						<File
+							RelativePath=".\saml2\profile\impl\BrowserSSOProfile20Validator.cpp"
 							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|x64"
+						</File>
+						<File
+							RelativePath=".\saml2\profile\impl\DelegationRestrictionRule.cpp"
 							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath=".\saml2\profile\BrowserSSOProfile20Validator.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
+						</File>
+						<File
+							RelativePath=".\saml2\profile\impl\SAML2AssertionPolicy.cpp"
 							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Debug|x64"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|x64"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-					</File>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 			<Filter
@@ -872,6 +825,26 @@
 					RelativePath=".\zlib\zutil.c"
 					>
 				</File>
+			</Filter>
+			<Filter
+				Name="profile"
+				>
+				<Filter
+					Name="impl"
+					>
+					<File
+						RelativePath=".\profile\impl\AudienceRestrictionRule.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\profile\impl\ConditionsRule.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\profile\impl\IgnoreRule.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
@@ -1006,10 +979,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\saml2\metadata\ChainingMetadataProvider.h"
-						>
-					</File>
-					<File
 						RelativePath=".\saml2\metadata\DynamicMetadataProvider.h"
 						>
 					</File>
@@ -1075,6 +1044,10 @@
 					</File>
 					<File
 						RelativePath=".\saml2\profile\BrowserSSOProfileValidator.h"
+						>
+					</File>
+					<File
+						RelativePath=".\saml2\profile\SAML2AssertionPolicy.h"
 						>
 					</File>
 				</Filter>

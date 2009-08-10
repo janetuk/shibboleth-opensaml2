@@ -77,6 +77,7 @@ am__objects_1 = samltest-samltest.$(OBJEXT) \
 	samltest-AuthenticationStatementTest.$(OBJEXT) \
 	samltest-SAML1ArtifactTest.$(OBJEXT) \
 	samltest-SAML1POSTTest.$(OBJEXT) \
+	samltest-SAML1PolicyTest.$(OBJEXT) \
 	samltest-Action20Test.$(OBJEXT) \
 	samltest-Advice20Test.$(OBJEXT) \
 	samltest-Artifact20Test.$(OBJEXT) \
@@ -137,7 +138,8 @@ am__objects_1 = samltest-samltest.$(OBJEXT) \
 	samltest-SAML2ArtifactTest.$(OBJEXT) \
 	samltest-SAML2POSTTest.$(OBJEXT) \
 	samltest-SAML2RedirectTest.$(OBJEXT) \
-	samltest-XMLMetadataProviderTest.$(OBJEXT)
+	samltest-XMLMetadataProviderTest.$(OBJEXT) \
+	samltest-SAML2PolicyTest.$(OBJEXT)
 nodist_samltest_OBJECTS = $(am__objects_1)
 samltest_OBJECTS = $(nodist_samltest_OBJECTS)
 samltest_DEPENDENCIES = $(top_builddir)/saml/libsaml.la
@@ -349,6 +351,7 @@ samltest_h = \
     saml1/core/impl/AuthenticationStatementTest.h \
     saml1/binding/SAML1ArtifactTest.h \
     saml1/binding/SAML1POSTTest.h \
+    saml1/profile/SAML1PolicyTest.h \
     saml2/core/impl/Action20Test.h \
     saml2/core/impl/Advice20Test.h \
     saml2/core/impl/Artifact20Test.h \
@@ -409,7 +412,8 @@ samltest_h = \
     saml2/binding/SAML2ArtifactTest.h \
     saml2/binding/SAML2POSTTest.h \
     saml2/binding/SAML2RedirectTest.h \
-    saml2/metadata/XMLMetadataProviderTest.h
+    saml2/metadata/XMLMetadataProviderTest.h \
+    saml2/profile/SAML2PolicyTest.h
 
 noinst_HEADERS = \
 	binding.h \
@@ -553,11 +557,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/samltest-SAML1ArtifactTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/samltest-SAML1AssertionTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/samltest-SAML1POSTTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/samltest-SAML1PolicyTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/samltest-SAML1RequestTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/samltest-SAML1ResponseTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/samltest-SAML2ArtifactTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/samltest-SAML2AssertionTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/samltest-SAML2POSTTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/samltest-SAML2PolicyTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/samltest-SAML2RedirectTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/samltest-SAMLArtifactCreationTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/samltest-SAMLArtifactType0001Test.Po@am__quote@
@@ -948,6 +954,20 @@ samltest-SAML1POSTTest.obj: saml1/binding/SAML1POSTTest.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml1/binding/SAML1POSTTest.cpp' object='samltest-SAML1POSTTest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(samltest_CXXFLAGS) $(CXXFLAGS) -c -o samltest-SAML1POSTTest.obj `if test -f 'saml1/binding/SAML1POSTTest.cpp'; then $(CYGPATH_W) 'saml1/binding/SAML1POSTTest.cpp'; else $(CYGPATH_W) '$(srcdir)/saml1/binding/SAML1POSTTest.cpp'; fi`
+
+samltest-SAML1PolicyTest.o: saml1/profile/SAML1PolicyTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(samltest_CXXFLAGS) $(CXXFLAGS) -MT samltest-SAML1PolicyTest.o -MD -MP -MF "$(DEPDIR)/samltest-SAML1PolicyTest.Tpo" -c -o samltest-SAML1PolicyTest.o `test -f 'saml1/profile/SAML1PolicyTest.cpp' || echo '$(srcdir)/'`saml1/profile/SAML1PolicyTest.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/samltest-SAML1PolicyTest.Tpo" "$(DEPDIR)/samltest-SAML1PolicyTest.Po"; else rm -f "$(DEPDIR)/samltest-SAML1PolicyTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml1/profile/SAML1PolicyTest.cpp' object='samltest-SAML1PolicyTest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(samltest_CXXFLAGS) $(CXXFLAGS) -c -o samltest-SAML1PolicyTest.o `test -f 'saml1/profile/SAML1PolicyTest.cpp' || echo '$(srcdir)/'`saml1/profile/SAML1PolicyTest.cpp
+
+samltest-SAML1PolicyTest.obj: saml1/profile/SAML1PolicyTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(samltest_CXXFLAGS) $(CXXFLAGS) -MT samltest-SAML1PolicyTest.obj -MD -MP -MF "$(DEPDIR)/samltest-SAML1PolicyTest.Tpo" -c -o samltest-SAML1PolicyTest.obj `if test -f 'saml1/profile/SAML1PolicyTest.cpp'; then $(CYGPATH_W) 'saml1/profile/SAML1PolicyTest.cpp'; else $(CYGPATH_W) '$(srcdir)/saml1/profile/SAML1PolicyTest.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/samltest-SAML1PolicyTest.Tpo" "$(DEPDIR)/samltest-SAML1PolicyTest.Po"; else rm -f "$(DEPDIR)/samltest-SAML1PolicyTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml1/profile/SAML1PolicyTest.cpp' object='samltest-SAML1PolicyTest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(samltest_CXXFLAGS) $(CXXFLAGS) -c -o samltest-SAML1PolicyTest.obj `if test -f 'saml1/profile/SAML1PolicyTest.cpp'; then $(CYGPATH_W) 'saml1/profile/SAML1PolicyTest.cpp'; else $(CYGPATH_W) '$(srcdir)/saml1/profile/SAML1PolicyTest.cpp'; fi`
 
 samltest-Action20Test.o: saml2/core/impl/Action20Test.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(samltest_CXXFLAGS) $(CXXFLAGS) -MT samltest-Action20Test.o -MD -MP -MF "$(DEPDIR)/samltest-Action20Test.Tpo" -c -o samltest-Action20Test.o `test -f 'saml2/core/impl/Action20Test.cpp' || echo '$(srcdir)/'`saml2/core/impl/Action20Test.cpp; \
@@ -1803,6 +1823,20 @@ samltest-XMLMetadataProviderTest.obj: saml2/metadata/XMLMetadataProviderTest.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(samltest_CXXFLAGS) $(CXXFLAGS) -c -o samltest-XMLMetadataProviderTest.obj `if test -f 'saml2/metadata/XMLMetadataProviderTest.cpp'; then $(CYGPATH_W) 'saml2/metadata/XMLMetadataProviderTest.cpp'; else $(CYGPATH_W) '$(srcdir)/saml2/metadata/XMLMetadataProviderTest.cpp'; fi`
 
+samltest-SAML2PolicyTest.o: saml2/profile/SAML2PolicyTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(samltest_CXXFLAGS) $(CXXFLAGS) -MT samltest-SAML2PolicyTest.o -MD -MP -MF "$(DEPDIR)/samltest-SAML2PolicyTest.Tpo" -c -o samltest-SAML2PolicyTest.o `test -f 'saml2/profile/SAML2PolicyTest.cpp' || echo '$(srcdir)/'`saml2/profile/SAML2PolicyTest.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/samltest-SAML2PolicyTest.Tpo" "$(DEPDIR)/samltest-SAML2PolicyTest.Po"; else rm -f "$(DEPDIR)/samltest-SAML2PolicyTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/profile/SAML2PolicyTest.cpp' object='samltest-SAML2PolicyTest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(samltest_CXXFLAGS) $(CXXFLAGS) -c -o samltest-SAML2PolicyTest.o `test -f 'saml2/profile/SAML2PolicyTest.cpp' || echo '$(srcdir)/'`saml2/profile/SAML2PolicyTest.cpp
+
+samltest-SAML2PolicyTest.obj: saml2/profile/SAML2PolicyTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(samltest_CXXFLAGS) $(CXXFLAGS) -MT samltest-SAML2PolicyTest.obj -MD -MP -MF "$(DEPDIR)/samltest-SAML2PolicyTest.Tpo" -c -o samltest-SAML2PolicyTest.obj `if test -f 'saml2/profile/SAML2PolicyTest.cpp'; then $(CYGPATH_W) 'saml2/profile/SAML2PolicyTest.cpp'; else $(CYGPATH_W) '$(srcdir)/saml2/profile/SAML2PolicyTest.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/samltest-SAML2PolicyTest.Tpo" "$(DEPDIR)/samltest-SAML2PolicyTest.Po"; else rm -f "$(DEPDIR)/samltest-SAML2PolicyTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/profile/SAML2PolicyTest.cpp' object='samltest-SAML2PolicyTest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(samltest_CXXFLAGS) $(CXXFLAGS) -c -o samltest-SAML2PolicyTest.obj `if test -f 'saml2/profile/SAML2PolicyTest.cpp'; then $(CYGPATH_W) 'saml2/profile/SAML2PolicyTest.cpp'; else $(CYGPATH_W) '$(srcdir)/saml2/profile/SAML2PolicyTest.cpp'; fi`
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -1862,7 +1896,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/encryption $(distdir)/saml1/binding $(distdir)/saml1/core/impl $(distdir)/saml2/binding $(distdir)/saml2/core/impl $(distdir)/saml2/metadata $(distdir)/security $(distdir)/signature
+	$(mkdir_p) $(distdir)/encryption $(distdir)/saml1/binding $(distdir)/saml1/core/impl $(distdir)/saml1/profile $(distdir)/saml2/binding $(distdir)/saml2/core/impl $(distdir)/saml2/metadata $(distdir)/saml2/profile $(distdir)/security $(distdir)/signature
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

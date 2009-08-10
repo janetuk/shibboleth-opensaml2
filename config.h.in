@@ -9,9 +9,6 @@
 /* Define if Xerces-C library was found */
 #undef HAVE_LIBXERCESC
 
-/* Define if XML-Tooling library was found */
-#undef HAVE_LIBXMLTOOLING
-
 /* Define if XML-Security library was found */
 #undef HAVE_LIBXSEC
 
@@ -57,11 +54,17 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Define if xmltooling library was found */
+#undef HAVE_XMLTOOLING
+
 /* Define if log4cpp library is used. */
 #undef OPENSAML_LOG4CPP
 
 /* Define if log4shib library is used. */
 #undef OPENSAML_LOG4SHIB
+
+/* Define to 1 if Xerces XMLString includes XMLByte release. */
+#undef OPENSAML_XERCESC_HAS_XMLBYTE_RELEASE
 
 /* Name of package */
 #undef PACKAGE

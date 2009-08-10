@@ -84,7 +84,6 @@ saml2bindinclude_HEADERS = \
 	
 saml2mdinclude_HEADERS = \
 	saml2/metadata/AbstractMetadataProvider.h \
-	saml2/metadata/ChainingMetadataProvider.h \
 	saml2/metadata/DynamicMetadataProvider.h \
 	saml2/metadata/EndpointManager.h \
 	saml2/metadata/Metadata.h \
@@ -96,7 +95,8 @@ saml2mdinclude_HEADERS = \
 
 saml2profinclude_HEADERS = \
 	saml2/profile/AssertionValidator.h \
-	saml2/profile/BrowserSSOProfileValidator.h
+	saml2/profile/BrowserSSOProfileValidator.h \
+	saml2/profile/SAML2AssertionPolicy.h
 
 noinst_HEADERS = \
 	internal.h
@@ -114,6 +114,9 @@ libsaml_la_SOURCES = \
 	binding/impl/SimpleSigningRule.cpp \
 	binding/impl/SOAPClient.cpp \
 	binding/impl/XMLSigningRule.cpp \
+	profile/impl/AudienceRestrictionRule.cpp \
+    profile/impl/ConditionsRule.cpp \
+    profile/impl/IgnoreRule.cpp \
 	saml1/core/impl/AssertionsImpl.cpp \
 	saml1/core/impl/AssertionsSchemaValidators.cpp \
 	saml1/core/impl/ProtocolsImpl.cpp \
@@ -128,8 +131,9 @@ libsaml_la_SOURCES = \
 	saml1/binding/impl/SAML1SOAPDecoder.cpp \
 	saml1/binding/impl/SAML1SOAPEncoder.cpp \
 	saml1/binding/impl/SAML1SOAPClient.cpp \
-	saml1/profile/AssertionValidator.cpp \
-	saml1/profile/BrowserSSOProfileValidator.cpp \
+	saml1/profile/impl/AssertionValidator.cpp \
+	saml1/profile/impl/BrowserSSOProfileValidator.cpp \
+	saml1/profile/impl/SAML1BrowserSSORule.cpp \
 	saml2/core/impl/Assertions.cpp \
 	saml2/core/impl/Assertions20Impl.cpp \
 	saml2/core/impl/Assertions20SchemaValidators.cpp \
@@ -139,6 +143,7 @@ libsaml_la_SOURCES = \
 	saml2/metadata/impl/BlacklistMetadataFilter.cpp \
 	saml2/metadata/impl/ChainingMetadataProvider.cpp \
 	saml2/metadata/impl/DynamicMetadataProvider.cpp \
+	saml2/metadata/impl/EntityRoleMetadataFilter.cpp \
 	saml2/metadata/impl/MetadataImpl.cpp \
 	saml2/metadata/impl/MetadataProvider.cpp \
 	saml2/metadata/impl/MetadataSchemaValidators.cpp \
@@ -162,8 +167,11 @@ libsaml_la_SOURCES = \
 	saml2/binding/impl/SAML2SOAPDecoder.cpp \
 	saml2/binding/impl/SAML2SOAPEncoder.cpp \
 	saml2/binding/impl/SAML2SOAPClient.cpp \
-	saml2/profile/Assertion20Validator.cpp \
-	saml2/profile/BrowserSSOProfile20Validator.cpp \
+	saml2/profile/impl/Assertion20Validator.cpp \
+	saml2/profile/impl/BrowserSSOProfile20Validator.cpp \
+    saml2/profile/impl/BearerConfirmationRule.cpp \
+    saml2/profile/impl/DelegationRestrictionRule.cpp \
+	saml2/profile/impl/SAML2AssertionPolicy.cpp \
 	encryption/EncryptedKeyResolver.cpp \
 	signature/ContentReference.cpp \
 	signature/SignatureProfileValidator.cpp \
@@ -172,7 +180,7 @@ libsaml_la_SOURCES = \
 
 # this is different from the project version
 # http://sources.redhat.com/autobook/autobook/autobook_91.html
-libsaml_la_LDFLAGS = -version-info 3:0:0
+libsaml_la_LDFLAGS = -version-info 4:0:0
 
 install-exec-hook:
 	for la in $(lib_LTLIBRARIES) ; do rm -f $(DESTDIR)$(libdir)/$$la ; done

@@ -29,6 +29,7 @@
 #include <fstream>
 #include <sstream>
 #include <xercesc/util/Base64.hpp>
+#include <xmltooling/io/HTTPResponse.h>
 #include <xmltooling/logging.h>
 #include <xmltooling/util/NDC.h>
 #include <xmltooling/util/PathResolver.h>
@@ -183,24 +184,32 @@ long SAML2POSTEncoder::encode(
         if (keyInfo.get()) {
             string& kstring = pmap.m_map["KeyInfo"];
             XMLHelper::serialize(keyInfo->marshall((DOMDocument*)NULL), kstring);
-            unsigned int len=0;
+            xsecsize_t len=0;
             XMLByte* out=Base64::encode(reinterpret_cast<const XMLByte*>(kstring.data()),kstring.size(),&len);
             if (!out)
                 throw BindingException("Base64 encoding of XML failed.");
             kstring.erase();
             kstring.append(reinterpret_cast<char*>(out),len);
+#ifdef OPENSAML_XERCESC_HAS_XMLBYTE_RELEASE
             XMLString::release(&out);
+#else
+            XMLString::release((char**)&out);
+#endif
         }
     }
     
     // Base64 the message.
-    unsigned int len=0;
+    xsecsize_t len=0;
     XMLByte* out=Base64::encode(reinterpret_cast<const XMLByte*>(msg.data()),msg.size(),&len);
     if (!out)
         throw BindingException("Base64 encoding of XML failed.");
     msg.erase();
     msg.append(reinterpret_cast<char*>(out),len);
+#ifdef OPENSAML_XERCESC_HAS_XMLBYTE_RELEASE
     XMLString::release(&out);
+#else
+    XMLString::release((char**)&out);
+#endif
     
     // Push the rest of it into template and send result to client.
     log.debug("message encoded, sending HTML form template to client");
@@ -213,6 +222,12 @@ long SAML2POSTEncoder::encode(
     stringstream s;
     engine->run(infile, s, pmap);
     genericResponse.setContentType("text/html");
+    HTTPResponse* httpResponse = dynamic_cast<HTTPResponse*>(&genericResponse);
+    if (httpResponse) {
+        httpResponse->setResponseHeader("Expires", "01-Jan-1997 12:00:00 GMT");
+        httpResponse->setResponseHeader("Cache-Control", "no-cache, no-store, must-revalidate, private");
+        httpResponse->setResponseHeader("Pragma", "no-cache");
+    }
     long ret = genericResponse.sendResponse(s);
 
     // Cleanup by destroying XML.

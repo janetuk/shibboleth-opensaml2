@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ namespace opensaml {
         const char* getType() const {
             return SIMPLESIGNING_POLICY_RULE;
         }
-        void evaluate(const XMLObject& message, const GenericRequest* request, SecurityPolicy& policy) const;
+        bool evaluate(const XMLObject& message, const GenericRequest* request, SecurityPolicy& policy) const;
 
     private:
         // Appends a raw parameter=value pair to the string.
@@ -92,33 +92,33 @@ SimpleSigningRule::SimpleSigningRule(const DOMElement* e) : m_errorFatal(false)
     }
 }
 
-void SimpleSigningRule::evaluate(const XMLObject& message, const GenericRequest* request, SecurityPolicy& policy) const
+bool SimpleSigningRule::evaluate(const XMLObject& message, const GenericRequest* request, SecurityPolicy& policy) const
 {
     Category& log=Category::getInstance(SAML_LOGCAT".SecurityPolicyRule.SimpleSigning");
     
     if (!policy.getIssuerMetadata()) {
         log.debug("ignoring message, no issuer metadata supplied");
-        return;
+        return false;
     }
 
     const SignatureTrustEngine* sigtrust;
     if (!(sigtrust=dynamic_cast<const SignatureTrustEngine*>(policy.getTrustEngine()))) {
         log.debug("ignoring message, no SignatureTrustEngine supplied");
-        return;
+        return false;
     }
 
     const HTTPRequest* httpRequest = dynamic_cast<const HTTPRequest*>(request);
     if (!request || !httpRequest)
-        return;
+        return false;
 
     const char* signature = request->getParameter("Signature");
     if (!signature)
-        return;
+        return false;
     
     const char* sigAlgorithm = request->getParameter("SigAlg");
     if (!sigAlgorithm) {
         log.error("SigAlg parameter not found, no way to verify the signature");
-        return;
+        return false;
     }
 
     string input;
@@ -146,26 +146,34 @@ void SimpleSigningRule::evaluate(const XMLObject& message, const GenericRequest*
         // Serializing the XMLObject doesn't guarantee the signature will verify (this is
         // why XMLSignature exists, and why this isn't really "simpler").
 
-        unsigned int x;
+        xsecsize_t x;
         pch = httpRequest->getParameter("SAMLRequest");
         if (pch) {
             XMLByte* decoded=Base64::decode(reinterpret_cast<const XMLByte*>(pch),&x);
             if (!decoded) {
                 log.warn("unable to decode base64 in POST binding message");
-                return;
+                return false;
             }
             input = string("SAMLRequest=") + reinterpret_cast<const char*>(decoded);
+#ifdef OPENSAML_XERCESC_HAS_XMLBYTE_RELEASE
             XMLString::release(&decoded);
+#else
+            XMLString::release((char**)&decoded);
+#endif
         }
         else {
             pch = httpRequest->getParameter("SAMLResponse");
             XMLByte* decoded=Base64::decode(reinterpret_cast<const XMLByte*>(pch),&x);
             if (!decoded) {
                 log.warn("unable to decode base64 in POST binding message");
-                return;
+                return false;
             }
             input = string("SAMLResponse=") + reinterpret_cast<const char*>(decoded);
+#ifdef OPENSAML_XERCESC_HAS_XMLBYTE_RELEASE
             XMLString::release(&decoded);
+#else
+            XMLString::release((char**)&decoded);
+#endif
         }
 
         pch = httpRequest->getParameter("RelayState");
@@ -178,11 +186,11 @@ void SimpleSigningRule::evaluate(const XMLObject& message, const GenericRequest*
     KeyInfo* keyInfo=NULL;
     pch = request->getParameter("KeyInfo");
     if (pch) {
-        unsigned int x;
+        xsecsize_t x;
         XMLByte* decoded=Base64::decode(reinterpret_cast<const XMLByte*>(pch),&x);
         if (decoded) {
             try {
-                istringstream kstrm(pch);
+                istringstream kstrm((char*)decoded);
                 DOMDocument* doc = XMLToolingConfig::getConfig().getParser().parse(kstrm);
                 XercesJanitor<DOMDocument> janitor(doc);
                 XMLObject* kxml = XMLObjectBuilder::buildOneFromElement(doc->getDocumentElement(), true);
@@ -193,6 +201,11 @@ void SimpleSigningRule::evaluate(const XMLObject& message, const GenericRequest*
             catch (XMLToolingException& ex) {
                 log.warn("Failed to load KeyInfo from message: %s", ex.what());
             }
+#ifdef OPENSAML_XERCESC_HAS_XMLBYTE_RELEASE
+            XMLString::release(&decoded);
+#else
+            XMLString::release((char**)&decoded);
+#endif
         }
         else {
             log.warn("Failed to load KeyInfo from message: Unable to decode base64-encoded KeyInfo.");
@@ -210,9 +223,10 @@ void SimpleSigningRule::evaluate(const XMLObject& message, const GenericRequest*
         log.error("unable to verify message signature with supplied trust engine");
         if (m_errorFatal)
             throw SecurityPolicyException("Message was signed, but signature could not be verified.");
-        return;
+        return false;
     }
 
     log.debug("signature verified against message issuer");
     policy.setAuthenticated(true);
+    return true;
 }

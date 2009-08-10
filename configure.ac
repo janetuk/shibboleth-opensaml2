@@ -1,7 +1,7 @@
 AC_PREREQ([2.50])
-AC_INIT([opensaml], [2.1], [mace-opensaml-users@internet2.edu], [saml])
+AC_INIT([opensaml], [2.2], [mace-opensaml-users@internet2.edu], [saml])
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE([opensaml], [2.1])
+AM_INIT_AUTOMAKE([opensaml], [2.2])
 
 sinclude(doxygen.m4)
 sinclude(acx_pthread.m4)
@@ -196,6 +196,15 @@ AC_TRY_LINK(
     [AC_DEFINE(HAVE_LIBXERCESC,1,[Define if Xerces-C library was found])],
     [AC_MSG_ERROR([unable to link with Xerces])])
 
+AC_MSG_CHECKING([whether Xerces XMLString::release(XMLByte**) exists])
+AC_TRY_COMPILE([#include <xercesc/util/XMLString.hpp>],
+    [using namespace XERCES_CPP_NAMESPACE;
+      XMLByte* buf=NULL;
+      XMLString::release(&buf);
+    ],
+    [AC_MSG_RESULT([yes])]
+    [AC_DEFINE([OPENSAML_XERCESC_HAS_XMLBYTE_RELEASE], [1], [Define to 1 if Xerces XMLString includes XMLByte release.])],
+    [AC_MSG_RESULT([no])])
 
 # XML-Security settings
 AC_ARG_WITH(xmlsec,
@@ -234,11 +243,15 @@ AC_ARG_WITH(xmltooling,
 LIBS="-lxmltooling $LIBS"
 AC_CHECK_HEADER([xmltooling/XMLToolingConfig.h],,AC_MSG_ERROR([unable to find xmltooling header files]))
 AC_TRY_LINK(
-    [#include <xmltooling/XMLToolingConfig.h>],
-    [xmltooling::XMLToolingConfig::getConfig().init()],
-    [AC_DEFINE(HAVE_LIBXMLTOOLING,1,[Define if XML-Tooling library was found])],
-    [AC_MSG_ERROR([unable to link with xmltooling library])]
-    )
+    [#include <xmltooling/XMLToolingConfig.h>
+#include <xmltooling/version.h>],
+    [#if _XMLTOOLING_VERSION >= 10200
+xmltooling::XMLToolingConfig::getConfig();
+#else
+#error Need XMLTooling version 1.2 or higher
+#endif],
+        [AC_DEFINE(HAVE_XMLTOOLING,1,[Define if xmltooling library was found])],
+        [AC_MSG_ERROR([unable to link with XMLTooling, or version was too old])])
 
 # Check for unit test support
 CXXTEST="/usr/bin/cxxtestgen.pl"

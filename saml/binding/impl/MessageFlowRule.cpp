@@ -1,6 +1,6 @@
 /*
- *  Copyright 2001-2007 Internet2
- * 
+ *  Copyright 2001-2009 Internet2
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,7 @@
 
 /**
  * MessageFlowRule.cpp
- * 
+ *
  * SAML replay and freshness checking SecurityPolicyRule
  */
 
@@ -39,12 +39,12 @@ namespace opensaml {
     public:
         MessageFlowRule(const DOMElement* e);
         virtual ~MessageFlowRule() {}
-        
+
         const char* getType() const {
             return MESSAGEFLOW_POLICY_RULE;
         }
-        void evaluate(const XMLObject& message, const GenericRequest* request, SecurityPolicy& policy) const;
-    
+        bool evaluate(const XMLObject& message, const GenericRequest* request, SecurityPolicy& policy) const;
+
     private:
         bool m_checkReplay;
         time_t m_expires;
@@ -72,12 +72,12 @@ MessageFlowRule::MessageFlowRule(const DOMElement* e)
     }
 }
 
-void MessageFlowRule::evaluate(const XMLObject& message, const GenericRequest* request, SecurityPolicy& policy) const
+bool MessageFlowRule::evaluate(const XMLObject& message, const GenericRequest* request, SecurityPolicy& policy) const
 {
     Category& log=Category::getInstance(SAML_LOGCAT".SecurityPolicyRule.MessageFlow");
     log.debug("evaluating message flow policy (replay checking %s, expiration %lu)", m_checkReplay ? "on" : "off", m_expires);
 
-    time_t now = time(NULL);
+    time_t now = policy.getTime();
     time_t skew = XMLToolingConfig::getConfig().clock_skew_secs;
     time_t issueInstant = policy.getIssueInstant();
     if (issueInstant == 0) {
@@ -95,17 +95,17 @@ void MessageFlowRule::evaluate(const XMLObject& message, const GenericRequest* r
             throw SecurityPolicyException("Message expired, was issued too long ago.");
         }
     }
-    
+
     // Check replay.
     if (m_checkReplay) {
         const XMLCh* id = policy.getMessageID();
         if (!id || !*id)
-            return;
+            return false;
 
         ReplayCache* replayCache = XMLToolingConfig::getConfig().getReplayCache();
         if (!replayCache) {
             log.warn("no ReplayCache available, skipping requested replay check");
-            return;
+            return false;
         }
 
         auto_ptr_char temp(id);
@@ -113,5 +113,7 @@ void MessageFlowRule::evaluate(const XMLObject& message, const GenericRequest* r
             log.error("replay detected of message ID (%s)", temp.get());
             throw SecurityPolicyException("Rejecting replayed message ID ($1).", params(1,temp.get()));
         }
+        return true;
     }
+    return false;
 }

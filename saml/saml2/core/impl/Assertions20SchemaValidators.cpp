@@ -1,5 +1,5 @@
 /*
-*  Copyright 2001-2007 Internet2
+*  Copyright 2001-2009 Internet2
  *
 * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,9 +72,31 @@ namespace opensaml {
             }
         END_XMLOBJECTVALIDATOR;
 
+        BEGIN_XMLOBJECTVALIDATOR(SAML_DLLLOCAL,Delegate);
+            int count=0;
+            if (ptr->getBaseID())
+                count++;
+            if (ptr->getNameID())
+                count++;
+            if (ptr->getEncryptedID())
+                count++;
+            if (count != 1)
+                throw ValidationException("Delegate must contain exactly one identifier element.");
+        END_XMLOBJECTVALIDATOR;
+
+        BEGIN_XMLOBJECTVALIDATOR(SAML_DLLLOCAL,DelegationRestrictionType);
+            XMLOBJECTVALIDATOR_NONEMPTY(DelegationRestrictionType,Delegate);
+        END_XMLOBJECTVALIDATOR;
+
         BEGIN_XMLOBJECTVALIDATOR(SAML_DLLLOCAL,Conditions);
             if (!ptr->hasChildren()) {
                 XMLOBJECTVALIDATOR_ONEOF(Conditions,NotBefore,NotOnOrAfter);
+            }
+            else if (ptr->getOneTimeUses().size() > 1) {
+                throw ValidationException("Multiple OneTimeUse condition elements are not permitted.");
+            }
+            else if (ptr->getProxyRestrictions().size() > 1) {
+                throw ValidationException("Multiple ProxyRestriction condition elements are not permitted.");
             }
         END_XMLOBJECTVALIDATOR;
 
@@ -180,25 +202,25 @@ namespace opensaml {
 };
 
 #define REGISTER_ELEMENT(cname) \
-    q=QName(SAML20_NS,cname::LOCAL_NAME); \
+    q=xmltooling::QName(SAML20_NS,cname::LOCAL_NAME); \
     XMLObjectBuilder::registerBuilder(q,new cname##Builder()); \
     SchemaValidators.registerValidator(q,new cname##SchemaValidator())
 
 #define REGISTER_TYPE(cname) \
-    q=QName(SAML20_NS,cname::TYPE_NAME); \
+    q=xmltooling::QName(SAML20_NS,cname::TYPE_NAME); \
     XMLObjectBuilder::registerBuilder(q,new cname##Builder()); \
     SchemaValidators.registerValidator(q,new cname##SchemaValidator())
 
 #define REGISTER_ELEMENT_NOVAL(cname) \
-    q=QName(SAML20_NS,cname::LOCAL_NAME); \
+    q=xmltooling::QName(SAML20_NS,cname::LOCAL_NAME); \
     XMLObjectBuilder::registerBuilder(q,new cname##Builder());
 
 #define REGISTER_TYPE_NOVAL(cname) \
-    q=QName(SAML20_NS,cname::TYPE_NAME); \
+    q=xmltooling::QName(SAML20_NS,cname::TYPE_NAME); \
     XMLObjectBuilder::registerBuilder(q,new cname##Builder());
 
 void opensaml::saml2::registerAssertionClasses() {
-    QName q;
+    xmltooling::QName q;
     REGISTER_ELEMENT(Action);
     REGISTER_ELEMENT(Advice);
     REGISTER_ELEMENT(Assertion);
@@ -249,4 +271,15 @@ void opensaml::saml2::registerAssertionClasses() {
     REGISTER_TYPE(Subject);
     REGISTER_TYPE(SubjectConfirmation);
     REGISTER_TYPE(SubjectLocality);
+
+    q=xmltooling::QName(samlconstants::SAML20_DELEGATION_CONDITION_NS,Delegate::LOCAL_NAME);
+    XMLObjectBuilder::registerBuilder(q,new DelegateBuilder());
+    SchemaValidators.registerValidator(q,new DelegateSchemaValidator());
+    q=xmltooling::QName(samlconstants::SAML20_DELEGATION_CONDITION_NS,Delegate::TYPE_NAME);
+    XMLObjectBuilder::registerBuilder(q,new DelegateBuilder());
+    SchemaValidators.registerValidator(q,new DelegateSchemaValidator());
+
+    q=xmltooling::QName(samlconstants::SAML20_DELEGATION_CONDITION_NS,DelegationRestrictionType::TYPE_NAME);
+    XMLObjectBuilder::registerBuilder(q,new DelegationRestrictionTypeBuilder());
+    SchemaValidators.registerValidator(q,new DelegationRestrictionTypeSchemaValidator());
 }
