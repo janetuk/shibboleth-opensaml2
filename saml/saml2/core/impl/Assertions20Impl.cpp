@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ using xmlconstants::XMLSIG_NS;
 using xmlconstants::XMLENC_NS;
 using xmlconstants::XML_BOOL_NULL;
 using samlconstants::SAML20_NS;
+using samlconstants::SAML20_DELEGATION_CONDITION_NS;
 
 
 #if defined (_MSC_VER)
@@ -85,7 +86,7 @@ namespace opensaml {
                 XMLString::release(&m_SPProvidedID);
             }
 
-            NameIDTypeImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            NameIDTypeImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                     : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
                 init();
             }
@@ -127,7 +128,7 @@ namespace opensaml {
         public:
             virtual ~NameIDImpl() {}
 
-            NameIDImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            NameIDImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {}
 
             NameIDImpl(const NameIDImpl& src) : AbstractXMLObject(src), NameIDTypeImpl(src) {}
@@ -143,7 +144,7 @@ namespace opensaml {
         public:
             virtual ~IssuerImpl() {}
 
-            IssuerImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            IssuerImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {}
 
             IssuerImpl(const IssuerImpl& src) : AbstractXMLObject(src), NameIDTypeImpl(src) {}
@@ -176,7 +177,7 @@ namespace opensaml {
         public:
             virtual ~EncryptedElementTypeImpl() {}
 
-            EncryptedElementTypeImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            EncryptedElementTypeImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                     : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
                 init();
             }
@@ -211,7 +212,7 @@ namespace opensaml {
         public:
             virtual ~EncryptedIDImpl() {}
 
-            EncryptedIDImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            EncryptedIDImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {}
 
             EncryptedIDImpl(const EncryptedIDImpl& src) : AbstractXMLObject(src), EncryptedElementTypeImpl(src) {}
@@ -227,11 +228,11 @@ namespace opensaml {
         public:
             virtual ~ConditionImpl() {}
 
-            ConditionImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            ConditionImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
             }
 
-            ConditionImpl(const ConditionImpl& src) : AnyElementImpl(src) {}
+            ConditionImpl(const ConditionImpl& src) : AbstractXMLObject(src), AnyElementImpl(src) {}
 
             IMPL_XMLOBJECT_CLONE(Condition);
         };
@@ -245,7 +246,7 @@ namespace opensaml {
         public:
             virtual ~AudienceRestrictionImpl() {}
 
-            AudienceRestrictionImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            AudienceRestrictionImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
             }
 
@@ -281,7 +282,7 @@ namespace opensaml {
         public:
             virtual ~OneTimeUseImpl() {}
 
-            OneTimeUseImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            OneTimeUseImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
             }
 
@@ -306,7 +307,7 @@ namespace opensaml {
                 XMLString::release(&m_Count);
             }
 
-            ProxyRestrictionImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            ProxyRestrictionImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
                 m_Count=NULL;
             }
@@ -345,6 +346,113 @@ namespace opensaml {
             }
         };
 
+        class SAML_DLLLOCAL DelegateImpl : public virtual Delegate,
+            public AbstractComplexElement,
+            public AbstractDOMCachingXMLObject,
+            public AbstractXMLObjectMarshaller,
+            public AbstractXMLObjectUnmarshaller
+        {
+            void init() {
+                m_ConfirmationMethod=NULL;
+                m_DelegationInstant=NULL;
+                m_BaseID=NULL;
+                m_NameID=NULL;
+                m_EncryptedID=NULL;
+                m_children.push_back(NULL);
+                m_children.push_back(NULL);
+                m_children.push_back(NULL);
+                m_pos_BaseID=m_children.begin();
+                m_pos_NameID=m_pos_BaseID;
+                ++m_pos_NameID;
+                m_pos_EncryptedID=m_pos_NameID;
+                ++m_pos_EncryptedID;
+            }
+        public:
+            virtual ~DelegateImpl() {
+                XMLString::release(&m_ConfirmationMethod);
+                delete m_DelegationInstant;
+            }
+
+            DelegateImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
+                : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
+                init();
+            }
+
+            DelegateImpl(const DelegateImpl& src)
+                    : AbstractXMLObject(src), AbstractComplexElement(src), AbstractDOMCachingXMLObject(src) {
+                init();
+                setConfirmationMethod(src.getConfirmationMethod());
+                setDelegationInstant(src.getDelegationInstant());
+                if (src.getBaseID())
+                    setBaseID(src.getBaseID()->cloneBaseID());
+                if (src.getNameID())
+                    setNameID(src.getNameID()->cloneNameID());
+                if (src.getEncryptedID())
+                    setEncryptedID(src.getEncryptedID()->cloneEncryptedID());
+            }
+
+            IMPL_XMLOBJECT_CLONE(Delegate);
+            IMPL_STRING_ATTRIB(ConfirmationMethod);
+            IMPL_DATETIME_ATTRIB(DelegationInstant,0);
+            IMPL_TYPED_CHILD(NameID);
+            IMPL_TYPED_CHILD(BaseID);
+            IMPL_TYPED_CHILD(EncryptedID);
+
+        protected:
+            void marshallAttributes(DOMElement* domElement) const {
+                MARSHALL_STRING_ATTRIB(ConfirmationMethod,CONFIRMATIONMETHOD,NULL);
+                MARSHALL_DATETIME_ATTRIB(DelegationInstant,DELEGATIONINSTANT,NULL);
+            }
+
+            void processChildElement(XMLObject* childXMLObject, const DOMElement* root) {
+                PROC_TYPED_CHILD(BaseID,SAML20_NS,false);
+                PROC_TYPED_CHILD(NameID,SAML20_NS,false);
+                PROC_TYPED_CHILD(EncryptedID,SAML20_NS,false);
+                AbstractXMLObjectUnmarshaller::processChildElement(childXMLObject,root);
+            }
+
+            void processAttribute(const DOMAttr* attribute) {
+                PROC_STRING_ATTRIB(ConfirmationMethod,CONFIRMATIONMETHOD,NULL);
+                PROC_DATETIME_ATTRIB(DelegationInstant,DELEGATIONINSTANT,NULL);
+                AbstractXMLObjectUnmarshaller::processAttribute(attribute);
+            }
+        };
+
+        class SAML_DLLLOCAL DelegationRestrictionTypeImpl : public virtual DelegationRestrictionType,
+            public AbstractComplexElement,
+            public AbstractDOMCachingXMLObject,
+            public AbstractXMLObjectMarshaller,
+            public AbstractXMLObjectUnmarshaller
+        {
+        public:
+            virtual ~DelegationRestrictionTypeImpl() {}
+
+            DelegationRestrictionTypeImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
+                : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
+            }
+
+            DelegationRestrictionTypeImpl(const DelegationRestrictionTypeImpl& src)
+                    : AbstractXMLObject(src), AbstractComplexElement(src), AbstractDOMCachingXMLObject(src) {
+                VectorOf(Delegate) v=getDelegates();
+                for (vector<Delegate*>::const_iterator i=src.m_Delegates.begin(); i!=src.m_Delegates.end(); i++) {
+                    if (*i) {
+                        v.push_back((*i)->cloneDelegate());
+                    }
+                }
+            }
+
+            IMPL_XMLOBJECT_CLONE(DelegationRestrictionType);
+            Condition* cloneCondition() const {
+                return cloneDelegationRestrictionType();
+            }
+            IMPL_TYPED_CHILDREN(Delegate,m_children.end());
+
+        protected:
+            void processChildElement(XMLObject* childXMLObject, const DOMElement* root) {
+                PROC_TYPED_CHILDREN(Delegate,SAML20_DELEGATION_CONDITION_NS,false);
+                AbstractXMLObjectUnmarshaller::processChildElement(childXMLObject,root);
+            }
+        };
 
         class SAML_DLLLOCAL ConditionsImpl : public virtual Conditions,
             public AbstractComplexElement,
@@ -361,7 +469,7 @@ namespace opensaml {
                 delete m_NotOnOrAfter;
             }
 
-            ConditionsImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            ConditionsImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
                 init();
             }
@@ -451,7 +559,7 @@ namespace opensaml {
                 XMLString::release(&m_Address);
             }
 
-            SubjectConfirmationDataTypeImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            SubjectConfirmationDataTypeImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                     : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
                 init();
             }
@@ -495,12 +603,12 @@ namespace opensaml {
         public:
             virtual ~SubjectConfirmationDataImpl() {}
 
-            SubjectConfirmationDataImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            SubjectConfirmationDataImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                     : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
             }
 
             SubjectConfirmationDataImpl(const SubjectConfirmationDataImpl& src)
-                    : SubjectConfirmationDataTypeImpl(src), AnyElementImpl(src) {
+                    : AbstractXMLObject(src), SubjectConfirmationDataTypeImpl(src), AnyElementImpl(src) {
             }
 
             IMPL_XMLOBJECT_CLONE(SubjectConfirmationData);
@@ -508,7 +616,7 @@ namespace opensaml {
                 return new SubjectConfirmationDataImpl(*this);
             }
 
-            void setAttribute(const QName& qualifiedName, const XMLCh* value, bool ID=false) {
+            void setAttribute(const xmltooling::QName& qualifiedName, const XMLCh* value, bool ID=false) {
                 if (!qualifiedName.hasNamespaceURI()) {
                     if (XMLString::equals(qualifiedName.getLocalPart(),NOTBEFORE_ATTRIB_NAME)) {
                         setNotBefore(value);
@@ -561,7 +669,7 @@ namespace opensaml {
         public:
             virtual ~KeyInfoConfirmationDataTypeImpl() {}
 
-            KeyInfoConfirmationDataTypeImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            KeyInfoConfirmationDataTypeImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                     : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
             }
 
@@ -581,7 +689,7 @@ namespace opensaml {
             IMPL_TYPED_CHILDREN(KeyInfo,m_children.end());
 
         public:
-            void setAttribute(const QName& qualifiedName, const XMLCh* value, bool ID=false) {
+            void setAttribute(const xmltooling::QName& qualifiedName, const XMLCh* value, bool ID=false) {
                 if (!qualifiedName.hasNamespaceURI()) {
                     if (XMLString::equals(qualifiedName.getLocalPart(),NOTBEFORE_ATTRIB_NAME)) {
                         setNotBefore(value);
@@ -650,7 +758,7 @@ namespace opensaml {
         public:
             virtual ~SubjectConfirmationImpl() {}
 
-            SubjectConfirmationImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            SubjectConfirmationImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
                 init();
             }
@@ -717,7 +825,7 @@ namespace opensaml {
         public:
             virtual ~SubjectImpl() {}
 
-            SubjectImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            SubjectImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
                 init();
             }
@@ -770,7 +878,7 @@ namespace opensaml {
                 XMLString::release(&m_DNSName);
             }
 
-            SubjectLocalityImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            SubjectLocalityImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
                 init();
             }
@@ -804,11 +912,11 @@ namespace opensaml {
         public:
             virtual ~StatementImpl() {}
 
-            StatementImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            StatementImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
             }
 
-            StatementImpl(const StatementImpl& src) : AnyElementImpl(src) {}
+            StatementImpl(const StatementImpl& src) : AbstractXMLObject(src), AnyElementImpl(src) {}
 
             IMPL_XMLOBJECT_CLONE(Statement);
         };
@@ -819,11 +927,11 @@ namespace opensaml {
         public:
             virtual ~AuthnContextDeclImpl() {}
 
-            AuthnContextDeclImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            AuthnContextDeclImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
             }
 
-            AuthnContextDeclImpl(const AuthnContextDeclImpl& src) : AnyElementImpl(src) {
+            AuthnContextDeclImpl(const AuthnContextDeclImpl& src) : AbstractXMLObject(src), AnyElementImpl(src) {
             }
 
             IMPL_XMLOBJECT_CLONE(AuthnContextDecl);
@@ -851,7 +959,7 @@ namespace opensaml {
         public:
             virtual ~AuthnContextImpl() {}
 
-            AuthnContextImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            AuthnContextImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
                 init();
             }
@@ -914,7 +1022,7 @@ namespace opensaml {
                 delete m_SessionNotOnOrAfter;
             }
 
-            AuthnStatementImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            AuthnStatementImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
                 init();
             }
@@ -973,7 +1081,7 @@ namespace opensaml {
                 XMLString::release(&m_Namespace);
             }
 
-            ActionImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            ActionImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                     : AbstractXMLObject(nsURI, localName, prefix, schemaType), m_Namespace(NULL) {
             }
 
@@ -1005,7 +1113,7 @@ namespace opensaml {
         public:
             virtual ~EvidenceImpl() {}
 
-            EvidenceImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            EvidenceImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
             }
 
@@ -1075,7 +1183,7 @@ namespace opensaml {
                 XMLString::release(&m_Decision);
             }
 
-            AuthzDecisionStatementImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            AuthzDecisionStatementImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
                 init();
             }
@@ -1128,11 +1236,11 @@ namespace opensaml {
         public:
             virtual ~AttributeValueImpl() {}
 
-            AttributeValueImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            AttributeValueImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
             }
 
-            AttributeValueImpl(const AttributeValueImpl& src) : AnyElementImpl(src) {
+            AttributeValueImpl(const AttributeValueImpl& src) : AbstractXMLObject(src), AnyElementImpl(src) {
             }
 
             IMPL_XMLOBJECT_CLONE(AttributeValue);
@@ -1156,7 +1264,7 @@ namespace opensaml {
                 XMLString::release(&m_FriendlyName);
             }
 
-            AttributeImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            AttributeImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
                 init();
             }
@@ -1182,7 +1290,7 @@ namespace opensaml {
             IMPL_STRING_ATTRIB(FriendlyName);
             IMPL_XMLOBJECT_CHILDREN(AttributeValue,m_children.end());
 
-            void setAttribute(const QName& qualifiedName, const XMLCh* value, bool ID=false) {
+            void setAttribute(const xmltooling::QName& qualifiedName, const XMLCh* value, bool ID=false) {
                 if (!qualifiedName.hasNamespaceURI()) {
                     if (XMLString::equals(qualifiedName.getLocalPart(),NAME_ATTRIB_NAME)) {
                         setName(value);
@@ -1223,7 +1331,7 @@ namespace opensaml {
         public:
             virtual ~EncryptedAttributeImpl() {}
 
-            EncryptedAttributeImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            EncryptedAttributeImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {}
 
             EncryptedAttributeImpl(const EncryptedAttributeImpl& src) : AbstractXMLObject(src), EncryptedElementTypeImpl(src) {}
@@ -1243,7 +1351,7 @@ namespace opensaml {
         public:
             virtual ~AttributeStatementImpl() {}
 
-            AttributeStatementImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            AttributeStatementImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
             }
 
@@ -1290,7 +1398,7 @@ namespace opensaml {
         public:
             virtual ~AdviceImpl() {}
 
-            AdviceImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            AdviceImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
             }
 
@@ -1358,7 +1466,7 @@ namespace opensaml {
         public:
             virtual ~EncryptedAssertionImpl() {}
 
-            EncryptedAssertionImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            EncryptedAssertionImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {}
 
             EncryptedAssertionImpl(const EncryptedAssertionImpl& src) : AbstractXMLObject(src), EncryptedElementTypeImpl(src) {}
@@ -1406,7 +1514,7 @@ namespace opensaml {
                 delete m_IssueInstant;
             }
 
-            AssertionImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const QName* schemaType)
+            AssertionImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
                 : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
                 init();
             }
@@ -1551,6 +1659,8 @@ IMPL_XMLOBJECTBUILDER(AuthnStatement);
 IMPL_XMLOBJECTBUILDER(AuthzDecisionStatement);
 IMPL_XMLOBJECTBUILDER(Condition);
 IMPL_XMLOBJECTBUILDER(Conditions);
+IMPL_XMLOBJECTBUILDER(Delegate);
+IMPL_XMLOBJECTBUILDER(DelegationRestrictionType);
 IMPL_XMLOBJECTBUILDER(EncryptedAssertion);
 IMPL_XMLOBJECTBUILDER(EncryptedAttribute);
 IMPL_XMLOBJECTBUILDER(EncryptedID);
@@ -1617,6 +1727,12 @@ const XMLCh Conditions::LOCAL_NAME[] =              UNICODE_LITERAL_10(C,o,n,d,i
 const XMLCh Conditions::TYPE_NAME[] =               UNICODE_LITERAL_14(C,o,n,d,i,t,i,o,n,s,T,y,p,e);
 const XMLCh Conditions::NOTBEFORE_ATTRIB_NAME[] =   UNICODE_LITERAL_9(N,o,t,B,e,f,o,r,e);
 const XMLCh Conditions::NOTONORAFTER_ATTRIB_NAME[] =UNICODE_LITERAL_12(N,o,t,O,n,O,r,A,f,t,e,r);
+const XMLCh Delegate::LOCAL_NAME[] =                UNICODE_LITERAL_8(D,e,l,e,g,a,t,e);
+const XMLCh Delegate::TYPE_NAME[] =                 UNICODE_LITERAL_12(D,e,l,e,g,a,t,e,T,y,p,e);
+const XMLCh Delegate::CONFIRMATIONMETHOD_ATTRIB_NAME[] = UNICODE_LITERAL_18(C,o,n,f,i,r,m,a,t,i,o,n,M,e,t,h,o,d);
+const XMLCh Delegate::DELEGATIONINSTANT_ATTRIB_NAME[] = UNICODE_LITERAL_17(D,e,l,e,g,a,t,i,o,n,I,n,s,t,a,n,t);
+const XMLCh DelegationRestrictionType::LOCAL_NAME[] = UNICODE_LITERAL_9(C,o,n,d,i,t,i,o,n);
+const XMLCh DelegationRestrictionType::TYPE_NAME[] =UNICODE_LITERAL_25(D,e,l,e,g,a,t,i,o,n,R,e,s,t,r,i,c,t,i,o,n,T,y,p,e);
 const XMLCh EncryptedAssertion::LOCAL_NAME[] =      UNICODE_LITERAL_18(E,n,c,r,y,p,t,e,d,A,s,s,e,r,t,i,o,n);
 const XMLCh EncryptedAttribute::LOCAL_NAME[] =      UNICODE_LITERAL_18(E,n,c,r,y,p,t,e,d,A,t,t,r,i,b,u,t,e);
 const XMLCh EncryptedElementType::LOCAL_NAME[] =    {chNull};

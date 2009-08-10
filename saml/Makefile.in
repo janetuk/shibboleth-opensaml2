@@ -79,18 +79,19 @@ am_libsaml_la_OBJECTS = SAMLConfig.lo ArtifactMap.lo \
 	ClientCertAuthRule.lo MessageDecoder.lo MessageEncoder.lo \
 	MessageFlowRule.lo NullSecurityRule.lo SAMLArtifact.lo \
 	SecurityPolicy.lo SimpleSigningRule.lo SOAPClient.lo \
-	XMLSigningRule.lo AssertionsImpl.lo \
-	AssertionsSchemaValidators.lo ProtocolsImpl.lo \
-	ProtocolsSchemaValidators.lo SAMLArtifactType0001.lo \
-	SAMLArtifactType0002.lo SAML1ArtifactDecoder.lo \
-	SAML1ArtifactEncoder.lo SAML1MessageDecoder.lo \
-	SAML1POSTDecoder.lo SAML1POSTEncoder.lo SAML1SOAPDecoder.lo \
-	SAML1SOAPEncoder.lo SAML1SOAPClient.lo AssertionValidator.lo \
-	BrowserSSOProfileValidator.lo Assertions.lo \
-	Assertions20Impl.lo Assertions20SchemaValidators.lo \
-	Protocols20Impl.lo Protocols20SchemaValidators.lo \
-	AbstractMetadataProvider.lo BlacklistMetadataFilter.lo \
-	ChainingMetadataProvider.lo DynamicMetadataProvider.lo \
+	XMLSigningRule.lo AudienceRestrictionRule.lo ConditionsRule.lo \
+	IgnoreRule.lo AssertionsImpl.lo AssertionsSchemaValidators.lo \
+	ProtocolsImpl.lo ProtocolsSchemaValidators.lo \
+	SAMLArtifactType0001.lo SAMLArtifactType0002.lo \
+	SAML1ArtifactDecoder.lo SAML1ArtifactEncoder.lo \
+	SAML1MessageDecoder.lo SAML1POSTDecoder.lo SAML1POSTEncoder.lo \
+	SAML1SOAPDecoder.lo SAML1SOAPEncoder.lo SAML1SOAPClient.lo \
+	AssertionValidator.lo BrowserSSOProfileValidator.lo \
+	SAML1BrowserSSORule.lo Assertions.lo Assertions20Impl.lo \
+	Assertions20SchemaValidators.lo Protocols20Impl.lo \
+	Protocols20SchemaValidators.lo AbstractMetadataProvider.lo \
+	BlacklistMetadataFilter.lo ChainingMetadataProvider.lo \
+	DynamicMetadataProvider.lo EntityRoleMetadataFilter.lo \
 	MetadataImpl.lo MetadataProvider.lo \
 	MetadataSchemaValidators.lo NullMetadataProvider.lo \
 	SignatureMetadataFilter.lo RequireValidUntilMetadataFilter.lo \
@@ -102,9 +103,10 @@ am_libsaml_la_OBJECTS = SAMLConfig.lo ArtifactMap.lo \
 	SAML2RedirectDecoder.lo SAML2RedirectEncoder.lo \
 	SAML2SOAPDecoder.lo SAML2SOAPEncoder.lo SAML2SOAPClient.lo \
 	Assertion20Validator.lo BrowserSSOProfile20Validator.lo \
-	EncryptedKeyResolver.lo ContentReference.lo \
-	SignatureProfileValidator.lo CommonDomainCookie.lo \
-	SAMLConstants.lo
+	BearerConfirmationRule.lo DelegationRestrictionRule.lo \
+	SAML2AssertionPolicy.lo EncryptedKeyResolver.lo \
+	ContentReference.lo SignatureProfileValidator.lo \
+	CommonDomainCookie.lo SAMLConstants.lo
 libsaml_la_OBJECTS = $(am_libsaml_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -375,7 +377,6 @@ saml2bindinclude_HEADERS = \
 
 saml2mdinclude_HEADERS = \
 	saml2/metadata/AbstractMetadataProvider.h \
-	saml2/metadata/ChainingMetadataProvider.h \
 	saml2/metadata/DynamicMetadataProvider.h \
 	saml2/metadata/EndpointManager.h \
 	saml2/metadata/Metadata.h \
@@ -387,7 +388,8 @@ saml2mdinclude_HEADERS = \
 
 saml2profinclude_HEADERS = \
 	saml2/profile/AssertionValidator.h \
-	saml2/profile/BrowserSSOProfileValidator.h
+	saml2/profile/BrowserSSOProfileValidator.h \
+	saml2/profile/SAML2AssertionPolicy.h
 
 noinst_HEADERS = \
 	internal.h
@@ -405,6 +407,9 @@ libsaml_la_SOURCES = \
 	binding/impl/SimpleSigningRule.cpp \
 	binding/impl/SOAPClient.cpp \
 	binding/impl/XMLSigningRule.cpp \
+	profile/impl/AudienceRestrictionRule.cpp \
+    profile/impl/ConditionsRule.cpp \
+    profile/impl/IgnoreRule.cpp \
 	saml1/core/impl/AssertionsImpl.cpp \
 	saml1/core/impl/AssertionsSchemaValidators.cpp \
 	saml1/core/impl/ProtocolsImpl.cpp \
@@ -419,8 +424,9 @@ libsaml_la_SOURCES = \
 	saml1/binding/impl/SAML1SOAPDecoder.cpp \
 	saml1/binding/impl/SAML1SOAPEncoder.cpp \
 	saml1/binding/impl/SAML1SOAPClient.cpp \
-	saml1/profile/AssertionValidator.cpp \
-	saml1/profile/BrowserSSOProfileValidator.cpp \
+	saml1/profile/impl/AssertionValidator.cpp \
+	saml1/profile/impl/BrowserSSOProfileValidator.cpp \
+	saml1/profile/impl/SAML1BrowserSSORule.cpp \
 	saml2/core/impl/Assertions.cpp \
 	saml2/core/impl/Assertions20Impl.cpp \
 	saml2/core/impl/Assertions20SchemaValidators.cpp \
@@ -430,6 +436,7 @@ libsaml_la_SOURCES = \
 	saml2/metadata/impl/BlacklistMetadataFilter.cpp \
 	saml2/metadata/impl/ChainingMetadataProvider.cpp \
 	saml2/metadata/impl/DynamicMetadataProvider.cpp \
+	saml2/metadata/impl/EntityRoleMetadataFilter.cpp \
 	saml2/metadata/impl/MetadataImpl.cpp \
 	saml2/metadata/impl/MetadataProvider.cpp \
 	saml2/metadata/impl/MetadataSchemaValidators.cpp \
@@ -453,8 +460,11 @@ libsaml_la_SOURCES = \
 	saml2/binding/impl/SAML2SOAPDecoder.cpp \
 	saml2/binding/impl/SAML2SOAPEncoder.cpp \
 	saml2/binding/impl/SAML2SOAPClient.cpp \
-	saml2/profile/Assertion20Validator.cpp \
-	saml2/profile/BrowserSSOProfile20Validator.cpp \
+	saml2/profile/impl/Assertion20Validator.cpp \
+	saml2/profile/impl/BrowserSSOProfile20Validator.cpp \
+    saml2/profile/impl/BearerConfirmationRule.cpp \
+    saml2/profile/impl/DelegationRestrictionRule.cpp \
+	saml2/profile/impl/SAML2AssertionPolicy.cpp \
 	encryption/EncryptedKeyResolver.cpp \
 	signature/ContentReference.cpp \
 	signature/SignatureProfileValidator.cpp \
@@ -464,7 +474,7 @@ libsaml_la_SOURCES = \
 
 # this is different from the project version
 # http://sources.redhat.com/autobook/autobook/autobook_91.html
-libsaml_la_LDFLAGS = -version-info 3:0:0
+libsaml_la_LDFLAGS = -version-info 4:0:0
 EXTRA_DIST = saml.vcproj zlib resource.h saml.rc
 all: all-am
 
@@ -544,15 +554,21 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Assertions20SchemaValidators.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AssertionsImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AssertionsSchemaValidators.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AudienceRestrictionRule.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BearerConfirmationRule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BlacklistMetadataFilter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BrowserSSOProfile20Validator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BrowserSSOProfileValidator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ChainingMetadataProvider.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ClientCertAuthRule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CommonDomainCookie.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConditionsRule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContentReference.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DelegationRestrictionRule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DynamicMetadataProvider.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EncryptedKeyResolver.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EntityRoleMetadataFilter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IgnoreRule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageDecoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageEncoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageFlowRule.Plo@am__quote@
@@ -568,6 +584,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RequireValidUntilMetadataFilter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SAML1ArtifactDecoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SAML1ArtifactEncoder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SAML1BrowserSSORule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SAML1MessageDecoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SAML1POSTDecoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SAML1POSTEncoder.Plo@am__quote@
@@ -578,6 +595,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SAML2ArtifactDecoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SAML2ArtifactEncoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SAML2ArtifactType0004.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SAML2AssertionPolicy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SAML2ECPDecoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SAML2ECPEncoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SAML2MessageDecoder.Plo@am__quote@
@@ -701,6 +719,27 @@ XMLSigningRule.lo: binding/impl/XMLSigningRule.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XMLSigningRule.lo `test -f 'binding/impl/XMLSigningRule.cpp' || echo '$(srcdir)/'`binding/impl/XMLSigningRule.cpp
 
+AudienceRestrictionRule.lo: profile/impl/AudienceRestrictionRule.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AudienceRestrictionRule.lo -MD -MP -MF "$(DEPDIR)/AudienceRestrictionRule.Tpo" -c -o AudienceRestrictionRule.lo `test -f 'profile/impl/AudienceRestrictionRule.cpp' || echo '$(srcdir)/'`profile/impl/AudienceRestrictionRule.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AudienceRestrictionRule.Tpo" "$(DEPDIR)/AudienceRestrictionRule.Plo"; else rm -f "$(DEPDIR)/AudienceRestrictionRule.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='profile/impl/AudienceRestrictionRule.cpp' object='AudienceRestrictionRule.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AudienceRestrictionRule.lo `test -f 'profile/impl/AudienceRestrictionRule.cpp' || echo '$(srcdir)/'`profile/impl/AudienceRestrictionRule.cpp
+
+ConditionsRule.lo: profile/impl/ConditionsRule.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ConditionsRule.lo -MD -MP -MF "$(DEPDIR)/ConditionsRule.Tpo" -c -o ConditionsRule.lo `test -f 'profile/impl/ConditionsRule.cpp' || echo '$(srcdir)/'`profile/impl/ConditionsRule.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ConditionsRule.Tpo" "$(DEPDIR)/ConditionsRule.Plo"; else rm -f "$(DEPDIR)/ConditionsRule.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='profile/impl/ConditionsRule.cpp' object='ConditionsRule.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ConditionsRule.lo `test -f 'profile/impl/ConditionsRule.cpp' || echo '$(srcdir)/'`profile/impl/ConditionsRule.cpp
+
+IgnoreRule.lo: profile/impl/IgnoreRule.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT IgnoreRule.lo -MD -MP -MF "$(DEPDIR)/IgnoreRule.Tpo" -c -o IgnoreRule.lo `test -f 'profile/impl/IgnoreRule.cpp' || echo '$(srcdir)/'`profile/impl/IgnoreRule.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/IgnoreRule.Tpo" "$(DEPDIR)/IgnoreRule.Plo"; else rm -f "$(DEPDIR)/IgnoreRule.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='profile/impl/IgnoreRule.cpp' object='IgnoreRule.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o IgnoreRule.lo `test -f 'profile/impl/IgnoreRule.cpp' || echo '$(srcdir)/'`profile/impl/IgnoreRule.cpp
+
 AssertionsImpl.lo: saml1/core/impl/AssertionsImpl.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AssertionsImpl.lo -MD -MP -MF "$(DEPDIR)/AssertionsImpl.Tpo" -c -o AssertionsImpl.lo `test -f 'saml1/core/impl/AssertionsImpl.cpp' || echo '$(srcdir)/'`saml1/core/impl/AssertionsImpl.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AssertionsImpl.Tpo" "$(DEPDIR)/AssertionsImpl.Plo"; else rm -f "$(DEPDIR)/AssertionsImpl.Tpo"; exit 1; fi
@@ -799,19 +838,26 @@ SAML1SOAPClient.lo: saml1/binding/impl/SAML1SOAPClient.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SAML1SOAPClient.lo `test -f 'saml1/binding/impl/SAML1SOAPClient.cpp' || echo '$(srcdir)/'`saml1/binding/impl/SAML1SOAPClient.cpp
 
-AssertionValidator.lo: saml1/profile/AssertionValidator.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AssertionValidator.lo -MD -MP -MF "$(DEPDIR)/AssertionValidator.Tpo" -c -o AssertionValidator.lo `test -f 'saml1/profile/AssertionValidator.cpp' || echo '$(srcdir)/'`saml1/profile/AssertionValidator.cpp; \
+AssertionValidator.lo: saml1/profile/impl/AssertionValidator.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AssertionValidator.lo -MD -MP -MF "$(DEPDIR)/AssertionValidator.Tpo" -c -o AssertionValidator.lo `test -f 'saml1/profile/impl/AssertionValidator.cpp' || echo '$(srcdir)/'`saml1/profile/impl/AssertionValidator.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AssertionValidator.Tpo" "$(DEPDIR)/AssertionValidator.Plo"; else rm -f "$(DEPDIR)/AssertionValidator.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml1/profile/AssertionValidator.cpp' object='AssertionValidator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml1/profile/impl/AssertionValidator.cpp' object='AssertionValidator.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AssertionValidator.lo `test -f 'saml1/profile/AssertionValidator.cpp' || echo '$(srcdir)/'`saml1/profile/AssertionValidator.cpp
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AssertionValidator.lo `test -f 'saml1/profile/impl/AssertionValidator.cpp' || echo '$(srcdir)/'`saml1/profile/impl/AssertionValidator.cpp
 
-BrowserSSOProfileValidator.lo: saml1/profile/BrowserSSOProfileValidator.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT BrowserSSOProfileValidator.lo -MD -MP -MF "$(DEPDIR)/BrowserSSOProfileValidator.Tpo" -c -o BrowserSSOProfileValidator.lo `test -f 'saml1/profile/BrowserSSOProfileValidator.cpp' || echo '$(srcdir)/'`saml1/profile/BrowserSSOProfileValidator.cpp; \
+BrowserSSOProfileValidator.lo: saml1/profile/impl/BrowserSSOProfileValidator.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT BrowserSSOProfileValidator.lo -MD -MP -MF "$(DEPDIR)/BrowserSSOProfileValidator.Tpo" -c -o BrowserSSOProfileValidator.lo `test -f 'saml1/profile/impl/BrowserSSOProfileValidator.cpp' || echo '$(srcdir)/'`saml1/profile/impl/BrowserSSOProfileValidator.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/BrowserSSOProfileValidator.Tpo" "$(DEPDIR)/BrowserSSOProfileValidator.Plo"; else rm -f "$(DEPDIR)/BrowserSSOProfileValidator.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml1/profile/BrowserSSOProfileValidator.cpp' object='BrowserSSOProfileValidator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml1/profile/impl/BrowserSSOProfileValidator.cpp' object='BrowserSSOProfileValidator.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o BrowserSSOProfileValidator.lo `test -f 'saml1/profile/BrowserSSOProfileValidator.cpp' || echo '$(srcdir)/'`saml1/profile/BrowserSSOProfileValidator.cpp
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o BrowserSSOProfileValidator.lo `test -f 'saml1/profile/impl/BrowserSSOProfileValidator.cpp' || echo '$(srcdir)/'`saml1/profile/impl/BrowserSSOProfileValidator.cpp
+
+SAML1BrowserSSORule.lo: saml1/profile/impl/SAML1BrowserSSORule.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SAML1BrowserSSORule.lo -MD -MP -MF "$(DEPDIR)/SAML1BrowserSSORule.Tpo" -c -o SAML1BrowserSSORule.lo `test -f 'saml1/profile/impl/SAML1BrowserSSORule.cpp' || echo '$(srcdir)/'`saml1/profile/impl/SAML1BrowserSSORule.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SAML1BrowserSSORule.Tpo" "$(DEPDIR)/SAML1BrowserSSORule.Plo"; else rm -f "$(DEPDIR)/SAML1BrowserSSORule.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml1/profile/impl/SAML1BrowserSSORule.cpp' object='SAML1BrowserSSORule.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SAML1BrowserSSORule.lo `test -f 'saml1/profile/impl/SAML1BrowserSSORule.cpp' || echo '$(srcdir)/'`saml1/profile/impl/SAML1BrowserSSORule.cpp
 
 Assertions.lo: saml2/core/impl/Assertions.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Assertions.lo -MD -MP -MF "$(DEPDIR)/Assertions.Tpo" -c -o Assertions.lo `test -f 'saml2/core/impl/Assertions.cpp' || echo '$(srcdir)/'`saml2/core/impl/Assertions.cpp; \
@@ -875,6 +921,13 @@ DynamicMetadataProvider.lo: saml2/metadata/impl/DynamicMetadataProvider.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/metadata/impl/DynamicMetadataProvider.cpp' object='DynamicMetadataProvider.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DynamicMetadataProvider.lo `test -f 'saml2/metadata/impl/DynamicMetadataProvider.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/DynamicMetadataProvider.cpp
+
+EntityRoleMetadataFilter.lo: saml2/metadata/impl/EntityRoleMetadataFilter.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT EntityRoleMetadataFilter.lo -MD -MP -MF "$(DEPDIR)/EntityRoleMetadataFilter.Tpo" -c -o EntityRoleMetadataFilter.lo `test -f 'saml2/metadata/impl/EntityRoleMetadataFilter.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/EntityRoleMetadataFilter.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/EntityRoleMetadataFilter.Tpo" "$(DEPDIR)/EntityRoleMetadataFilter.Plo"; else rm -f "$(DEPDIR)/EntityRoleMetadataFilter.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/metadata/impl/EntityRoleMetadataFilter.cpp' object='EntityRoleMetadataFilter.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o EntityRoleMetadataFilter.lo `test -f 'saml2/metadata/impl/EntityRoleMetadataFilter.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/EntityRoleMetadataFilter.cpp
 
 MetadataImpl.lo: saml2/metadata/impl/MetadataImpl.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MetadataImpl.lo -MD -MP -MF "$(DEPDIR)/MetadataImpl.Tpo" -c -o MetadataImpl.lo `test -f 'saml2/metadata/impl/MetadataImpl.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/MetadataImpl.cpp; \
@@ -1037,19 +1090,40 @@ SAML2SOAPClient.lo: saml2/binding/impl/SAML2SOAPClient.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SAML2SOAPClient.lo `test -f 'saml2/binding/impl/SAML2SOAPClient.cpp' || echo '$(srcdir)/'`saml2/binding/impl/SAML2SOAPClient.cpp
 
-Assertion20Validator.lo: saml2/profile/Assertion20Validator.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Assertion20Validator.lo -MD -MP -MF "$(DEPDIR)/Assertion20Validator.Tpo" -c -o Assertion20Validator.lo `test -f 'saml2/profile/Assertion20Validator.cpp' || echo '$(srcdir)/'`saml2/profile/Assertion20Validator.cpp; \
+Assertion20Validator.lo: saml2/profile/impl/Assertion20Validator.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Assertion20Validator.lo -MD -MP -MF "$(DEPDIR)/Assertion20Validator.Tpo" -c -o Assertion20Validator.lo `test -f 'saml2/profile/impl/Assertion20Validator.cpp' || echo '$(srcdir)/'`saml2/profile/impl/Assertion20Validator.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Assertion20Validator.Tpo" "$(DEPDIR)/Assertion20Validator.Plo"; else rm -f "$(DEPDIR)/Assertion20Validator.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/profile/Assertion20Validator.cpp' object='Assertion20Validator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/profile/impl/Assertion20Validator.cpp' object='Assertion20Validator.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Assertion20Validator.lo `test -f 'saml2/profile/Assertion20Validator.cpp' || echo '$(srcdir)/'`saml2/profile/Assertion20Validator.cpp
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Assertion20Validator.lo `test -f 'saml2/profile/impl/Assertion20Validator.cpp' || echo '$(srcdir)/'`saml2/profile/impl/Assertion20Validator.cpp
 
-BrowserSSOProfile20Validator.lo: saml2/profile/BrowserSSOProfile20Validator.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT BrowserSSOProfile20Validator.lo -MD -MP -MF "$(DEPDIR)/BrowserSSOProfile20Validator.Tpo" -c -o BrowserSSOProfile20Validator.lo `test -f 'saml2/profile/BrowserSSOProfile20Validator.cpp' || echo '$(srcdir)/'`saml2/profile/BrowserSSOProfile20Validator.cpp; \
+BrowserSSOProfile20Validator.lo: saml2/profile/impl/BrowserSSOProfile20Validator.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT BrowserSSOProfile20Validator.lo -MD -MP -MF "$(DEPDIR)/BrowserSSOProfile20Validator.Tpo" -c -o BrowserSSOProfile20Validator.lo `test -f 'saml2/profile/impl/BrowserSSOProfile20Validator.cpp' || echo '$(srcdir)/'`saml2/profile/impl/BrowserSSOProfile20Validator.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/BrowserSSOProfile20Validator.Tpo" "$(DEPDIR)/BrowserSSOProfile20Validator.Plo"; else rm -f "$(DEPDIR)/BrowserSSOProfile20Validator.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/profile/BrowserSSOProfile20Validator.cpp' object='BrowserSSOProfile20Validator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/profile/impl/BrowserSSOProfile20Validator.cpp' object='BrowserSSOProfile20Validator.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o BrowserSSOProfile20Validator.lo `test -f 'saml2/profile/BrowserSSOProfile20Validator.cpp' || echo '$(srcdir)/'`saml2/profile/BrowserSSOProfile20Validator.cpp
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o BrowserSSOProfile20Validator.lo `test -f 'saml2/profile/impl/BrowserSSOProfile20Validator.cpp' || echo '$(srcdir)/'`saml2/profile/impl/BrowserSSOProfile20Validator.cpp
+
+BearerConfirmationRule.lo: saml2/profile/impl/BearerConfirmationRule.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT BearerConfirmationRule.lo -MD -MP -MF "$(DEPDIR)/BearerConfirmationRule.Tpo" -c -o BearerConfirmationRule.lo `test -f 'saml2/profile/impl/BearerConfirmationRule.cpp' || echo '$(srcdir)/'`saml2/profile/impl/BearerConfirmationRule.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/BearerConfirmationRule.Tpo" "$(DEPDIR)/BearerConfirmationRule.Plo"; else rm -f "$(DEPDIR)/BearerConfirmationRule.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/profile/impl/BearerConfirmationRule.cpp' object='BearerConfirmationRule.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o BearerConfirmationRule.lo `test -f 'saml2/profile/impl/BearerConfirmationRule.cpp' || echo '$(srcdir)/'`saml2/profile/impl/BearerConfirmationRule.cpp
+
+DelegationRestrictionRule.lo: saml2/profile/impl/DelegationRestrictionRule.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DelegationRestrictionRule.lo -MD -MP -MF "$(DEPDIR)/DelegationRestrictionRule.Tpo" -c -o DelegationRestrictionRule.lo `test -f 'saml2/profile/impl/DelegationRestrictionRule.cpp' || echo '$(srcdir)/'`saml2/profile/impl/DelegationRestrictionRule.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/DelegationRestrictionRule.Tpo" "$(DEPDIR)/DelegationRestrictionRule.Plo"; else rm -f "$(DEPDIR)/DelegationRestrictionRule.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/profile/impl/DelegationRestrictionRule.cpp' object='DelegationRestrictionRule.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DelegationRestrictionRule.lo `test -f 'saml2/profile/impl/DelegationRestrictionRule.cpp' || echo '$(srcdir)/'`saml2/profile/impl/DelegationRestrictionRule.cpp
+
+SAML2AssertionPolicy.lo: saml2/profile/impl/SAML2AssertionPolicy.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SAML2AssertionPolicy.lo -MD -MP -MF "$(DEPDIR)/SAML2AssertionPolicy.Tpo" -c -o SAML2AssertionPolicy.lo `test -f 'saml2/profile/impl/SAML2AssertionPolicy.cpp' || echo '$(srcdir)/'`saml2/profile/impl/SAML2AssertionPolicy.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SAML2AssertionPolicy.Tpo" "$(DEPDIR)/SAML2AssertionPolicy.Plo"; else rm -f "$(DEPDIR)/SAML2AssertionPolicy.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/profile/impl/SAML2AssertionPolicy.cpp' object='SAML2AssertionPolicy.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SAML2AssertionPolicy.lo `test -f 'saml2/profile/impl/SAML2AssertionPolicy.cpp' || echo '$(srcdir)/'`saml2/profile/impl/SAML2AssertionPolicy.cpp
 
 EncryptedKeyResolver.lo: encryption/EncryptedKeyResolver.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT EncryptedKeyResolver.lo -MD -MP -MF "$(DEPDIR)/EncryptedKeyResolver.Tpo" -c -o EncryptedKeyResolver.lo `test -f 'encryption/EncryptedKeyResolver.cpp' || echo '$(srcdir)/'`encryption/EncryptedKeyResolver.cpp; \

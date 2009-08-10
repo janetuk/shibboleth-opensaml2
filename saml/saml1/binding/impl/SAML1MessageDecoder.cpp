@@ -1,6 +1,6 @@
 /*
  *  Copyright 2001-2007 Internet2
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,7 @@
 
 /**
  * SAML1MessageDecoder.cpp
- * 
+ *
  * Base class for SAML 1.x MessageDecoders.
  */
 
@@ -43,7 +43,7 @@ void SAML1MessageDecoder::extractMessageDetails(
     ) const
 {
     // Only handle SAML 1.x protocol messages.
-    const QName& q = message.getElementQName();
+    const xmltooling::QName& q = message.getElementQName();
     if (!XMLString::equals(q.getNamespaceURI(), samlconstants::SAML1P_NS))
         return;
 
@@ -93,8 +93,10 @@ void SAML1MessageDecoder::extractMessageDetails(
 
     if (policy.getMetadataProvider() && policy.getRole()) {
         log.debug("searching metadata for response issuer...");
-
-        MetadataProvider::Criteria mc(issuer, policy.getRole(), protocol);
+        MetadataProvider::Criteria& mc = policy.getMetadataProviderCriteria();
+        mc.entityID_unicode = issuer;
+        mc.role = policy.getRole();
+        mc.protocol = protocol;
         pair<const EntityDescriptor*,const RoleDescriptor*> entity = policy.getMetadataProvider()->getEntityDescriptor(mc);
 
         if (!entity.first) {
