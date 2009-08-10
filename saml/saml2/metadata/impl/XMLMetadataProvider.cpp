@@ -27,6 +27,7 @@
 
 #include <xmltooling/util/NDC.h>
 #include <xmltooling/util/ReloadableXMLFile.h>
+#include <xmltooling/validation/ValidatorSuite.h>
 
 using namespace opensaml::saml2md;
 using namespace xmltooling::logging;
@@ -101,6 +102,15 @@ pair<bool,DOMElement*> XMLMetadataProvider::load()
             );
 
     // Preprocess the metadata.
+    if (!m_validate) {
+        try {
+            SchemaValidators.validate(xmlObject.get());
+        }
+        catch (exception& ex) {
+            m_log.error("metadata intance failed manual schema validation checking: %s", ex.what());
+            throw MetadataException("Metadata instance failed manual schema validation checking.");
+        }
+    }
     doFilters(*xmlObject.get());
     xmlObject->releaseThisAndChildrenDOM();
     xmlObject->setDocument(NULL);
@@ -133,12 +143,12 @@ void XMLMetadataProvider::index()
     EntitiesDescriptor* group=dynamic_cast<EntitiesDescriptor*>(m_object);
     if (group) {
         if (!m_local && group->getCacheDuration())
-            exp = time_t(NULL) + group->getCacheDurationEpoch();
+            exp = time(NULL) + group->getCacheDurationEpoch();
         AbstractMetadataProvider::index(group, exp);
         return;
     }
     EntityDescriptor* site=dynamic_cast<EntityDescriptor*>(m_object);
     if (!m_local && site->getCacheDuration())
-        exp = time_t(NULL) + site->getCacheDurationEpoch();
+        exp = time(NULL) + site->getCacheDurationEpoch();
     AbstractMetadataProvider::index(site, exp);
 }

@@ -1,6 +1,6 @@
 /*
  *  Copyright 2001-2007 Internet2
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,8 +16,8 @@
 
 /**
  * @file saml/saml2/profile/BrowserSSOProfileValidator.h
- * 
- * SAML 2.0 Browser SSO Profile Assertion Validator 
+ *
+ * SAML 2.0 Browser SSO Profile Assertion Validator
  */
 
 #ifndef __saml2_ssoval_h__
@@ -26,22 +26,22 @@
 #include <saml/saml2/profile/AssertionValidator.h>
 
 namespace opensaml {
-    
+
     namespace saml2 {
-        
+
         /**
+         * @deprecated
          * SAML 2.0 Browser SSO Profile Assertion Validator
          *
          * <p>In addition to standard core requirements for validity, SSO assertions
-         * <strong>MUST</strong> have NotBefore/NotOnOrAfter attributes and each subject statement
-         * <strong>MUST</strong> be confirmable via bearer method.
+         * <strong>MUST</strong> be bearer-confirmable.
          */
         class SAML_API BrowserSSOProfileValidator : public AssertionValidator
         {
         public:
             /**
              * Constructor
-             * 
+             *
              * @param recipient     name of assertion recipient (implicit audience)
              * @param audiences     additional audience values
              * @param ts            timestamp to evaluate assertion conditions, or 0 to bypass check
@@ -57,7 +57,7 @@ namespace opensaml {
                 ) : AssertionValidator(recipient, audiences, ts), m_destination(destination), m_requestID(requestID) {
             }
             virtual ~BrowserSSOProfileValidator() {}
-    
+
             void validateAssertion(const Assertion& assertion) const;
 
             /**
@@ -68,7 +68,7 @@ namespace opensaml {
             const char* getAddress() const {
                 return m_address.c_str();
             }
-        
+
         protected:
             /** Server location to which assertion was delivered. */
             xmltooling::auto_ptr_XMLCh m_destination;
@@ -80,7 +80,7 @@ namespace opensaml {
             /** Address in confirmed bearer SubjectConfirmationData. */
             mutable std::string m_address;
         };
-        
+
     };
 };
 

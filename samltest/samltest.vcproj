@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="samltest"
 	ProjectGUID="{8BBB3B12-DBA1-4533-9C36-2CA95F1F1659}"
 	RootNamespace="samltest"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -64,10 +65,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\cpp-xmltooling\$(ConfigurationName)\xmltooling1D.lib xerces-c_2D.lib xsec_1D.lib"
+				AdditionalDependencies="..\..\cpp-xmltooling\$(ConfigurationName)\xmltooling1D.lib xerces-c_3D.lib xsec_1D.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -87,85 +90,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			CharacterSet="1"
-			WholeProgramOptimization="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;;&quot;$(ProjectDir)&quot;;&quot;..\..\cpp-xmltooling&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE=1"
-				RuntimeLibrary="2"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\cpp-xmltooling\$(ConfigurationName)\xmltooling1.lib xerces-c_2.lib xsec_1.lib"
-				LinkIncremental="1"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -218,10 +142,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\cpp-xmltooling\$(PlatformName)\$(ConfigurationName)\xmltooling1D.lib xerces-c_2D.lib xsec_1D.lib"
+				AdditionalDependencies="..\..\cpp-xmltooling\$(PlatformName)\$(ConfigurationName)\xmltooling1D.lib xerces-c_3D.lib xsec_1D.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -243,7 +169,79 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			CharacterSet="1"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;;&quot;$(ProjectDir)&quot;;&quot;..\..\cpp-xmltooling&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE=1"
+				RuntimeLibrary="2"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="true"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="..\..\cpp-xmltooling\$(ConfigurationName)\xmltooling1.lib xerces-c_3.lib xsec_1.lib"
+				LinkIncremental="1"
+				GenerateDebugInformation="true"
+				SubSystem="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -293,12 +291,14 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\cpp-xmltooling\$(PlatformName)\$(ConfigurationName)\xmltooling1.lib xerces-c_2.lib xsec_1.lib"
+				AdditionalDependencies="..\..\cpp-xmltooling\$(PlatformName)\$(ConfigurationName)\xmltooling1.lib xerces-c_3.lib xsec_1.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -318,9 +318,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -419,6 +416,14 @@
 					</File>
 					<File
 						RelativePath=".\saml1\binding\SAML1POSTTest.cpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="profile"
+					>
+					<File
+						RelativePath=".\saml1\profile\SAML1PolicyTest.cpp"
 						>
 					</File>
 				</Filter>
@@ -706,6 +711,14 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="profile"
+					>
+					<File
+						RelativePath=".\saml2\profile\SAML2PolicyTest.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="security"
@@ -746,7 +759,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|x64"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -755,7 +768,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|x64"
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -786,7 +799,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|x64"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -795,7 +808,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|x64"
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -826,7 +839,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|x64"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -835,7 +848,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|x64"
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -866,7 +879,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|x64"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -875,7 +888,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|x64"
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -906,7 +919,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|x64"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -915,7 +928,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|x64"
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -946,7 +959,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|x64"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -955,7 +968,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|x64"
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -995,7 +1008,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1004,7 +1017,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1035,7 +1048,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1044,7 +1057,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1075,7 +1088,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1084,7 +1097,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1115,7 +1128,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1124,7 +1137,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1155,7 +1168,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1164,7 +1177,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1195,7 +1208,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1204,7 +1217,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1235,7 +1248,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1244,7 +1257,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1275,7 +1288,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1284,7 +1297,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1315,7 +1328,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1324,7 +1337,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1355,7 +1368,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1364,7 +1377,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1400,7 +1413,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32"
+							Name="Debug|x64"
 							>
 							<Tool
 								Name="VCCustomBuildTool"
@@ -1409,7 +1422,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|x64"
+							Name="Release|Win32"
 							>
 							<Tool
 								Name="VCCustomBuildTool"
@@ -1440,7 +1453,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32"
+							Name="Debug|x64"
 							>
 							<Tool
 								Name="VCCustomBuildTool"
@@ -1449,7 +1462,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|x64"
+							Name="Release|Win32"
 							>
 							<Tool
 								Name="VCCustomBuildTool"
@@ -1463,6 +1476,50 @@
 							<Tool
 								Name="VCCustomBuildTool"
 								CommandLine="perl.exe -w \cxxtest\cxxtestgen.pl --part --have-eh --have-std --abort-on-fail -o &quot;$(InputDir)$(InputName)&quot;.cpp &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+								Outputs="&quot;$(InputDir)$(InputName)&quot;.cpp"
+							/>
+						</FileConfiguration>
+					</File>
+				</Filter>
+				<Filter
+					Name="profile"
+					>
+					<File
+						RelativePath=".\saml1\profile\SAML1PolicyTest.h"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								CommandLine="perl.exe -w \cxxtest\cxxtestgen.pl --part --have-eh --have-std --abort-on-fail -o &quot;$(InputDir)$(InputName)&quot;.cpp &quot;$(InputPath)&quot;"
+								Outputs="&quot;$(InputDir)$(InputName)&quot;.cpp"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								CommandLine="perl.exe -w \cxxtest\cxxtestgen.pl --part --have-eh --have-std --abort-on-fail -o &quot;$(InputDir)$(InputName)&quot;.cpp &quot;$(InputPath)&quot;"
+								Outputs="&quot;$(InputDir)$(InputName)&quot;.cpp"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								CommandLine="perl.exe -w \cxxtest\cxxtestgen.pl --part --have-eh --have-std --abort-on-fail -o &quot;$(InputDir)$(InputName)&quot;.cpp &quot;$(InputPath)&quot;"
+								Outputs="&quot;$(InputDir)$(InputName)&quot;.cpp"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								CommandLine="perl.exe -w \cxxtest\cxxtestgen.pl --part --have-eh --have-std --abort-on-fail -o &quot;$(InputDir)$(InputName)&quot;.cpp &quot;$(InputPath)&quot;"
 								Outputs="&quot;$(InputDir)$(InputName)&quot;.cpp"
 							/>
 						</FileConfiguration>
@@ -1485,7 +1542,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -1494,7 +1551,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -1525,7 +1582,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -1534,7 +1591,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -1565,7 +1622,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -1574,7 +1631,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -1605,7 +1662,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -1614,7 +1671,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -1659,7 +1716,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1668,7 +1725,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1699,7 +1756,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1708,7 +1765,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1739,7 +1796,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1748,7 +1805,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1779,7 +1836,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1788,7 +1845,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1819,7 +1876,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1828,7 +1885,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1859,7 +1916,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1868,7 +1925,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1899,7 +1956,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1908,7 +1965,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1939,7 +1996,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1948,7 +2005,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1979,7 +2036,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -1988,7 +2045,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2019,7 +2076,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2028,7 +2085,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2059,7 +2116,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2068,7 +2125,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2099,7 +2156,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2108,7 +2165,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2139,7 +2196,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2148,7 +2205,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2179,7 +2236,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2188,7 +2245,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2219,7 +2276,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2228,7 +2285,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2259,7 +2316,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2268,7 +2325,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2299,7 +2356,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2308,7 +2365,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2339,7 +2396,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2348,7 +2405,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2379,7 +2436,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2388,7 +2445,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2419,7 +2476,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2428,7 +2485,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2459,7 +2516,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2468,7 +2525,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2499,7 +2556,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2508,7 +2565,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2539,7 +2596,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2548,7 +2605,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2579,7 +2636,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2588,7 +2645,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2619,7 +2676,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2628,7 +2685,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2659,7 +2716,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2668,7 +2725,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2699,7 +2756,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2708,7 +2765,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2739,7 +2796,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2748,7 +2805,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2779,7 +2836,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2788,7 +2845,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2819,7 +2876,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2828,7 +2885,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2859,7 +2916,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2868,7 +2925,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2899,7 +2956,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2908,7 +2965,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2939,7 +2996,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2948,7 +3005,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2979,7 +3036,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -2988,7 +3045,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3019,7 +3076,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3028,7 +3085,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3059,7 +3116,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3068,7 +3125,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3099,7 +3156,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3108,7 +3165,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3139,7 +3196,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3148,7 +3205,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3179,7 +3236,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3188,7 +3245,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3219,7 +3276,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3228,7 +3285,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3259,7 +3316,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3268,7 +3325,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3299,7 +3356,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3308,7 +3365,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3339,7 +3396,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3348,7 +3405,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3379,7 +3436,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3388,7 +3445,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3419,7 +3476,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3428,7 +3485,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3459,7 +3516,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3468,7 +3525,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3499,7 +3556,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3508,7 +3565,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3539,7 +3596,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3548,7 +3605,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3579,7 +3636,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3588,7 +3645,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3619,7 +3676,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3628,7 +3685,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3659,7 +3716,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3668,7 +3725,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3699,7 +3756,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3708,7 +3765,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3739,7 +3796,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3748,7 +3805,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3779,7 +3836,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3788,7 +3845,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3819,7 +3876,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3828,7 +3885,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3859,7 +3916,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3868,7 +3925,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3899,7 +3956,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3908,7 +3965,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								>
 								<Tool
 									Name="VCCustomBuildTool"
@@ -3944,7 +4001,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32"
+							Name="Debug|x64"
 							>
 							<Tool
 								Name="VCCustomBuildTool"
@@ -3953,7 +4010,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|x64"
+							Name="Release|Win32"
 							>
 							<Tool
 								Name="VCCustomBuildTool"
@@ -3988,7 +4045,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32"
+							Name="Debug|x64"
 							>
 							<Tool
 								Name="VCCustomBuildTool"
@@ -3997,7 +4054,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|x64"
+							Name="Release|Win32"
 							>
 							<Tool
 								Name="VCCustomBuildTool"
@@ -4028,7 +4085,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32"
+							Name="Debug|x64"
 							>
 							<Tool
 								Name="VCCustomBuildTool"
@@ -4037,7 +4094,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|x64"
+							Name="Release|Win32"
 							>
 							<Tool
 								Name="VCCustomBuildTool"
@@ -4068,6 +4125,15 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								CommandLine="perl.exe -w \cxxtest\cxxtestgen.pl --part --have-eh --have-std --abort-on-fail -o &quot;$(InputDir)$(InputName)&quot;.cpp &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+								Outputs="&quot;$(InputDir)$(InputName)&quot;.cpp"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
 							>
 							<Tool
@@ -4077,7 +4143,42 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Release|x64"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								CommandLine="perl.exe -w \cxxtest\cxxtestgen.pl --part --have-eh --have-std --abort-on-fail -o &quot;$(InputDir)$(InputName)&quot;.cpp &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+								Outputs="&quot;$(InputDir)$(InputName)&quot;.cpp"
+							/>
+						</FileConfiguration>
+					</File>
+				</Filter>
+				<Filter
+					Name="profile"
+					>
+					<File
+						RelativePath=".\saml2\profile\SAML2PolicyTest.h"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								CommandLine="perl.exe -w \cxxtest\cxxtestgen.pl --part --have-eh --have-std --abort-on-fail -o &quot;$(InputDir)$(InputName)&quot;.cpp &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+								Outputs="&quot;$(InputDir)$(InputName)&quot;.cpp"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+								CommandLine="perl.exe -w \cxxtest\cxxtestgen.pl --part --have-eh --have-std --abort-on-fail -o &quot;$(InputDir)$(InputName)&quot;.cpp &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+								Outputs="&quot;$(InputDir)$(InputName)&quot;.cpp"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
 							>
 							<Tool
 								Name="VCCustomBuildTool"
@@ -4113,7 +4214,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -4122,7 +4223,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -4153,7 +4254,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -4162,7 +4263,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -4197,7 +4298,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -4206,7 +4307,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
