@@ -7,6 +7,7 @@ opensaml2 (2.2-1) UNRELEASED; urgency=low
     - Allow verbs for GET-based bindings to be overridden.
   * Rename library package for upstream SONAME bump.
   * Build against Xerces-C 3.0.
+  * Update standards version to 3.8.2 (no changes required).
 
  -- Russ Allbery <rra@debian.org>  Mon, 10 Aug 2009 15:38:31 -0700
 
