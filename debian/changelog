@@ -5,6 +5,7 @@ opensaml2 (2.2-1) UNRELEASED; urgency=low
     - Fix cacheDuration handling in metadata parsing.
     - Set HTTP no-cache headers when redirecting client to IdP via POST.
     - Allow verbs for GET-based bindings to be overridden.
+  * Build against Xerces-C 3.0.
 
  -- Russ Allbery <rra@debian.org>  Mon, 10 Aug 2009 15:38:31 -0700
 
