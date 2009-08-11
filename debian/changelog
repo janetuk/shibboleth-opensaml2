@@ -8,6 +8,8 @@ opensaml2 (2.2-1) UNRELEASED; urgency=low
   * Rename library package for upstream SONAME bump.
   * Build against Xerces-C 3.0.
   * Build-depend and depend on xmltooling 1.2 or later.
+  * Temporarily add libicu-dev to Build-Depends to work around Bug#540964
+    in libxerces-c-dev.
   * Update standards version to 3.8.2 (no changes required).
 
  -- Russ Allbery <rra@debian.org>  Mon, 10 Aug 2009 15:38:31 -0700
