@@ -10,9 +10,9 @@ opensaml2 (2.2-1) unstable; urgency=low
   * Build-depend and depend on xmltooling 1.2 or later.
   * Temporarily add libicu-dev to Build-Depends to work around Bug#540964
     in libxerces-c-dev.
-  * Update standards version to 3.8.2 (no changes required).
+  * Update standards version to 3.8.3 (no changes required).
 
- -- Russ Allbery <rra@debian.org>  Mon, 10 Aug 2009 17:17:50 -0700
+ -- Russ Allbery <rra@debian.org>  Tue, 18 Aug 2009 16:36:16 -0700
 
 opensaml2 (2.1-1) unstable; urgency=low
 

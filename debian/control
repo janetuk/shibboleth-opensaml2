@@ -6,7 +6,7 @@ Uploaders: Russ Allbery <rra@debian.org>, Ferenc Wagner <wferi@niif.hu>
 Build-Depends: debhelper (>= 5), autotools-dev, doxygen, libicu-dev,
  liblog4cpp5-dev, libssl-dev, libxerces-c-dev,
  libxml-security-c-dev (>= 1.4), libxmltooling-dev (>= 1.2)
-Standards-Version: 3.8.2
+Standards-Version: 3.8.3
 Homepage: https://spaces.internet2.edu/display/OpenSAML/Home
 Vcs-Git: git://git.debian.org/git/pkg-shibboleth/opensaml2.git
 Vcs-Browser: http://git.debian.org/?p=pkg-shibboleth/opensaml2.git
