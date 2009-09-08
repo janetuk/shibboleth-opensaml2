@@ -3,6 +3,8 @@ opensaml2 (2.2.1-1) UNRELEASED; urgency=low
   * New upstream release.
     - Fix crash when generating unsigned ECP AuthnRequest.
     - Correct check of key usage against KeyDescriptor use.
+  * Remove temporary build-depend on libicu-dev and tighten the build
+    dependency on libxerces-c-dev to require the fixed version.
 
  -- Russ Allbery <rra@debian.org>  Mon, 07 Sep 2009 18:12:21 -0700
 
