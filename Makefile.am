@@ -14,26 +14,12 @@ dist-hook:
 SUBDIRS = doc schemas saml samltest samlsign
 
 if DX_COND_doc
-all-local: opensaml.spec pkginfo doxygen-doc
+all-local: doxygen-doc
 else
-all-local: opensaml.spec pkginfo
+all-local:
 endif
 
-install-data-hook:
-	rm -rf $(DESTDIR)$(datadir)/doc/@PACKAGE@/api
-	cp -r doc/api $(DESTDIR)$(datadir)/doc/@PACKAGE@
-
-opensaml.spec: opensaml.spec.in Makefile
-	rm -f $@.tmp
-	sed < $@.in > $@.tmp \
-	    -e 's:@-VERSION-@:${VERSION}:'
-	mv $@.tmp $@
-
-pkginfo: pkginfo.in Makefile
-	rm -f $@.tmp
-	sed < $@.in > $@.tmp \
-	    -e 's:@-VERSION-@:${VERSION}:'
-	mv $@.tmp $@
+GENFILES = opensaml.spec pkginfo Portfile
 
 EXTRA_DIST = $(DX_CONFIG) \
 	cpp-opensaml2.sln \
@@ -42,11 +28,7 @@ EXTRA_DIST = $(DX_CONFIG) \
 	acx_pthread.m4 \
 	depcomp \
 	config_win32.h \
-	opensaml.spec.in \
-	opensaml.spec \
-	pkginfo.in \
-	pkginfo \
+	$(GENFILES) \
+	$(GENFILES:%=%.in) \
 	depend \
 	postinstall
-
-DISTCLEANFILES = opensaml.spec pkginfo
