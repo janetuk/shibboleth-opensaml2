@@ -1,7 +1,7 @@
 AC_PREREQ([2.50])
-AC_INIT([opensaml], [2.2], [mace-opensaml-users@internet2.edu], [saml])
+AC_INIT([opensaml], [2.2.1], [mace-opensaml-users@internet2.edu], [saml])
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE([opensaml], [2.2])
+AM_INIT_AUTOMAKE([opensaml], [2.2.1])
 
 sinclude(doxygen.m4)
 sinclude(acx_pthread.m4)
@@ -273,5 +273,7 @@ AM_CONDITIONAL(BUILD_UNITTEST,test -f ${CXXTEST})
 AC_SUBST(DX_INCLUDE)
 LIBTOOL="$LIBTOOL --silent"
 
-# output makefiles
-AC_OUTPUT(Makefile saml/Makefile samltest/Makefile samlsign/Makefile schemas/Makefile doc/Makefile)
+# output packaging and makefiles
+AC_CONFIG_FILES([opensaml.spec pkginfo Portfile])
+AC_CONFIG_FILES([Makefile saml/Makefile samltest/Makefile samlsign/Makefile schemas/Makefile doc/Makefile])
+AC_OUTPUT
