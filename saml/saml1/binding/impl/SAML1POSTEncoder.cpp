@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 /**
  * SAML1POSTEncoder.cpp
  * 
- * SAML 1.x POST binding/profile message encoder
+ * SAML 1.x POST binding/profile message encoder.
  */
 
 #include "internal.h"
@@ -29,8 +29,11 @@
 #include <fstream>
 #include <sstream>
 #include <xercesc/util/Base64.hpp>
+#include <xsec/framework/XSECDefs.hpp>
 #include <xmltooling/io/HTTPResponse.h>
 #include <xmltooling/logging.h>
+#include <xmltooling/XMLToolingConfig.h>
+#include <xmltooling/signature/Signature.h>
 #include <xmltooling/util/NDC.h>
 #include <xmltooling/util/PathResolver.h>
 #include <xmltooling/util/TemplateEngine.h>
@@ -105,12 +108,12 @@ long SAML1POSTEncoder::encode(
     xmltooling::NDC ndc("encode");
 #endif
     Category& log = Category::getInstance(SAML_LOGCAT".MessageEncoder.SAML1POST");
+    log.debug("validating input");
 
     TemplateEngine* engine = XMLToolingConfig::getConfig().getTemplateEngine();
-    if (!engine)
-        throw BindingException("Encoding response using POST requires a TemplateEngine instance.");
-    
-    log.debug("validating input");
+    if (!engine || !destination)
+        throw BindingException("Encoding response using POST requires a TemplateEngine instance and a destination.");
+    HTTPResponse::sanitizeURL(destination);
     if (xmlObject->getParent())
         throw BindingException("Cannot encode XML content with parent.");
     Response* response = dynamic_cast<Response*>(xmlObject);

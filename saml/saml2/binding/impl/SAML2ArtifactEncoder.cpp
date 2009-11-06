@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 /**
  * SAML2ArtifactEncoder.cpp
  * 
- * SAML 2.0 HTTP-Artifact binding message encoder
+ * SAML 2.0 HTTP-Artifact binding message encoder.
  */
 
 #include "internal.h"
@@ -27,11 +27,14 @@
 #include "saml2/binding/SAML2Artifact.h"
 #include "saml2/core/Protocols.h"
 #include "saml2/metadata/Metadata.h"
+#include "signature/ContentReference.h"
 
 #include <fstream>
 #include <sstream>
 #include <xmltooling/logging.h>
+#include <xmltooling/XMLToolingConfig.h>
 #include <xmltooling/io/HTTPResponse.h>
+#include <xmltooling/signature/Signature.h>
 #include <xmltooling/util/NDC.h>
 #include <xmltooling/util/PathResolver.h>
 #include <xmltooling/util/TemplateEngine.h>
@@ -111,14 +114,14 @@ long SAML2ArtifactEncoder::encode(
     xmltooling::NDC ndc("encode");
 #endif
     Category& log = Category::getInstance(SAML_LOGCAT".MessageEncoder.SAML2Artifact");
-
     log.debug("validating input");
+    if (!destination)
+        throw BindingException("Encoding response requires a destination.");
     HTTPResponse* httpResponse=dynamic_cast<HTTPResponse*>(&genericResponse);
     if (!httpResponse)
         throw BindingException("Unable to cast response interface to HTTPResponse type.");
     if (relayState && strlen(relayState)>80)
         throw BindingException("RelayState cannot exceed 80 bytes in length.");
-    
     if (xmlObject->getParent())
         throw BindingException("Cannot encode XML content with parent.");
 
@@ -190,6 +193,7 @@ long SAML2ArtifactEncoder::encode(
         TemplateEngine* engine = XMLToolingConfig::getConfig().getTemplateEngine();
         if (!engine)
             throw BindingException("Encoding artifact using POST requires a TemplateEngine instance.");
+        HTTPResponse::sanitizeURL(destination);
         ifstream infile(m_template.c_str());
         if (!infile)
             throw BindingException("Failed to open HTML template for POST response ($1).", params(1,m_template.c_str()));

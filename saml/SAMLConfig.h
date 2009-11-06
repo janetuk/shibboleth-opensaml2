@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 /**
  * @file saml/SAMLConfig.h
  * 
- * Library configuration 
+ * Library configuration.
  */
 
 #ifndef __saml_config_h__
@@ -25,10 +25,9 @@
 
 #include <saml/base.h>
 
-#include <xmltooling/PluginManager.h>
-#include <xmltooling/XMLToolingConfig.h>
-
 #include <string>
+#include <xercesc/dom/DOM.hpp>
+#include <xmltooling/PluginManager.h>
 
 /**
  * @namespace opensaml
@@ -59,7 +58,7 @@ namespace opensaml {
     {
     MAKE_NONCOPYABLE(SAMLConfig);
     public:
-        virtual ~SAMLConfig() {}
+        virtual ~SAMLConfig();
 
         /**
          * Returns the global configuration object for the library.
@@ -107,9 +106,7 @@ namespace opensaml {
          * 
          * @return  global ArtifactMap or NULL
          */
-        ArtifactMap* getArtifactMap() const {
-            return m_artifactMap;
-        }
+        ArtifactMap* getArtifactMap() const;
 
         /**
          * Generate random information using the underlying security library
@@ -136,6 +133,7 @@ namespace opensaml {
         virtual XMLCh* generateIdentifier()=0;
         
         /**
+         * @deprecated
          * Generate the SHA-1 hash of a string
          * 
          * @param s     NULL-terminated string to hash
@@ -164,7 +162,7 @@ namespace opensaml {
         xmltooling::PluginManager<saml2md::MetadataFilter,std::string,const xercesc::DOMElement*> MetadataFilterManager;
 
     protected:
-        SAMLConfig() : m_artifactMap(NULL) {}
+        SAMLConfig();
         
         /** Global ArtifactMap instance for use by artifact-related functions. */
         ArtifactMap* m_artifactMap;

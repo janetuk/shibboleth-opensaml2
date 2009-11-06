@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 /**
  * SAML2RedirectEncoder.cpp
  * 
- * SAML 2.0 HTTP-POST binding message encoder
+ * SAML 2.0 HTTP-POST binding message encoder.
  */
 
 #include "internal.h"
@@ -29,8 +29,12 @@
 #include <fstream>
 #include <sstream>
 #include <xercesc/util/Base64.hpp>
+#include <xsec/dsig/DSIGConstants.hpp>
 #include <xmltooling/logging.h>
+#include <xmltooling/XMLToolingConfig.h>
 #include <xmltooling/io/HTTPResponse.h>
+#include <xmltooling/security/Credential.h>
+#include <xmltooling/signature/Signature.h>
 #include <xmltooling/util/NDC.h>
 #include <xmltooling/util/URLEncoder.h>
 

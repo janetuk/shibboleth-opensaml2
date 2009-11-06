@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,22 @@
 /**
  * Protocols20Impl.cpp
  * 
- * Implementation classes for SAML 2.0 Protocols schema
+ * Implementation classes for SAML 2.0 Protocols schema.
  */
 
 #include "internal.h"
 #include "exceptions.h"
 #include "saml2/core/Protocols.h"
+#include "signature/ContentReference.h"
 
 #include <xmltooling/AbstractComplexElement.h>
 #include <xmltooling/AbstractSimpleElement.h>
+#include <xmltooling/encryption/Encryption.h>
 #include <xmltooling/impl/AnyElement.h>
 #include <xmltooling/io/AbstractXMLObjectMarshaller.h>
 #include <xmltooling/io/AbstractXMLObjectUnmarshaller.h>
+#include <xmltooling/signature/Signature.h>
+#include <xmltooling/util/DateTime.h>
 #include <xmltooling/util/XMLHelper.h>
 
 #include <ctime>
@@ -311,7 +315,7 @@ namespace opensaml {
             }
             
             IMPL_STRING_ATTRIB(Version);
-            IMPL_ID_ATTRIB(ID);
+            IMPL_ID_ATTRIB_EX(ID,ID,NULL);
             IMPL_DATETIME_ATTRIB(IssueInstant,0);
             IMPL_STRING_ATTRIB(Destination);
             IMPL_STRING_ATTRIB(Consent);
@@ -1071,7 +1075,7 @@ namespace opensaml {
             }
             
             IMPL_STRING_ATTRIB(Version);
-            IMPL_ID_ATTRIB(ID);
+            IMPL_ID_ATTRIB_EX(ID,ID,NULL);
             IMPL_STRING_ATTRIB(InResponseTo);
             IMPL_DATETIME_ATTRIB(IssueInstant,0);
             IMPL_STRING_ATTRIB(Destination);

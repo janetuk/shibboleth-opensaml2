@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,18 +27,28 @@
 #include <xmltooling/signature/Signature.h>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xsec/dsig/DSIGReference.hpp>
+#include <xsec/dsig/DSIGSignature.hpp>
 #include <xsec/dsig/DSIGTransformC14n.hpp>
 
 using namespace opensaml;
 using namespace xmltooling;
 using namespace std;
 
+ContentReference::ContentReference(const SignableObject& signableObject)
+    : m_signableObject(signableObject), m_digest(NULL), m_c14n(NULL)
+{
+}
+
+ContentReference::~ContentReference()
+{
+}
+
 void ContentReference::createReferences(DSIGSignature* sig)
 {
     DSIGReference* ref=NULL;
     const XMLCh* id=m_signableObject.getXMLID();
     if (!id || !*id)
-        ref=sig->createReference(&chNull);  // whole doc reference
+        ref=sig->createReference(&chNull, m_digest ? m_digest : DSIGConstants::s_unicodeStrURISHA1);  // whole doc reference
     else {
         XMLCh* buf=new XMLCh[XMLString::stringLen(id) + 2];
         buf[0]=chPound;
@@ -92,10 +102,23 @@ void ContentReference::addInclusivePrefix(const XMLCh* prefix)
 #endif
 }
 
+void ContentReference::setDigestAlgorithm(const XMLCh* digest)
+{
+    m_digest = digest;
+}
+
+void ContentReference::setCanonicalizationMethod(const XMLCh* c14n)
+{
+    m_c14n = c14n;
+}
+
 void ContentReference::addPrefixes(const std::set<Namespace>& namespaces)
 {
-    for (set<Namespace>::const_iterator n = namespaces.begin(); n!=namespaces.end(); ++n)
-        addInclusivePrefix(n->getNamespacePrefix());
+    for (set<Namespace>::const_iterator n = namespaces.begin(); n!=namespaces.end(); ++n) {
+        // Check for xmlns:xml.
+        if (!XMLString::equals(n->getNamespacePrefix(), xmlconstants::XML_PREFIX) || !XMLString::equals(n->getNamespaceURI(), xmlconstants::XML_NS))
+            addInclusivePrefix(n->getNamespacePrefix());
+    }
 }
 
 void ContentReference::addPrefixes(const XMLObject& xmlObject)

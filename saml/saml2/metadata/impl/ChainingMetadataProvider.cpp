@@ -23,12 +23,14 @@
 #include "internal.h"
 #include "exceptions.h"
 #include "saml/binding/SAMLArtifact.h"
+#include "saml2/metadata/Metadata.h"
 #include "saml2/metadata/ObservableMetadataProvider.h"
 #include "saml2/metadata/MetadataCredentialCriteria.h"
 
 #include <memory>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xmltooling/logging.h>
+#include <xmltooling/util/Threads.h>
 #include <xmltooling/util/XMLHelper.h>
 
 

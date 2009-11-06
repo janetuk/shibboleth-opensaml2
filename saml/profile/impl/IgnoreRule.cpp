@@ -25,6 +25,8 @@
 #include "binding/SecurityPolicyRule.h"
 
 #include <xmltooling/logging.h>
+#include <xmltooling/QName.h>
+#include <xmltooling/XMLObject.h>
 #include <xmltooling/util/XMLHelper.h>
 
 using namespace opensaml;

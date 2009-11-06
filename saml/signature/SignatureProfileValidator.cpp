@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,19 @@
 /**
  * SignatureProfileValidator.cpp
  * 
- * SAML-specific signature verification 
+ * SAML-specific signature verification.
  */
  
 #include "internal.h"
 #include "exceptions.h"
+#include "signature/SignableObject.h"
 #include "signature/SignatureProfileValidator.h"
 
 #include <xmltooling/signature/Signature.h>
 
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xsec/dsig/DSIGReference.hpp>
+#include <xsec/dsig/DSIGSignature.hpp>
 #include <xsec/dsig/DSIGTransformC14n.hpp>
 #include <xsec/dsig/DSIGTransformList.hpp>
 
@@ -35,6 +37,14 @@ using namespace opensaml;
 using namespace xmlsignature;
 using namespace xmltooling;
 using namespace std;
+
+SignatureProfileValidator::SignatureProfileValidator()
+{
+}
+
+SignatureProfileValidator::~SignatureProfileValidator()
+{
+}
 
 void SignatureProfileValidator::validate(const XMLObject* xmlObject) const
 {

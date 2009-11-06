@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 /**
  * @file saml/binding/SAMLArtifact.h
  * 
- * Base class for SAML 1.x and 2.0 artifacts 
+ * Base class for SAML 1.x and 2.0 artifacts.
  */
 
 #ifndef __saml_artifact_h__
@@ -26,7 +26,7 @@
 #include <saml/base.h>
 
 #include <string>
-#include <xmltooling/unicode.h>
+#include <xmltooling/exceptions.h>
 
 namespace opensaml {
 
@@ -37,7 +37,7 @@ namespace opensaml {
     {
         SAMLArtifact& operator=(const SAMLArtifact& src);
     public:
-        virtual ~SAMLArtifact() {}
+        virtual ~SAMLArtifact();
 
         /**
          * Returns artifact encoded into null-terminated base64 for transmission.
@@ -57,9 +57,7 @@ namespace opensaml {
          * 
          * @return the binary artifact data
          */
-        virtual std::string getBytes() const {
-            return m_raw;
-        }
+        virtual std::string getBytes() const;
 
         /**
          * Returns the binary type code of the artifact.
@@ -67,9 +65,7 @@ namespace opensaml {
          * 
          * @return the binary type code
          */
-        virtual std::string getTypeCode() const {
-            return m_raw.substr(0,TYPECODE_LENGTH);
-        }
+        virtual std::string getTypeCode() const;
         
         /**
          * Returns the binary artifact data following the type code.
@@ -77,9 +73,7 @@ namespace opensaml {
          * 
          * @return the binary artifact data
          */
-        virtual std::string getRemainingArtifact() const {
-            return m_raw.substr(TYPECODE_LENGTH);
-        }
+        virtual std::string getRemainingArtifact() const;
         
         /**
          * Returns a string that identifies the source of the artifact.
@@ -118,10 +112,7 @@ namespace opensaml {
          * @param s base64-encoded artifact
          * @return the decoded artifact
          */
-        static SAMLArtifact* parse(const XMLCh* s) {
-            xmltooling::auto_ptr_char temp(s);
-            return parse(temp.get());
-        }
+        static SAMLArtifact* parse(const XMLCh* s);
 
         /**
          * Converts binary data to hex notation.
@@ -132,7 +123,7 @@ namespace opensaml {
         static std::string toHex(const std::string& s);
         
     protected:
-        SAMLArtifact() {}
+        SAMLArtifact();
 
         /**
          * Decodes a base64-encoded artifact into its raw form.
@@ -141,7 +132,7 @@ namespace opensaml {
          */        
         SAMLArtifact(const char* s);
 
-        SAMLArtifact(const SAMLArtifact& src) : m_raw(src.m_raw) {}
+        SAMLArtifact(const SAMLArtifact& src);
         
         /** Raw binary data that makes up an artifact. */
         std::string m_raw;

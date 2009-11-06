@@ -15,39 +15,27 @@
  */
 
 /**
- * SAML2Artifact.cpp
+ * MetadataCredentialContext.cpp
  * 
- * Base class for SAML 2.0 artifacts.
+ * Metadata-based CredentialContext subclass.
  */
 
 #include "internal.h"
-#include "saml2/binding/SAML2Artifact.h"
+#include "saml2/metadata/Metadata.h"
+#include "saml2/metadata/MetadataCredentialContext.h"
 
-using namespace opensaml::saml2p;
+using namespace opensaml::saml2md;
 
-const unsigned int SAML2Artifact::INDEX_LENGTH = 2;
-
-SAML2Artifact::SAML2Artifact()
+MetadataCredentialContext::MetadataCredentialContext(const KeyDescriptor& descriptor)
+    : KeyInfoCredentialContext(descriptor.getKeyInfo()), m_descriptor(descriptor)
 {
 }
 
-SAML2Artifact::SAML2Artifact(const char* s) : SAMLArtifact(s)
+MetadataCredentialContext::~MetadataCredentialContext()
 {
 }
 
-SAML2Artifact::SAML2Artifact(const SAML2Artifact& src) : SAMLArtifact(src)
+const KeyDescriptor& MetadataCredentialContext::getKeyDescriptor() const
 {
-}
-
-SAML2Artifact::~SAML2Artifact()
-{
-}
-
-int SAML2Artifact::getEndpointIndex() const
-{
-    int index=0;
-    if (m_raw.size()>=TYPECODE_LENGTH+INDEX_LENGTH) {
-        index = (16 * static_cast<int>(m_raw[TYPECODE_LENGTH])) + static_cast<int>(m_raw[TYPECODE_LENGTH+1]); 
-    }
-    return index;
+    return m_descriptor;
 }

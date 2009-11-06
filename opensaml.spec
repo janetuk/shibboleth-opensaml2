@@ -1,5 +1,5 @@
 Name:		opensaml
-Version:	2.2.1
+Version:	2.3
 Release:	1
 Summary:    OpenSAML SAML library
 Group:		System Environment/Libraries
@@ -11,18 +11,21 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 %if 0%{?suse_version} > 1030
 BuildRequires:  libXerces-c-devel >= 2.8.0
 BuildRequires:  libxml-security-c-devel >= 1.4.0
-BuildRequires:  libxmltooling-devel >= 1.2
+BuildRequires:  libxmltooling-devel >= 1.3
 %{?_with_log4cpp:BuildRequires: liblog4cpp-devel >= 1.0}
 %{!?_with_log4cpp:BuildRequires: liblog4shib-devel}
 %else
 BuildRequires:  xerces%{?xercesver}-c-devel >= 2.8.0
 BuildRequires:  xml-security-c-devel >= 1.4.0
-BuildRequires:  xmltooling-devel >= 1.2
+BuildRequires:  xmltooling-devel >= 1.3
 %{?_with_log4cpp:BuildRequires: log4cpp-devel >= 1.0}
 %{!?_with_log4cpp:BuildRequires: log4shib-devel}
 %endif
 BuildRequires:  gcc-c++
 %{!?_without_doxygen:BuildRequires: doxygen}
+%if "%{_vendor}" == "redhat"
+BuildRequires: redhat-rpm-config
+%endif
 
 %if "%{_vendor}" == "suse"
 %define pkgdocdir %{_docdir}/%{name}
@@ -36,12 +39,12 @@ Markup Language Specification. It contains a set of open source C++ classes
 that support the SAML 1.0, 1.1, and 2.0 specifications.
 
 %if 0%{?suse_version} > 1030
-%package -n libsaml4
+%package -n libsaml6
 Summary:    OpenSAML SAML library
 Group:      Development/Libraries
 Provides:   opensaml = %{version}
 
-%description -n libsaml4
+%description -n libsaml6
 OpenSAML is an open source implementation of the OASIS Security Assertion
 Markup Language Specification. It contains a set of open source C++ classes
 that support the SAML 1.0, 1.1, and 2.0 specifications.
@@ -51,7 +54,7 @@ This package contains just the shared library.
 
 %if 0%{?suse_version} > 1030
 %package -n libsaml-devel
-Requires: libsaml4 = %version
+Requires: libsaml6 = %version
 %else
 %package devel
 Requires: %name = %version
@@ -61,13 +64,13 @@ Group: Development/Libraries
 %if 0%{?suse_version} > 1030
 Requires: libXerces-c-devel >= 2.8.0
 Requires: libxml-security-c-devel >= 1.4.0
-Requires: libxmltooling-devel >= 1.2
+Requires: libxmltooling-devel >= 1.3
 %{?_with_log4cpp:Requires: liblog4cpp-devel >= 1.0}
 %{!?_with_log4cpp:Requires: liblog4shib-devel}
 %else
 Requires: xerces%{?xercesver}-c-devel >= 2.8.0
 Requires: xml-security-c-devel >= 1.4.0
-Requires: xmltooling-devel >= 1.2
+Requires: xmltooling-devel >= 1.3
 %{?_with_log4cpp:Requires: log4cpp-devel >= 1.0}
 %{!?_with_log4cpp:Requires: log4shib-devel}
 %endif
@@ -104,7 +107,7 @@ This package includes files needed for development with OpenSAML.
 
 %ifnos solaris2.8 solaris2.9 solaris2.10
 %if 0%{?suse_version} > 1030
-%post -n libsaml4 -p /sbin/ldconfig
+%post -n libsaml6 -p /sbin/ldconfig
 %else
 %post -p /sbin/ldconfig
 %endif
@@ -112,7 +115,7 @@ This package includes files needed for development with OpenSAML.
 
 %ifnos solaris2.8 solaris2.9 solaris2.10
 %if 0%{?suse_version} > 1030
-%postun -n libsaml4 -p /sbin/ldconfig
+%postun -n libsaml6 -p /sbin/ldconfig
 %else
 %postun -p /sbin/ldconfig
 %endif
@@ -122,7 +125,7 @@ This package includes files needed for development with OpenSAML.
 %defattr(-,root,root,-)
 %{_bindir}/samlsign
 %if 0%{?suse_version} > 1030
-%files -n libsaml4
+%files -n libsaml6
 %defattr(-,root,root,-)
 %endif
 %{_libdir}/libsaml.so.*
@@ -140,6 +143,9 @@ This package includes files needed for development with OpenSAML.
 %doc %{pkgdocdir}
 
 %changelog
+* Mon Aug 31 2009   Scott Cantor  <cantor.2@osu.edu>  - 2.3-1
+- Bump soname for SUSE packaging.
+
 * Sat Aug 8 2009  Scott Cantor  <cantor.2@osu.edu>  - 2.2.1-1
 - SuSE conventions
 - Stop packaging unit tester
