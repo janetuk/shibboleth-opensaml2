@@ -1,3 +1,19 @@
+opensaml2 (2.3-1) unstable; urgency=high
+
+  * Urgency set to high for security fix.
+  * New upstream release.
+    - SECURITY: Partial fix for improper handling of URLs that could be
+      abused for script injection and other cross-site scripting attacks.
+      The complete fix also requires newer xmltooling and shibboleth-sp2
+      packages.  (CVE-2009-3300)
+    - Fix crash on assertions with missing SubjectConfirmation.
+    - Remove inline functions except for templates or RAII patterns.
+    - Remove xml from the inclusive prefix list to avoid bugs in Apache
+      Java xmlsec.
+    - Honor digest algorithm in whole document signing with empty URI.
+
+ -- Russ Allbery <rra@debian.org>  Fri, 06 Nov 2009 15:09:04 -0800
+
 opensaml2 (2.2.1-1) unstable; urgency=low
 
   * New upstream release.
