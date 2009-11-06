@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,22 @@
 #include "saml1/profile/AssertionValidator.h"
 
 #include <xmltooling/logging.h>
+#include <xmltooling/XMLToolingConfig.h>
 #include <xmltooling/util/NDC.h>
 
 using namespace opensaml::saml1;
 using namespace xmltooling::logging;
 using namespace xmltooling;
 using namespace std;
+
+AssertionValidator::AssertionValidator(const XMLCh* recipient, const vector<const XMLCh*>* audiences, time_t ts)
+    : m_recipient(recipient), m_audiences(audiences), m_ts(ts)
+{
+}
+
+AssertionValidator::~AssertionValidator()
+{
+}
 
 void AssertionValidator::validate(const xmltooling::XMLObject* xmlObject) const
 {

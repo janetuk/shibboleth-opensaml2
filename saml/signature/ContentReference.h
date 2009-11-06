@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,34 @@
 /**
  * @file saml/signature/ContentReference.h
  * 
- * SAML-specific signature reference profile 
+ * SAML-specific signature reference profile.
  */
 
 #ifndef __saml_sigref_h__
 #define __saml_sigref_h__
 
 #include <saml/base.h>
-#include <xmltooling/XMLObject.h>
-#include <xmltooling/signature/ContentReference.h>
 
 #include <set>
 #include <string>
+#ifdef HAVE_GOOD_STL
+# include <xmltooling/unicode.h>
+#endif
+#include <xmltooling/signature/ContentReference.h>
+
+namespace xmltooling {
+    class XMLTOOL_API Namespace;
+    class XMLTOOL_API XMLObject;
+};
 
 namespace opensaml {
 
     class SAML_API SignableObject;
+
+#if defined (_MSC_VER)
+    #pragma warning( push )
+    #pragma warning( disable : 4251 )
+#endif
 
     /**
      * SAML-specific signature reference profile.
@@ -45,11 +57,9 @@ namespace opensaml {
          * 
          * @param signableObject    reference to object being signed
          */
-        ContentReference(const SignableObject& signableObject)
-            : m_signableObject(signableObject), m_digest(NULL), m_c14n(NULL) {
-        }
+        ContentReference(const SignableObject& signableObject);
     
-        virtual ~ContentReference() {}
+        virtual ~ContentReference();
 
         /**
          * Given a "blank" native signature, creates signature reference
@@ -74,9 +84,7 @@ namespace opensaml {
          * 
          * @param digest    the digest algorithm
          */
-        void setDigestAlgorithm(const XMLCh* digest) {
-            m_digest = digest;
-        }
+        void setDigestAlgorithm(const XMLCh* digest);
 
         /**
          * Sets the canonicalization method to include in the reference,
@@ -84,9 +92,7 @@ namespace opensaml {
          * 
          * @param c14n  the canonicalization method
          */
-        void setCanonicalizationMethod(const XMLCh* c14n) {
-            m_c14n = c14n;
-        }
+        void setCanonicalizationMethod(const XMLCh* c14n);
         
     private:
         void addPrefixes(const std::set<xmltooling::Namespace>& namespaces);
@@ -102,6 +108,9 @@ namespace opensaml {
         const XMLCh* m_c14n;
     };
 
+#if defined (_MSC_VER)
+    #pragma warning( pop )
+#endif
 };
 
 #endif /* __saml_sigref_h__ */

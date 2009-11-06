@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,14 @@
 #include "saml2/metadata/MetadataCredentialCriteria.h"
 
 #include <xmltooling/logging.h>
+#include <xmltooling/XMLToolingConfig.h>
 #include <xmltooling/encryption/Encrypter.h>
 #include <xmltooling/encryption/Decrypter.h>
+#include <xmltooling/security/Credential.h>
+#include <xmltooling/signature/KeyInfo.h>
+#include <xmltooling/util/ParserPool.h>
+
+#include <xsec/utils/XSECPlatformUtils.hpp>
 
 using namespace opensaml::saml2md;
 using namespace opensaml::saml2;

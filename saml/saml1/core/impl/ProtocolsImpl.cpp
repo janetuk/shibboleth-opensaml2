@@ -17,19 +17,22 @@
 /**
  * ProtocolsImpl.cpp
  *
- * Implementation classes for SAML 1.x Protocols schema
+ * Implementation classes for SAML 1.x Protocols schema.
  */
 
 #include "internal.h"
 #include "exceptions.h"
 #include "saml1/core/Assertions.h"
 #include "saml1/core/Protocols.h"
+#include "signature/ContentReference.h"
 
 #include <xmltooling/AbstractComplexElement.h>
 #include <xmltooling/AbstractSimpleElement.h>
 #include <xmltooling/impl/AnyElement.h>
 #include <xmltooling/io/AbstractXMLObjectMarshaller.h>
 #include <xmltooling/io/AbstractXMLObjectUnmarshaller.h>
+#include <xmltooling/signature/Signature.h>
+#include <xmltooling/util/DateTime.h>
 #include <xmltooling/util/XMLHelper.h>
 
 #include <ctime>
@@ -376,6 +379,11 @@ namespace opensaml {
             const XMLCh* getID() const {
                 return getRequestID();
             }
+            void releaseDOM() const {
+                if (getDOM())
+                    getDOM()->removeAttributeNS(NULL, REQUESTID_ATTRIB_NAME);
+                AbstractDOMCachingXMLObject::releaseDOM();
+            }
             IMPL_DATETIME_ATTRIB(IssueInstant,0);
             IMPL_TYPED_CHILDREN(RespondWith,m_pos_Signature);
 
@@ -713,6 +721,11 @@ namespace opensaml {
             }
             const XMLCh* getID() const {
                 return getResponseID();
+            }
+            void releaseDOM() const {
+                if (getDOM())
+                    getDOM()->removeAttributeNS(NULL, RESPONSEID_ATTRIB_NAME);
+                AbstractDOMCachingXMLObject::releaseDOM();
             }
             IMPL_STRING_ATTRIB(InResponseTo);
             IMPL_DATETIME_ATTRIB(IssueInstant,0);

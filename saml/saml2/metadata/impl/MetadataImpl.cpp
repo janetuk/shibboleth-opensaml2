@@ -17,22 +17,28 @@
 /**
  * MetadataImpl.cpp
  *
- * Implementation classes for SAML 2.0 Metadata schema
+ * Implementation classes for SAML 2.0 Metadata schema.
  */
 
 #include "internal.h"
 #include "exceptions.h"
 #include "saml2/metadata/Metadata.h"
+#include "signature/ContentReference.h"
 
 #include <xmltooling/AbstractComplexElement.h>
 #include <xmltooling/AbstractSimpleElement.h>
+#include <xmltooling/encryption/Encryption.h>
 #include <xmltooling/impl/AnyElement.h>
 #include <xmltooling/io/AbstractXMLObjectMarshaller.h>
 #include <xmltooling/io/AbstractXMLObjectUnmarshaller.h>
+#include <xmltooling/signature/KeyInfo.h>
+#include <xmltooling/signature/Signature.h>
+#include <xmltooling/util/DateTime.h>
 #include <xmltooling/util/XMLHelper.h>
 
 #include <ctime>
 #include <xercesc/util/XMLUniDefs.hpp>
+#include <xsec/framework/XSECDefs.hpp>
 
 using namespace samlconstants;
 using namespace opensaml::saml2md;
@@ -987,7 +993,7 @@ namespace opensaml {
                     m_Signature->setContentReference(new opensaml::ContentReference(*this));
             }
 
-            IMPL_ID_ATTRIB(ID);
+            IMPL_ID_ATTRIB_EX(ID,ID,NULL);
             IMPL_STRING_ATTRIB(ProtocolSupportEnumeration);
             IMPL_STRING_ATTRIB(ErrorURL);
             IMPL_DATETIME_ATTRIB(ValidUntil,SAMLTIME_MAX);
@@ -1002,8 +1008,8 @@ namespace opensaml {
                     return true;
                 if (m_ProtocolSupportEnumeration) {
                     // Look for first character.
-                    unsigned int len=XMLString::stringLen(protocol);
-                    unsigned int pos=0;
+                    xsecsize_t len=XMLString::stringLen(protocol);
+                    xsecsize_t pos=0;
                     int index=XMLString::indexOf(m_ProtocolSupportEnumeration,protocol[0],pos);
                     while (index>=0) {
                         // Only possible match is if it's the first character or a space comes before it.
@@ -2011,7 +2017,7 @@ namespace opensaml {
                     m_Signature->setContentReference(new opensaml::ContentReference(*this));
             }
 
-            IMPL_ID_ATTRIB(ID);
+            IMPL_ID_ATTRIB_EX(ID,ID,NULL);
             IMPL_STRING_ATTRIB(AffiliationOwnerID);
             IMPL_DATETIME_ATTRIB(ValidUntil,SAMLTIME_MAX);
             IMPL_DURATION_ATTRIB(CacheDuration,0);
@@ -2219,7 +2225,7 @@ namespace opensaml {
                     m_Signature->setContentReference(new opensaml::ContentReference(*this));
             }
 
-            IMPL_ID_ATTRIB(ID);
+            IMPL_ID_ATTRIB_EX(ID,ID,NULL);
             IMPL_STRING_ATTRIB(EntityID);
             IMPL_DATETIME_ATTRIB(ValidUntil,SAMLTIME_MAX);
             IMPL_DURATION_ATTRIB(CacheDuration,0);
@@ -2399,7 +2405,7 @@ namespace opensaml {
                     m_Signature->setContentReference(new opensaml::ContentReference(*this));
             }
 
-            IMPL_ID_ATTRIB(ID);
+            IMPL_ID_ATTRIB_EX(ID,ID,NULL);
             IMPL_STRING_ATTRIB(Name);
             IMPL_DATETIME_ATTRIB(ValidUntil,SAMLTIME_MAX);
             IMPL_DURATION_ATTRIB(CacheDuration,0);

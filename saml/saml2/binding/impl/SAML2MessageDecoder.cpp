@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
  */
 
 #include "internal.h"
-#include "exceptions.h"
+#include "binding/SecurityPolicy.h"
 #include "saml2/binding/SAML2MessageDecoder.h"
 #include "saml2/core/Protocols.h"
 #include "saml2/metadata/Metadata.h"
@@ -37,6 +37,14 @@ using namespace opensaml;
 using namespace xmltooling::logging;
 using namespace xmltooling;
 using namespace std;
+
+SAML2MessageDecoder::SAML2MessageDecoder()
+{
+}
+
+SAML2MessageDecoder::~SAML2MessageDecoder()
+{
+}
 
 void SAML2MessageDecoder::extractMessageDetails(
     const XMLObject& message, const GenericRequest& request, const XMLCh* protocol, SecurityPolicy& policy

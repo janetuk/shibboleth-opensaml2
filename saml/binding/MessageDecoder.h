@@ -23,13 +23,20 @@
 #ifndef __saml_decoder_h__
 #define __saml_decoder_h__
 
-#include <saml/binding/SecurityPolicy.h>
-#include <xmltooling/XMLObject.h>
-#include <xmltooling/io/GenericRequest.h>
+#include <saml/base.h>
+
+#include <vector>
+#include <xercesc/util/XMLUniDefs.hpp>
+
+namespace xmltooling {
+    class XMLTOOL_API GenericRequest;
+    class XMLTOOL_API XMLObject;
+};
 
 namespace opensaml {
 
     class SAML_API SAMLArtifact;
+    class SAML_API SecurityPolicy;
     namespace saml1p {
         class SAML_API Response;
     };
@@ -51,16 +58,14 @@ namespace opensaml {
     {
         MAKE_NONCOPYABLE(MessageDecoder);
     public:
-        virtual ~MessageDecoder() {}
+        virtual ~MessageDecoder();
 
         /**
          * Indicates whether a web browser or similar user agent delivered the message.
          *
          * @return true iff the message was delivered by a user agent
          */
-        virtual bool isUserAgentPresent() const {
-            return true;
-        }
+        virtual bool isUserAgentPresent() const;
 
         /**
          * Interface to caller-supplied artifact resolution mechanism.
@@ -76,10 +81,10 @@ namespace opensaml {
         class SAML_API ArtifactResolver {
             MAKE_NONCOPYABLE(ArtifactResolver);
         protected:
-            ArtifactResolver() {}
+            ArtifactResolver();
 
         public:
-            virtual ~ArtifactResolver() {}
+            virtual ~ArtifactResolver();
 
             /**
              * Resolves one or more SAML 1.x artifacts into a response containing a set of
@@ -131,9 +136,7 @@ namespace opensaml {
          *
          * @param artifactResolver   an ArtifactResolver implementation to use
          */
-        void setArtifactResolver(const ArtifactResolver* artifactResolver) {
-            m_artifactResolver = artifactResolver;
-        }
+        void setArtifactResolver(const ArtifactResolver* artifactResolver);
 
         /**
          * Decodes a transport request into a SAML protocol message, and evaluates it
@@ -156,7 +159,7 @@ namespace opensaml {
             ) const=0;
 
     protected:
-        MessageDecoder() : m_artifactResolver(NULL) {}
+        MessageDecoder();
 
         /** Pointer to an ArtifactResolver implementation. */
         const ArtifactResolver* m_artifactResolver;

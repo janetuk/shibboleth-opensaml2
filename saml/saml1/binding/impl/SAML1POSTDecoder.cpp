@@ -17,11 +17,12 @@
 /**
  * SAML1POSTDecoder.cpp
  * 
- * SAML 1.x POST binding/profile message decoder
+ * SAML 1.x POST binding/profile message decoder.
  */
 
 #include "internal.h"
 #include "exceptions.h"
+#include "binding/SecurityPolicy.h"
 #include "saml1/binding/SAML1MessageDecoder.h"
 #include "saml1/core/Assertions.h"
 #include "saml1/core/Protocols.h"
@@ -32,8 +33,10 @@
 #include <xercesc/framework/Wrapper4InputSource.hpp>
 #include <xercesc/util/Base64.hpp>
 #include <xmltooling/logging.h>
+#include <xmltooling/XMLToolingConfig.h>
 #include <xmltooling/io/HTTPRequest.h>
 #include <xmltooling/util/NDC.h>
+#include <xmltooling/util/ParserPool.h>
 #include <xmltooling/validation/ValidatorSuite.h>
 
 using namespace opensaml::saml2md;

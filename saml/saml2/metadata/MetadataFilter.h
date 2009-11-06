@@ -20,17 +20,12 @@
  * Processes metadata after it's been unmarshalled.
  */
 
-#include <saml/base.h>
-#include <saml/exceptions.h>
 #include <saml/saml2/metadata/MetadataProvider.h>
-
-#include <xmltooling/XMLObject.h>
 
 #ifndef __saml2_metadatafilt_h__
 #define __saml2_metadatafilt_h__
 
 namespace opensaml {
-
     namespace saml2md {
 
         /**
@@ -44,9 +39,9 @@ namespace opensaml {
         {
             MAKE_NONCOPYABLE(MetadataFilter);
         protected:
-            MetadataFilter() {}
+            MetadataFilter();
         public:
-            virtual ~MetadataFilter() {}
+            virtual ~MetadataFilter();
 
             /**
              * Returns an identifying string for the filter.
