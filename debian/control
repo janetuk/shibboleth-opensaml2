@@ -4,8 +4,8 @@ Priority: extra
 Maintainer: Debian Shib Team <pkg-shibboleth-devel@lists.alioth.debian.org>
 Uploaders: Russ Allbery <rra@debian.org>, Ferenc Wagner <wferi@niif.hu>
 Build-Depends: debhelper (>= 5), autotools-dev, doxygen, liblog4cpp5-dev,
- libssl-dev, libxerces-c-dev (>= 3.0.1-2~), libxml-security-c-dev (>= 1.4),
- libxmltooling-dev (>= 1.2)
+ libssl-dev, libxerces-c-dev (>= 3.0.1-2~), libxml-security-c-dev (>= 1.5),
+ libxmltooling-dev (>= 1.3)
 Standards-Version: 3.8.3
 Homepage: https://spaces.internet2.edu/display/OpenSAML/Home
 Vcs-Git: git://git.debian.org/git/pkg-shibboleth/opensaml2.git
@@ -25,7 +25,7 @@ Description: Security Assertion Markup Language library (runtime)
 Package: libsaml2-dev
 Section: libdevel
 Architecture: any
-Depends: libsaml4 (= ${binary:Version}), libxmltooling-dev (>= 1.2)
+Depends: libsaml6 (= ${binary:Version}), libxmltooling-dev (>= 1.3)
 Suggests: libsaml2-doc (= ${source:Version})
 Conflicts: libsaml-dev
 Description: Security Assertion Markup Language library (development)
