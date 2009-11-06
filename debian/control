@@ -11,7 +11,7 @@ Homepage: https://spaces.internet2.edu/display/OpenSAML/Home
 Vcs-Git: git://git.debian.org/git/pkg-shibboleth/opensaml2.git
 Vcs-Browser: http://git.debian.org/?p=pkg-shibboleth/opensaml2.git
 
-Package: libsaml4
+Package: libsaml6
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Security Assertion Markup Language library (runtime)

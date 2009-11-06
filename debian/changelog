@@ -11,6 +11,7 @@ opensaml2 (2.3-1) unstable; urgency=high
     - Remove xml from the inclusive prefix list to avoid bugs in Apache
       Java xmlsec.
     - Honor digest algorithm in whole document signing with empty URI.
+  * Rename library package for upstream SONAME bump.
 
  -- Russ Allbery <rra@debian.org>  Fri, 06 Nov 2009 15:09:04 -0800
 
