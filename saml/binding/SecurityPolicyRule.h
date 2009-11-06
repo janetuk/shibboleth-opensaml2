@@ -23,9 +23,15 @@
 #ifndef __saml_secrule_h__
 #define __saml_secrule_h__
 
-#include <saml/binding/SecurityPolicy.h>
+#include <saml/base.h>
+
+namespace xmltooling {
+    class XMLTOOL_API GenericRequest;
+    class XMLTOOL_API XMLObject;
+};
 
 namespace opensaml {
+    class SAML_API SecurityPolicy;
 
     /**
      * A rule that a protocol request and message must meet in order to be valid and secure.
@@ -38,9 +44,9 @@ namespace opensaml {
     {
         MAKE_NONCOPYABLE(SecurityPolicyRule);
     protected:
-        SecurityPolicyRule() {}
+        SecurityPolicyRule();
     public:
-        virtual ~SecurityPolicyRule() {}
+        virtual ~SecurityPolicyRule();
 
         /**
          * Returns the rule's class/type.

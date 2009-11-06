@@ -92,21 +92,23 @@ am_libsaml_la_OBJECTS = SAMLConfig.lo ArtifactMap.lo \
 	Protocols20SchemaValidators.lo AbstractMetadataProvider.lo \
 	BlacklistMetadataFilter.lo ChainingMetadataProvider.lo \
 	DynamicMetadataProvider.lo EntityRoleMetadataFilter.lo \
+	MetadataCredentialContext.lo MetadataCredentialCriteria.lo \
 	MetadataImpl.lo MetadataProvider.lo \
 	MetadataSchemaValidators.lo NullMetadataProvider.lo \
-	SignatureMetadataFilter.lo RequireValidUntilMetadataFilter.lo \
-	WhitelistMetadataFilter.lo XMLMetadataProvider.lo \
-	SAML2Artifact.lo SAML2ArtifactType0004.lo \
-	SAML2ArtifactDecoder.lo SAML2ArtifactEncoder.lo \
-	SAML2ECPDecoder.lo SAML2ECPEncoder.lo SAML2MessageDecoder.lo \
-	SAML2POSTDecoder.lo SAML2POSTEncoder.lo SAML2Redirect.lo \
-	SAML2RedirectDecoder.lo SAML2RedirectEncoder.lo \
-	SAML2SOAPDecoder.lo SAML2SOAPEncoder.lo SAML2SOAPClient.lo \
-	Assertion20Validator.lo BrowserSSOProfile20Validator.lo \
-	BearerConfirmationRule.lo DelegationRestrictionRule.lo \
-	SAML2AssertionPolicy.lo EncryptedKeyResolver.lo \
-	ContentReference.lo SignatureProfileValidator.lo \
-	CommonDomainCookie.lo SAMLConstants.lo
+	ObservableMetadataProvider.lo SignatureMetadataFilter.lo \
+	RequireValidUntilMetadataFilter.lo WhitelistMetadataFilter.lo \
+	XMLMetadataProvider.lo SAML2Artifact.lo \
+	SAML2ArtifactType0004.lo SAML2ArtifactDecoder.lo \
+	SAML2ArtifactEncoder.lo SAML2ECPDecoder.lo SAML2ECPEncoder.lo \
+	SAML2MessageDecoder.lo SAML2POSTDecoder.lo SAML2POSTEncoder.lo \
+	SAML2Redirect.lo SAML2RedirectDecoder.lo \
+	SAML2RedirectEncoder.lo SAML2SOAPDecoder.lo \
+	SAML2SOAPEncoder.lo SAML2SOAPClient.lo Assertion20Validator.lo \
+	BrowserSSOProfile20Validator.lo BearerConfirmationRule.lo \
+	DelegationRestrictionRule.lo SAML2AssertionPolicy.lo \
+	EncryptedKeyResolver.lo ContentReference.lo \
+	SignatureProfileValidator.lo CommonDomainCookie.lo \
+	SAMLConstants.lo
 libsaml_la_OBJECTS = $(am_libsaml_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -408,8 +410,8 @@ libsaml_la_SOURCES = \
 	binding/impl/SOAPClient.cpp \
 	binding/impl/XMLSigningRule.cpp \
 	profile/impl/AudienceRestrictionRule.cpp \
-    profile/impl/ConditionsRule.cpp \
-    profile/impl/IgnoreRule.cpp \
+	profile/impl/ConditionsRule.cpp \
+	profile/impl/IgnoreRule.cpp \
 	saml1/core/impl/AssertionsImpl.cpp \
 	saml1/core/impl/AssertionsSchemaValidators.cpp \
 	saml1/core/impl/ProtocolsImpl.cpp \
@@ -437,10 +439,13 @@ libsaml_la_SOURCES = \
 	saml2/metadata/impl/ChainingMetadataProvider.cpp \
 	saml2/metadata/impl/DynamicMetadataProvider.cpp \
 	saml2/metadata/impl/EntityRoleMetadataFilter.cpp \
+	saml2/metadata/impl/MetadataCredentialContext.cpp \
+	saml2/metadata/impl/MetadataCredentialCriteria.cpp \
 	saml2/metadata/impl/MetadataImpl.cpp \
 	saml2/metadata/impl/MetadataProvider.cpp \
 	saml2/metadata/impl/MetadataSchemaValidators.cpp \
 	saml2/metadata/impl/NullMetadataProvider.cpp \
+	saml2/metadata/impl/ObservableMetadataProvider.cpp \
 	saml2/metadata/impl/SignatureMetadataFilter.cpp \
 	saml2/metadata/impl/RequireValidUntilMetadataFilter.cpp \
 	saml2/metadata/impl/WhitelistMetadataFilter.cpp \
@@ -449,9 +454,9 @@ libsaml_la_SOURCES = \
 	saml2/binding/impl/SAML2ArtifactType0004.cpp \
 	saml2/binding/impl/SAML2ArtifactDecoder.cpp \
 	saml2/binding/impl/SAML2ArtifactEncoder.cpp \
-    saml2/binding/impl/SAML2ECPDecoder.cpp \
-    saml2/binding/impl/SAML2ECPEncoder.cpp \
-    saml2/binding/impl/SAML2MessageDecoder.cpp \
+	saml2/binding/impl/SAML2ECPDecoder.cpp \
+	saml2/binding/impl/SAML2ECPEncoder.cpp \
+	saml2/binding/impl/SAML2MessageDecoder.cpp \
 	saml2/binding/impl/SAML2POSTDecoder.cpp \
 	saml2/binding/impl/SAML2POSTEncoder.cpp \
 	saml2/binding/impl/SAML2Redirect.cpp \
@@ -462,8 +467,8 @@ libsaml_la_SOURCES = \
 	saml2/binding/impl/SAML2SOAPClient.cpp \
 	saml2/profile/impl/Assertion20Validator.cpp \
 	saml2/profile/impl/BrowserSSOProfile20Validator.cpp \
-    saml2/profile/impl/BearerConfirmationRule.cpp \
-    saml2/profile/impl/DelegationRestrictionRule.cpp \
+	saml2/profile/impl/BearerConfirmationRule.cpp \
+	saml2/profile/impl/DelegationRestrictionRule.cpp \
 	saml2/profile/impl/SAML2AssertionPolicy.cpp \
 	encryption/EncryptedKeyResolver.cpp \
 	signature/ContentReference.cpp \
@@ -474,7 +479,7 @@ libsaml_la_SOURCES = \
 
 # this is different from the project version
 # http://sources.redhat.com/autobook/autobook/autobook_91.html
-libsaml_la_LDFLAGS = -version-info 4:1:0
+libsaml_la_LDFLAGS = -version-info 6:0:0
 EXTRA_DIST = saml.vcproj zlib resource.h saml.rc
 all: all-am
 
@@ -572,11 +577,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageDecoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageEncoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageFlowRule.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MetadataCredentialContext.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MetadataCredentialCriteria.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MetadataImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MetadataProvider.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MetadataSchemaValidators.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NullMetadataProvider.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NullSecurityRule.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ObservableMetadataProvider.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Protocols20Impl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Protocols20SchemaValidators.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ProtocolsImpl.Plo@am__quote@
@@ -929,6 +937,20 @@ EntityRoleMetadataFilter.lo: saml2/metadata/impl/EntityRoleMetadataFilter.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o EntityRoleMetadataFilter.lo `test -f 'saml2/metadata/impl/EntityRoleMetadataFilter.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/EntityRoleMetadataFilter.cpp
 
+MetadataCredentialContext.lo: saml2/metadata/impl/MetadataCredentialContext.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MetadataCredentialContext.lo -MD -MP -MF "$(DEPDIR)/MetadataCredentialContext.Tpo" -c -o MetadataCredentialContext.lo `test -f 'saml2/metadata/impl/MetadataCredentialContext.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/MetadataCredentialContext.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MetadataCredentialContext.Tpo" "$(DEPDIR)/MetadataCredentialContext.Plo"; else rm -f "$(DEPDIR)/MetadataCredentialContext.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/metadata/impl/MetadataCredentialContext.cpp' object='MetadataCredentialContext.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MetadataCredentialContext.lo `test -f 'saml2/metadata/impl/MetadataCredentialContext.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/MetadataCredentialContext.cpp
+
+MetadataCredentialCriteria.lo: saml2/metadata/impl/MetadataCredentialCriteria.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MetadataCredentialCriteria.lo -MD -MP -MF "$(DEPDIR)/MetadataCredentialCriteria.Tpo" -c -o MetadataCredentialCriteria.lo `test -f 'saml2/metadata/impl/MetadataCredentialCriteria.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/MetadataCredentialCriteria.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MetadataCredentialCriteria.Tpo" "$(DEPDIR)/MetadataCredentialCriteria.Plo"; else rm -f "$(DEPDIR)/MetadataCredentialCriteria.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/metadata/impl/MetadataCredentialCriteria.cpp' object='MetadataCredentialCriteria.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MetadataCredentialCriteria.lo `test -f 'saml2/metadata/impl/MetadataCredentialCriteria.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/MetadataCredentialCriteria.cpp
+
 MetadataImpl.lo: saml2/metadata/impl/MetadataImpl.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MetadataImpl.lo -MD -MP -MF "$(DEPDIR)/MetadataImpl.Tpo" -c -o MetadataImpl.lo `test -f 'saml2/metadata/impl/MetadataImpl.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/MetadataImpl.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MetadataImpl.Tpo" "$(DEPDIR)/MetadataImpl.Plo"; else rm -f "$(DEPDIR)/MetadataImpl.Tpo"; exit 1; fi
@@ -956,6 +978,13 @@ NullMetadataProvider.lo: saml2/metadata/impl/NullMetadataProvider.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/metadata/impl/NullMetadataProvider.cpp' object='NullMetadataProvider.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o NullMetadataProvider.lo `test -f 'saml2/metadata/impl/NullMetadataProvider.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/NullMetadataProvider.cpp
+
+ObservableMetadataProvider.lo: saml2/metadata/impl/ObservableMetadataProvider.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ObservableMetadataProvider.lo -MD -MP -MF "$(DEPDIR)/ObservableMetadataProvider.Tpo" -c -o ObservableMetadataProvider.lo `test -f 'saml2/metadata/impl/ObservableMetadataProvider.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/ObservableMetadataProvider.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ObservableMetadataProvider.Tpo" "$(DEPDIR)/ObservableMetadataProvider.Plo"; else rm -f "$(DEPDIR)/ObservableMetadataProvider.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='saml2/metadata/impl/ObservableMetadataProvider.cpp' object='ObservableMetadataProvider.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ObservableMetadataProvider.lo `test -f 'saml2/metadata/impl/ObservableMetadataProvider.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/ObservableMetadataProvider.cpp
 
 SignatureMetadataFilter.lo: saml2/metadata/impl/SignatureMetadataFilter.cpp
 @am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SignatureMetadataFilter.lo -MD -MP -MF "$(DEPDIR)/SignatureMetadataFilter.Tpo" -c -o SignatureMetadataFilter.lo `test -f 'saml2/metadata/impl/SignatureMetadataFilter.cpp' || echo '$(srcdir)/'`saml2/metadata/impl/SignatureMetadataFilter.cpp; \

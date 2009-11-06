@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,15 @@
 #ifndef __saml1_soap11client_h__
 #define __saml1_soap11client_h__
 
-#include <saml/binding/SOAPClient.h>
+#include <saml/base.h>
 
 namespace opensaml {
+
+    class SAML_API SOAPClient;
+
+    namespace saml2md {
+        class SAML_API MetadataCredentialCriteria;
+    };
 
     namespace saml1p {
         
@@ -45,12 +51,9 @@ namespace opensaml {
              * @param soaper            reference to SOAPClient object to use for call
              * @param fatalSAMLErrors   true iff a non-successful SAML Status code should be fatal
              */
-            SAML1SOAPClient(SOAPClient& soaper, bool fatalSAMLErrors=true) : m_soaper(soaper), m_fatal(fatalSAMLErrors), m_correlate(NULL) {
-            }
+            SAML1SOAPClient(SOAPClient& soaper, bool fatalSAMLErrors=true);
             
-            virtual ~SAML1SOAPClient() {
-                xercesc::XMLString::release(&m_correlate);
-            }
+            virtual ~SAML1SOAPClient();
     
             /**
              * Specialized method for sending SAML 1.x requests. The SOAP layer will be

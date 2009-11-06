@@ -25,10 +25,11 @@
 
 #include <saml/base.h>
 
-#include <istream>
-#include <xmltooling/XMLObject.h>
-#include <xmltooling/io/GenericResponse.h>
-#include <xmltooling/security/Credential.h>
+namespace xmltooling {
+    class XMLTOOL_API Credential;
+    class XMLTOOL_API GenericResponse;
+    class XMLTOOL_API XMLObject;
+};
 
 namespace opensaml {
 
@@ -47,25 +48,21 @@ namespace opensaml {
     {
         MAKE_NONCOPYABLE(MessageEncoder);
     public:
-        virtual ~MessageEncoder() {}
+        virtual ~MessageEncoder();
 
         /**
          * Indicates whether the encoding format requires that messages be as compact as possible.
          *
          * @return  true iff the encoding has size constraints
          */
-        virtual bool isCompact() const {
-            return false;
-        }
+        virtual bool isCompact() const;
 
         /**
          * Indicates whether a web browser or similar user agent will receive the message.
          *
          * @return true iff the message will be handled by a user agent
          */
-        virtual bool isUserAgentPresent() const {
-            return true;
-        }
+        virtual bool isUserAgentPresent() const;
 
         /**
          * Interface to caller-supplied artifact generation mechanism.
@@ -80,9 +77,9 @@ namespace opensaml {
         class SAML_API ArtifactGenerator {
             MAKE_NONCOPYABLE(ArtifactGenerator);
         protected:
-            ArtifactGenerator() {}
+            ArtifactGenerator();
         public:
-            virtual ~ArtifactGenerator() {}
+            virtual ~ArtifactGenerator();
             
             /**
              * Generate a SAML 1.x artifact suitable for consumption by the relying party.
@@ -136,7 +133,7 @@ namespace opensaml {
             ) const=0;
 
     protected:
-        MessageEncoder() {}
+        MessageEncoder();
     };
 
     /**

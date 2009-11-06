@@ -25,12 +25,27 @@
 #include "saml2/profile/BrowserSSOProfileValidator.h"
 
 #include <xmltooling/logging.h>
+#include <xmltooling/XMLToolingConfig.h>
 #include <xmltooling/util/NDC.h>
 
 using namespace opensaml::saml2;
 using namespace xmltooling::logging;
 using namespace xmltooling;
 using namespace std;
+
+BrowserSSOProfileValidator::BrowserSSOProfileValidator(
+    const XMLCh* recipient,
+    const vector<const XMLCh*>* audiences,
+    time_t ts,
+    const char* destination,
+    const char* requestID
+    ) : AssertionValidator(recipient, audiences, ts), m_destination(destination), m_requestID(requestID)
+{
+}
+
+BrowserSSOProfileValidator::~BrowserSSOProfileValidator()
+{
+}
 
 void BrowserSSOProfileValidator::validateAssertion(const Assertion& assertion) const
 {
@@ -40,7 +55,7 @@ void BrowserSSOProfileValidator::validateAssertion(const Assertion& assertion) c
     Category& log = Category::getInstance(SAML_LOGCAT".AssertionValidator");
 
     // The assertion MUST have proper confirmation requirements.
-    const char* msg=NULL;
+    const char* msg="assertion is missing bearer SubjectConfirmation";
     const Subject* subject = assertion.getSubject();
     if (subject) {
         const vector<SubjectConfirmation*>& confs = subject->getSubjectConfirmations();
@@ -86,6 +101,11 @@ void BrowserSSOProfileValidator::validateAssertion(const Assertion& assertion) c
         }
     }
 
-    log.error(msg);
+    log.error(msg ? msg : "no error message");
     throw ValidationException("Unable to locate satisfiable bearer SubjectConfirmation in assertion.");
+}
+
+const char* BrowserSSOProfileValidator::getAddress() const
+{
+    return m_address.c_str();
 }

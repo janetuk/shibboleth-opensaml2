@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,11 @@
 #include "saml2/metadata/MetadataCredentialCriteria.h"
 
 #include <xercesc/util/XMLUniDefs.hpp>
+#include <xmltooling/XMLToolingConfig.h>
+#include <xmltooling/security/Credential.h>
 #include <xmltooling/security/KeyInfoResolver.h>
+#include <xmltooling/security/SecurityHelper.h>
+#include <xmltooling/util/Threads.h>
 #include <xmltooling/util/XMLHelper.h>
 
 using namespace opensaml::saml2md;
@@ -114,7 +118,7 @@ void AbstractMetadataProvider::index(EntityDescriptor* site, time_t validUntil, 
             }
             
             // Hash the ID.
-            m_sources.insert(sitemap_t::value_type(SAMLConfig::getConfig().hashSHA1(id.get(), true),site));
+            m_sources.insert(sitemap_t::value_type(SecurityHelper::doHash("SHA1", id.get(), strlen(id.get())),site));
                 
             // Load endpoints for type 0x0002 artifacts.
             const vector<ArtifactResolutionService*>& locs=const_cast<const IDPSSODescriptor*>(*i)->getArtifactResolutionServices();
@@ -128,7 +132,7 @@ void AbstractMetadataProvider::index(EntityDescriptor* site, time_t validUntil, 
         // SAML 2.0?
         if ((*i)->hasSupport(samlconstants::SAML20P_NS)) {
             // Hash the ID.
-            m_sources.insert(sitemap_t::value_type(SAMLConfig::getConfig().hashSHA1(id.get(), true),site));
+            m_sources.insert(sitemap_t::value_type(SecurityHelper::doHash("SHA1", id.get(), strlen(id.get())),site));
         }
     }
 }

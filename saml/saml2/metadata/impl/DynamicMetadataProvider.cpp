@@ -28,6 +28,9 @@
 #include <xercesc/framework/Wrapper4InputSource.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xmltooling/logging.h>
+#include <xmltooling/XMLToolingConfig.h>
+#include <xmltooling/util/ParserPool.h>
+#include <xmltooling/util/Threads.h>
 #include <xmltooling/util/XMLHelper.h>
 #include <xmltooling/validation/ValidatorSuite.h>
 
@@ -70,6 +73,26 @@ DynamicMetadataProvider::~DynamicMetadataProvider()
     // Each entity in the map is unique (no multimap semantics), so this is safe.
     clearDescriptorIndex(true);
     delete m_lock;
+}
+
+const XMLObject* DynamicMetadataProvider::getMetadata() const
+{
+    throw MetadataException("getMetadata operation not implemented on this provider.");
+}
+
+Lockable* DynamicMetadataProvider::lock()
+{
+    m_lock->rdlock();
+    return this;
+}
+
+void DynamicMetadataProvider::unlock()
+{
+    m_lock->unlock();
+}
+
+void DynamicMetadataProvider::init()
+{
 }
 
 pair<const EntityDescriptor*,const RoleDescriptor*> DynamicMetadataProvider::getEntityDescriptor(const Criteria& criteria) const

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,14 @@
 #ifndef __saml_metacredctx_h__
 #define __saml_metacredctx_h__
 
-#include <saml/saml2/metadata/Metadata.h>
+#include <saml/base.h>
 #include <xmltooling/security/KeyInfoCredentialContext.h>
 
 namespace opensaml {
     namespace saml2md {
         
+        class SAML_API KeyDescriptor;
+
         /**
          * Metadata-based CredentialContext subclass.
          */
@@ -40,20 +42,16 @@ namespace opensaml {
              *
              * @param descriptor    source of metadata-supplied credential
              */
-            MetadataCredentialContext(const KeyDescriptor& descriptor)
-                : KeyInfoCredentialContext(descriptor.getKeyInfo()), m_descriptor(descriptor) {
-            }
+            MetadataCredentialContext(const KeyDescriptor& descriptor);
     
-            virtual ~MetadataCredentialContext() {}
+            virtual ~MetadataCredentialContext();
             
             /**
              * Return the KeyDescriptor associated with the credential.
              *
              * @return the associated KeyDescriptor
              */
-            const KeyDescriptor& getKeyDescriptor() const {
-                return m_descriptor;
-            }
+            const KeyDescriptor& getKeyDescriptor() const;
 
         private:
             const KeyDescriptor& m_descriptor;

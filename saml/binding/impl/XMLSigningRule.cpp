@@ -22,6 +22,7 @@
 
 #include "internal.h"
 #include "exceptions.h"
+#include "binding/SecurityPolicy.h"
 #include "binding/SecurityPolicyRule.h"
 #include "saml2/core/Assertions.h"
 #include "saml2/metadata/Metadata.h"
@@ -31,6 +32,7 @@
 
 #include <xmltooling/logging.h>
 #include <xmltooling/security/SignatureTrustEngine.h>
+#include <xmltooling/signature/Signature.h>
 
 using namespace opensaml::saml2md;
 using namespace opensaml;

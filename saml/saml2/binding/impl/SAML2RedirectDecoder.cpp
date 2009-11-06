@@ -17,11 +17,12 @@
 /**
  * SAML2RedirectDecoder.cpp
  *
- * SAML 2.0 HTTP Redirect binding message encoder
+ * SAML 2.0 HTTP Redirect binding message encoder.
  */
 
 #include "internal.h"
 #include "exceptions.h"
+#include "binding/SecurityPolicy.h"
 #include "saml2/binding/SAML2MessageDecoder.h"
 #include "saml2/binding/SAML2Redirect.h"
 #include "saml2/core/Protocols.h"
@@ -30,8 +31,10 @@
 
 #include <xercesc/util/Base64.hpp>
 #include <xmltooling/logging.h>
+#include <xmltooling/XMLToolingConfig.h>
 #include <xmltooling/io/HTTPRequest.h>
 #include <xmltooling/util/NDC.h>
+#include <xmltooling/util/ParserPool.h>
 #include <xmltooling/validation/ValidatorSuite.h>
 
 using namespace opensaml::saml2md;

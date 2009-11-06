@@ -17,17 +17,21 @@
 /**
  * SAML2SOAPDecoder.cpp
  * 
- * SAML 2.0 SOAP binding message decoder
+ * SAML 2.0 SOAP binding message decoder.
  */
 
 #include "internal.h"
 #include "exceptions.h"
+#include "binding/SecurityPolicy.h"
 #include "saml2/binding/SAML2MessageDecoder.h"
 #include "saml2/core/Protocols.h"
 
 #include <xmltooling/logging.h>
+#include <xmltooling/XMLToolingConfig.h>
+#include <xmltooling/io/GenericRequest.h>
 #include <xmltooling/soap/SOAP.h>
 #include <xmltooling/util/NDC.h>
+#include <xmltooling/util/ParserPool.h>
 #include <xmltooling/validation/ValidatorSuite.h>
 
 using namespace opensaml::saml2p;

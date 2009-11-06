@@ -17,16 +17,20 @@
 /**
  * ConditionsRule.cpp
  *
- * SAML Conditions SecurityPolicyRule
+ * SAML Conditions SecurityPolicyRule.
  */
 
 #include "internal.h"
 #include "exceptions.h"
+#include "binding/SecurityPolicy.h"
 #include "binding/SecurityPolicyRule.h"
 #include "saml1/core/Assertions.h"
 #include "saml2/core/Assertions.h"
 
+#include <xercesc/util/XMLUniDefs.hpp>
 #include <xmltooling/logging.h>
+#include <xmltooling/XMLToolingConfig.h>
+#include <xmltooling/util/ParserPool.h>
 
 using namespace opensaml;
 using namespace xmltooling::logging;

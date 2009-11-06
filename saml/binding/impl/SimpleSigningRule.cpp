@@ -17,11 +17,12 @@
 /**
  * SimpleSigningRule.cpp
  * 
- * Blob-oriented signature checking SecurityPolicyRule
+ * Blob-oriented signature checking SecurityPolicyRule.
  */
 
 #include "internal.h"
 #include "exceptions.h"
+#include "binding/SecurityPolicy.h"
 #include "binding/SecurityPolicyRule.h"
 #include "saml2/core/Assertions.h"
 #include "saml2/metadata/Metadata.h"
@@ -30,8 +31,12 @@
 
 #include <xercesc/util/Base64.hpp>
 #include <xmltooling/logging.h>
+#include <xmltooling/XMLToolingConfig.h>
 #include <xmltooling/io/HTTPRequest.h>
 #include <xmltooling/security/SignatureTrustEngine.h>
+#include <xmltooling/signature/KeyInfo.h>
+#include <xmltooling/signature/Signature.h>
+#include <xmltooling/util/ParserPool.h>
 
 using namespace opensaml::saml2md;
 using namespace opensaml;

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,17 @@
 /**
  * @file saml/RootObject.h
  * 
- * Base class for SAML objects at the root of core schemas 
+ * Base class for SAML objects at the root of core schemas.
  */
 
 #ifndef __saml_root_h__
 #define __saml_root_h__
 
 #include <saml/signature/SignableObject.h>
-#include <xmltooling/util/DateTime.h>
+
+namespace xmltooling {
+    class XMLTOOL_API DateTime;
+};
 
 namespace opensaml {
 
@@ -35,7 +38,7 @@ namespace opensaml {
     class SAML_API RootObject : public SignableObject
     {
     public:
-        virtual ~RootObject() {}
+        virtual ~RootObject();
 
         /**
          * Returns the unique SAML ID of the object.
@@ -59,7 +62,7 @@ namespace opensaml {
         virtual time_t getIssueInstantEpoch() const=0;
 
     protected:
-        RootObject() {}
+        RootObject();
     };
 
 };

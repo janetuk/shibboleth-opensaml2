@@ -1,6 +1,6 @@
 
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 /**
  * SAMLConfig.cpp
  * 
- * Library configuration 
+ * Library configuration.
  */
 
 #include "internal.h"
@@ -52,6 +52,7 @@
 
 #include <xmltooling/logging.h>
 #include <xmltooling/XMLToolingConfig.h>
+#include <xmltooling/security/SecurityHelper.h>
 #include <xmltooling/signature/Signature.h>
 #include <xmltooling/util/NDC.h>
 #include <xmltooling/util/PathResolver.h>
@@ -101,6 +102,19 @@ SAMLConfig& SAMLConfig::getConfig()
 SAMLInternalConfig& SAMLInternalConfig::getInternalConfig()
 {
     return g_config;
+}
+
+SAMLConfig::SAMLConfig() : m_artifactMap(NULL)
+{
+}
+
+SAMLConfig::~SAMLConfig()
+{
+}
+
+ArtifactMap* SAMLConfig::getArtifactMap() const
+{
+    return m_artifactMap;
 }
 
 void SAMLConfig::setArtifactMap(ArtifactMap* artifactMap)
@@ -204,29 +218,31 @@ XMLCh* SAMLInternalConfig::generateIdentifier()
 
 string SAMLInternalConfig::hashSHA1(const char* s, bool toHex)
 {
-    static char DIGITS[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    return SecurityHelper::doHash("SHA1", s, strlen(s), toHex);
+}
 
-    auto_ptr<XSECCryptoHash> hasher(XSECPlatformUtils::g_cryptoProvider->hashSHA1());
-    if (hasher.get()) {
-        unsigned char buf[21];
-        hasher->hash(reinterpret_cast<unsigned char*>(const_cast<char*>(s)),strlen(s));
-        if (hasher->finish(buf,20)==20) {
-            string ret;
-            if (toHex) {
-                for (unsigned int i=0; i<20; i++) {
-                    ret+=(DIGITS[((unsigned char)(0xF0 & buf[i])) >> 4 ]);
-                    ret+=(DIGITS[0x0F & buf[i]]);
-                }
-            }
-            else {
-                for (unsigned int i=0; i<20; i++) {
-                    ret+=buf[i];
-                }
-            }
-            return ret;
-        }
-    }
-    throw XMLSecurityException("Unable to generate SHA-1 hash.");
+SignableObject::SignableObject()
+{
+}
+
+SignableObject::~SignableObject()
+{
+}
+
+RootObject::RootObject()
+{
+}
+
+RootObject::~RootObject()
+{
+}
+
+Assertion::Assertion()
+{
+}
+
+Assertion::~Assertion()
+{
 }
 
 using namespace saml2p;

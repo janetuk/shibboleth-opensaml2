@@ -17,19 +17,23 @@
 /**
  * Assertions20Impl.cpp
  *
- * Implementation classes for SAML 2.0 Assertions schema
+ * Implementation classes for SAML 2.0 Assertions schema.
  */
 
 #include "internal.h"
 #include "exceptions.h"
 #include "saml/encryption/EncryptedKeyResolver.h"
 #include "saml2/core/Assertions.h"
+#include "signature/ContentReference.h"
 
 #include <xmltooling/AbstractComplexElement.h>
 #include <xmltooling/AbstractSimpleElement.h>
 #include <xmltooling/impl/AnyElement.h>
 #include <xmltooling/io/AbstractXMLObjectMarshaller.h>
 #include <xmltooling/io/AbstractXMLObjectUnmarshaller.h>
+#include <xmltooling/signature/KeyInfo.h>
+#include <xmltooling/signature/Signature.h>
+#include <xmltooling/util/DateTime.h>
 #include <xmltooling/util/XMLHelper.h>
 
 #include <ctime>
@@ -1584,7 +1588,7 @@ namespace opensaml {
 
             IMPL_XMLOBJECT_CLONE(Assertion);
             IMPL_STRING_ATTRIB(Version);
-            IMPL_ID_ATTRIB(ID);
+            IMPL_ID_ATTRIB_EX(ID,ID,NULL);
             IMPL_DATETIME_ATTRIB(IssueInstant,0);
             IMPL_TYPED_CHILD(Issuer);
             IMPL_TYPED_CHILD(Subject);

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@
 
 #include "internal.h"
 #include "exceptions.h"
+#include "binding/SecurityPolicy.h"
+#include "binding/SOAPClient.h"
 #include "saml1/binding/SAML1SOAPClient.h"
 #include "saml1/core/Protocols.h"
 #include "saml2/metadata/Metadata.h"
@@ -36,6 +38,15 @@ using namespace soap11;
 using namespace xmltooling::logging;
 using namespace xmltooling;
 using namespace std;
+
+SAML1SOAPClient::SAML1SOAPClient(opensaml::SOAPClient& soaper, bool fatalSAMLErrors) : m_soaper(soaper), m_fatal(fatalSAMLErrors), m_correlate(NULL)
+{
+}
+
+SAML1SOAPClient::~SAML1SOAPClient()
+{
+    XMLString::release(&m_correlate);
+}
 
 void SAML1SOAPClient::sendSAML(Request* request, const char* from, MetadataCredentialCriteria& to, const char* endpoint)
 {

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2009 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@
 
 #include <sstream>
 #include <saml/signature/SignatureProfileValidator.h>
+#include <xmltooling/security/Credential.h>
 #include <xmltooling/security/CredentialCriteria.h>
 #include <xmltooling/security/CredentialResolver.h>
 #include <xmltooling/signature/KeyInfo.h>
+#include <xmltooling/signature/Signature.h>
 #include <xmltooling/signature/SignatureValidator.h>
 
 using namespace xmlsignature;
