@@ -1,0 +1,93 @@
+opensaml2 (2.3-2) unstable; urgency=low
+
+  * Force source format 1.0 for now since it makes backporting easier.
+  * Add ${misc:Depends} to all package dependencies.
+  * Update debhelper compatibility level to V7.
+    - Use dh_prep instead of dh_clean -k.
+  * Update standards version to 3.8.4 (no changes required).
+
+ -- Russ Allbery <rra@debian.org>  Thu, 13 May 2010 10:21:12 -0700
+
+opensaml2 (2.3-1) unstable; urgency=high
+
+  * Urgency set to high for security fix.
+  * New upstream release.
+    - SECURITY: Partial fix for improper handling of URLs that could be
+      abused for script injection and other cross-site scripting attacks.
+      The complete fix also requires newer xmltooling and shibboleth-sp2
+      packages.  (CVE-2009-3300)
+    - Fix crash on assertions with missing SubjectConfirmation.
+    - Remove inline functions except for templates or RAII patterns.
+    - Remove xml from the inclusive prefix list to avoid bugs in Apache
+      Java xmlsec.
+    - Honor digest algorithm in whole document signing with empty URI.
+  * Rename library package for upstream SONAME bump.
+  * Build-depend on libxmltooling-dev 1.3 or later and make libsaml2-dev
+    depend on libxmltooling-dev 1.3 or later for the fixes for URL
+    sanitization.
+  * Build-depend on libxml-security-c-dev 1.5 or later to ensure
+    that all builds are consistent.
+
+ -- Russ Allbery <rra@debian.org>  Fri, 06 Nov 2009 15:09:04 -0800
+
+opensaml2 (2.2.1-1) unstable; urgency=low
+
+  * New upstream release.
+    - Fix crash when generating unsigned ECP AuthnRequest.
+    - Correct check of key usage against KeyDescriptor use.
+  * Remove temporary build-depend on libicu-dev and tighten the build
+    dependency on libxerces-c-dev to require the fixed version.
+
+ -- Russ Allbery <rra@debian.org>  Mon, 07 Sep 2009 18:35:47 -0700
+
+opensaml2 (2.2-1) unstable; urgency=low
+
+  * New upstream release.
+    - Use CRLs in the metadata signature during PKIX path validation.
+    - Fix cacheDuration handling in metadata parsing.
+    - Set HTTP no-cache headers when redirecting client to IdP via POST.
+    - Allow verbs for GET-based bindings to be overridden.
+  * Rename library package for upstream SONAME bump.
+  * Build against Xerces-C 3.0.
+  * Build-depend and depend on xmltooling 1.2 or later.
+  * Temporarily add libicu-dev to Build-Depends to work around Bug#540964
+    in libxerces-c-dev.
+  * Update standards version to 3.8.3 (no changes required).
+
+ -- Russ Allbery <rra@debian.org>  Tue, 18 Aug 2009 16:36:16 -0700
+
+opensaml2 (2.1-1) unstable; urgency=low
+
+  [ Russ Allbery ]
+  * New upstream bug-fix release.
+  * Bump SONAME of libsaml following upstream's versioning.  The names of
+    libsaml2-dev and libsaml2-doc have not changed; the "2" in those names
+    refers to the major version of the package, not to the SONAME of the
+    library.
+  * Build-depend on libxmtooling-dev >= 1.1 following the upstream spec
+    file.
+  * Flesh out debian/copyright with entries for build system files and
+    convert to the latest draft of the copyright format proposal.
+  * Remove duplicated Section header in the libsaml3 control stanza.
+
+  [ Ferenc Wagner ]
+  * Fix watch file for upstream directory structure.
+
+ -- Russ Allbery <rra@debian.org>  Sun, 22 Feb 2009 13:16:05 -0800
+
+opensaml2 (2.0-2) unstable; urgency=low
+
+  * Include fix for https://bugs.internet2.edu/jira/browse/CPPOST-7
+    (Metadata with EncryptionMethod elements fails to load)
+  * Include fix for https://bugs.internet2.edu/jira/browse/CPPOST-11
+    (SignatureMetadataFilter fails to validate signed EntityDescriptor)
+
+ -- Ferenc Wagner <wferi@niif.hu>  Wed, 21 Jan 2009 16:30:46 +0100
+
+opensaml2 (2.0-1) unstable; urgency=low
+
+  [ Ferenc Wagner ]
+  * Initial release (Closes: #480289)
+
+ -- Russ Allbery <rra@debian.org>  Mon, 16 Jun 2008 21:28:28 -0700
+

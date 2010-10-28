@@ -1,0 +1,2 @@
+debian/tmp/usr/bin/*
+debian/samlsign.1 usr/share/man/man1
