@@ -107,7 +107,8 @@ namespace opensaml {
 #endif
 
 XMLMetadataProvider::XMLMetadataProvider(const DOMElement* e)
-    : AbstractMetadataProvider(e), DiscoverableMetadataProvider(e), ReloadableXMLFile(e, Category::getInstance(SAML_LOGCAT".MetadataProvider.XML"), false),
+    : MetadataProvider(e), AbstractMetadataProvider(e), DiscoverableMetadataProvider(e),
+        ReloadableXMLFile(e, Category::getInstance(SAML_LOGCAT".MetadataProvider.XML"), false),
         m_object(nullptr), m_discoveryFeed(XMLHelper::getAttrBool(e, true, discoveryFeed)),
         m_refreshDelayFactor(0.75), m_backoffFactor(1),
         m_minRefreshDelay(XMLHelper::getAttrInt(e, 600, minRefreshDelay)),
@@ -125,7 +126,7 @@ XMLMetadataProvider::XMLMetadataProvider(const DOMElement* e)
         }
 
         if (m_minRefreshDelay > m_maxRefreshDelay) {
-            m_log.error("minRefreshDelay setting exceeds maxRefreshDelay/refreshInterval setting, lowering to match it");
+            m_log.warn("minRefreshDelay setting exceeds maxRefreshDelay/reloadInterval setting, lowering to match it");
             m_minRefreshDelay = m_maxRefreshDelay;
         }
     }
