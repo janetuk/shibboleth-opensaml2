@@ -32,7 +32,7 @@ opensaml2 (2.4.1-1) UNRELEASED; urgency=low
     patch for simplicity since the packaging is maintained in Git using
     branches, and include a patch header explaining why.
   * Update standards version to 3.9.1 (no changes required).
-  
+
  -- Russ Allbery <rra@debian.org>  Sun, 03 Apr 2011 17:59:57 -0700
 
 opensaml2 (2.3-2) unstable; urgency=low

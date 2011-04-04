@@ -11,7 +11,7 @@ Homepage: https://spaces.internet2.edu/display/OpenSAML/Home
 Vcs-Git: git://git.debian.org/git/pkg-shibboleth/opensaml2.git
 Vcs-Browser: http://git.debian.org/?p=pkg-shibboleth/opensaml2.git
 
-Package: libsaml6
+Package: libsaml7
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Security Assertion Markup Language library (runtime)
@@ -25,7 +25,7 @@ Description: Security Assertion Markup Language library (runtime)
 Package: libsaml2-dev
 Section: libdevel
 Architecture: any
-Depends: ${misc:Depends}, libsaml6 (= ${binary:Version}),
+Depends: ${misc:Depends}, libsaml7 (= ${binary:Version}),
  libxmltooling-dev (>= 1.4)
 Suggests: libsaml2-doc (= ${source:Version})
 Conflicts: libsaml-dev
