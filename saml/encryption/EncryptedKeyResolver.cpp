@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2009 Internet2
+ *  Copyright 2001-2010 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,11 @@ const EncryptedKey* opensaml::EncryptedKeyResolver::resolveKey(const EncryptedDa
 
     const vector<EncryptedKey*>& keys=m_ref.getEncryptedKeys();
     for (vector<EncryptedKey*>::const_iterator i=keys.begin(); i!=keys.end(); i++) {
-        if (XMLString::equals(recipient,(*i)->getRecipient()))
+        if ((*i)->getRecipient() == nullptr)
+            return (*i);
+        else if (XMLString::equals(recipient,(*i)->getRecipient()))
             return (*i);
     }
-    return NULL;
+
+    return nullptr;
 }

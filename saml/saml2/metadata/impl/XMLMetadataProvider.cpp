@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2010 Internet2
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,26 @@
  */
 
 #include "internal.h"
+#include "binding/SAMLArtifact.h"
 #include "saml2/metadata/Metadata.h"
 #include "saml2/metadata/MetadataFilter.h"
 #include "saml2/metadata/AbstractMetadataProvider.h"
+#include "saml2/metadata/DiscoverableMetadataProvider.h"
 
+#include <fstream>
+#include <xmltooling/XMLToolingConfig.h>
+#include <xmltooling/io/HTTPResponse.h>
 #include <xmltooling/util/NDC.h>
+#include <xmltooling/util/PathResolver.h>
 #include <xmltooling/util/ReloadableXMLFile.h>
+#include <xmltooling/util/Threads.h>
 #include <xmltooling/validation/ValidatorSuite.h>
+
+#if defined(OPENSAML_LOG4SHIB)
+# include <log4shib/NDC.hh>
+#elif defined(OPENSAML_LOG4CPP)
+# include <log4cpp/NDC.hh>
+#endif
 
 using namespace opensaml::saml2md;
 using namespace xmltooling::logging;
@@ -42,19 +55,38 @@ using namespace std;
 namespace opensaml {
     namespace saml2md {
 
-        class SAML_DLLLOCAL XMLMetadataProvider : public AbstractMetadataProvider, public ReloadableXMLFile
+        class SAML_DLLLOCAL XMLMetadataProvider
+            : public AbstractMetadataProvider, public DiscoverableMetadataProvider, public ReloadableXMLFile
         {
         public:
-            XMLMetadataProvider(const DOMElement* e)
-                : AbstractMetadataProvider(e), ReloadableXMLFile(e, Category::getInstance(SAML_LOGCAT".MetadataProvider.XML")),
-                    m_object(NULL), m_maxCacheDuration(m_reloadInterval) {
-            }
+            XMLMetadataProvider(const DOMElement* e);
+
             virtual ~XMLMetadataProvider() {
+                shutdown();
                 delete m_object;
             }
 
             void init() {
-                load(); // guarantees an exception or the metadata is loaded
+                try {
+                    if (!m_id.empty()) {
+                        string threadid("[");
+                        threadid += m_id + ']';
+                        logging::NDC::push(threadid);
+                    }
+                    background_load();
+                    startup();
+                }
+                catch (...) {
+                    startup();
+                    if (!m_id.empty()) {
+                        logging::NDC::pop();
+                    }
+                    throw;
+                }
+
+                if (!m_id.empty()) {
+                    logging::NDC::pop();
+                }
             }
 
             const XMLObject* getMetadata() const {
@@ -62,14 +94,19 @@ namespace opensaml {
             }
 
         protected:
-            pair<bool,DOMElement*> load();
+            pair<bool,DOMElement*> load(bool backup);
+            pair<bool,DOMElement*> background_load();
 
         private:
             using AbstractMetadataProvider::index;
-            void index();
+            void index(time_t& validUntil);
+            time_t computeNextRefresh();
 
             XMLObject* m_object;
-            time_t m_maxCacheDuration;
+            bool m_discoveryFeed;
+            double m_refreshDelayFactor;
+            unsigned int m_backoffFactor;
+            time_t m_minRefreshDelay,m_maxRefreshDelay,m_lastValidUntil;
         };
 
         MetadataProvider* SAML_DLLLOCAL XMLMetadataProviderFactory(const DOMElement* const & e)
@@ -77,6 +114,9 @@ namespace opensaml {
             return new XMLMetadataProvider(e);
         }
 
+        static const XMLCh discoveryFeed[] =        UNICODE_LITERAL_13(d,i,s,c,o,v,e,r,y,F,e,e,d);
+        static const XMLCh minRefreshDelay[] =      UNICODE_LITERAL_15(m,i,n,R,e,f,r,e,s,h,D,e,l,a,y);
+        static const XMLCh refreshDelayFactor[] =   UNICODE_LITERAL_18(r,e,f,r,e,s,h,D,e,l,a,y,F,a,c,t,o,r);
     };
 };
 
@@ -84,13 +124,44 @@ namespace opensaml {
     #pragma warning( pop )
 #endif
 
-pair<bool,DOMElement*> XMLMetadataProvider::load()
+XMLMetadataProvider::XMLMetadataProvider(const DOMElement* e)
+    : MetadataProvider(e), AbstractMetadataProvider(e), DiscoverableMetadataProvider(e),
+        ReloadableXMLFile(e, Category::getInstance(SAML_LOGCAT".MetadataProvider.XML"), false),
+        m_object(nullptr), m_discoveryFeed(XMLHelper::getAttrBool(e, true, discoveryFeed)),
+        m_refreshDelayFactor(0.75), m_backoffFactor(1),
+        m_minRefreshDelay(XMLHelper::getAttrInt(e, 600, minRefreshDelay)),
+        m_maxRefreshDelay(m_reloadInterval), m_lastValidUntil(SAMLTIME_MAX)
 {
-    // Load from source using base class.
-    pair<bool,DOMElement*> raw = ReloadableXMLFile::load();
+    if (!m_local && m_maxRefreshDelay) {
+        const XMLCh* setting = e->getAttributeNS(nullptr, refreshDelayFactor);
+        if (setting && *setting) {
+            auto_ptr_char delay(setting);
+            m_refreshDelayFactor = atof(delay.get());
+            if (m_refreshDelayFactor <= 0.0 || m_refreshDelayFactor >= 1.0) {
+                m_log.error("invalid refreshDelayFactor setting, using default");
+                m_refreshDelayFactor = 0.75;
+            }
+        }
+
+        if (m_minRefreshDelay > m_maxRefreshDelay) {
+            m_log.warn("minRefreshDelay setting exceeds maxRefreshDelay/reloadInterval setting, lowering to match it");
+            m_minRefreshDelay = m_maxRefreshDelay;
+        }
+    }
+}
+
+pair<bool,DOMElement*> XMLMetadataProvider::load(bool backup)
+{
+    if (!backup) {
+        // Lower the refresh rate in case of an error.
+        m_reloadInterval = m_minRefreshDelay;
+    }
+
+    // Call the base class to load/parse the appropriate XML resource.
+    pair<bool,DOMElement*> raw = ReloadableXMLFile::load(backup);
 
     // If we own it, wrap it for now.
-    XercesJanitor<DOMDocument> docjanitor(raw.first ? raw.second->getOwnerDocument() : NULL);
+    XercesJanitor<DOMDocument> docjanitor(raw.first ? raw.second->getOwnerDocument() : nullptr);
 
     // Unmarshall objects, binding the document.
     auto_ptr<XMLObject> xmlObject(XMLObjectBuilder::buildOneFromElement(raw.second, true));
@@ -110,44 +181,142 @@ pair<bool,DOMElement*> XMLMetadataProvider::load()
         throw MetadataException("Metadata instance failed manual validation checking.");
     }
 
-    doFilters(*xmlObject.get());
-    xmlObject->releaseThisAndChildrenDOM();
-    xmlObject->setDocument(NULL);
+    // This is the best place to take a backup, since it's superficially "correct" metadata.
+    string backupKey;
+    if (!backup && !m_backing.empty()) {
+        // We compute a random filename extension to the "real" location.
+        SAMLConfig::getConfig().generateRandomBytes(backupKey, 2);
+        backupKey = m_backing + '.' + SAMLArtifact::toHex(backupKey);
+        m_log.debug("backing up remote metadata resource to (%s)", backupKey.c_str());
+        try {
+            ofstream backer(backupKey.c_str());
+            backer << *(raw.second->getOwnerDocument());
+        }
+        catch (exception& ex) {
+            m_log.crit("exception while backing up metadata: %s", ex.what());
+            backupKey.erase();
+        }
+    }
 
-    // Swap it in.
-    bool changed = m_object!=NULL;
+    try {
+        doFilters(*xmlObject.get());
+    }
+    catch (exception&) {
+        if (!backupKey.empty())
+            remove(backupKey.c_str());
+        throw;
+    }
+
+    if (!backupKey.empty()) {
+        m_log.debug("committing backup file to permanent location (%s)", m_backing.c_str());
+        Locker locker(getBackupLock());
+        remove(m_backing.c_str());
+        if (rename(backupKey.c_str(), m_backing.c_str()) != 0)
+            m_log.crit("unable to rename metadata backup file");
+        preserveCacheTag();
+    }
+
+    xmlObject->releaseThisAndChildrenDOM();
+    xmlObject->setDocument(nullptr);
+
+    // Swap it in after acquiring write lock if necessary.
+    if (m_lock)
+        m_lock->wrlock();
+    SharedLock locker(m_lock, false);
+    bool changed = m_object!=nullptr;
     delete m_object;
     m_object = xmlObject.release();
-    index();
+    m_lastValidUntil = SAMLTIME_MAX;
+    index(m_lastValidUntil);
+    if (m_discoveryFeed)
+        generateFeed();
     if (changed)
         emitChangeEvent();
 
-    // If a remote resource, reduce the reload interval if cacheDuration is set.
-    if (!m_local) {
-        const CacheableSAMLObject* cacheable = dynamic_cast<const CacheableSAMLObject*>(m_object);
-        if (cacheable && cacheable->getCacheDuration() && cacheable->getCacheDurationEpoch() < m_maxCacheDuration)
-            m_reloadInterval = cacheable->getCacheDurationEpoch();
-        else
-            m_reloadInterval = m_maxCacheDuration;
+    // Tracking cacheUntil through the tree is TBD, but
+    // validUntil is the tightest interval amongst the children.
+
+    // If a remote resource that's monitored, adjust the reload interval.
+    if (!backup && !m_local && m_lock) {
+        m_backoffFactor = 1;
+        m_reloadInterval = computeNextRefresh();
+        m_log.info("adjusted reload interval to %d seconds", m_reloadInterval);
     }
 
-    return make_pair(false,(DOMElement*)NULL);
+    m_loaded = true;
+    return make_pair(false,(DOMElement*)nullptr);
 }
 
-void XMLMetadataProvider::index()
+pair<bool,DOMElement*> XMLMetadataProvider::background_load()
 {
-    time_t exp = SAMLTIME_MAX;
+    try {
+        return load(false);
+    }
+    catch (long& ex) {
+        if (ex == HTTPResponse::XMLTOOLING_HTTP_STATUS_NOTMODIFIED) {
+            // Unchanged document, so re-establish previous refresh interval.
+            m_reloadInterval = computeNextRefresh();
+            m_log.info("remote resource (%s) unchanged, adjusted reload interval to %u seconds", m_source.c_str(), m_reloadInterval);
+        }
+        else {
+            // Any other status code, just treat as an error.
+            m_reloadInterval = m_minRefreshDelay * m_backoffFactor++;
+            if (m_reloadInterval > m_maxRefreshDelay)
+                m_reloadInterval = m_maxRefreshDelay;
+            m_log.warn("adjusted reload interval to %u seconds", m_reloadInterval);
+        }
+        if (!m_loaded && !m_backing.empty())
+            return load(true);
+        throw;
+    }
+    catch (exception&) {
+        if (!m_local) {
+            m_reloadInterval = m_minRefreshDelay * m_backoffFactor++;
+            if (m_reloadInterval > m_maxRefreshDelay)
+                m_reloadInterval = m_maxRefreshDelay;
+            m_log.warn("adjusted reload interval to %u seconds", m_reloadInterval);
+            if (!m_loaded && !m_backing.empty())
+                return load(true);
+        }
+        throw;
+    }
+}
 
+time_t XMLMetadataProvider::computeNextRefresh()
+{
+    time_t now = time(nullptr);
+
+    // If some or all of the metadata is already expired, reload after the minimum.
+    if (m_lastValidUntil < now) {
+        return m_minRefreshDelay;
+    }
+    else {
+        // Compute the smaller of the validUntil / cacheDuration constraints.
+        time_t ret = m_lastValidUntil - now;
+        const CacheableSAMLObject* cacheable = dynamic_cast<const CacheableSAMLObject*>(m_object);
+        if (cacheable && cacheable->getCacheDuration())
+            ret = min(ret, cacheable->getCacheDurationEpoch());
+            
+        // Adjust for the delay factor.
+        ret *= m_refreshDelayFactor;
+
+        // Bound by max and min.
+        if (ret > m_maxRefreshDelay)
+            return m_maxRefreshDelay;
+        else if (ret < m_minRefreshDelay)
+            return m_minRefreshDelay;
+
+        return ret;
+    }
+}
+
+void XMLMetadataProvider::index(time_t& validUntil)
+{
     clearDescriptorIndex();
     EntitiesDescriptor* group=dynamic_cast<EntitiesDescriptor*>(m_object);
     if (group) {
-        if (!m_local && group->getCacheDuration())
-            exp = time(NULL) + group->getCacheDurationEpoch();
-        AbstractMetadataProvider::index(group, exp);
+        indexGroup(group, validUntil);
         return;
     }
-    EntityDescriptor* site=dynamic_cast<EntityDescriptor*>(m_object);
-    if (!m_local && site->getCacheDuration())
-        exp = time(NULL) + site->getCacheDurationEpoch();
-    AbstractMetadataProvider::index(site, exp);
+    indexEntity(dynamic_cast<EntityDescriptor*>(m_object), validUntil);
 }

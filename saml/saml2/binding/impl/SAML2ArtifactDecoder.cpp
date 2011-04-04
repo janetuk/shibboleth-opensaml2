@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2009 Internet2
+ *  Copyright 2001-2010 Internet2
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 /**
  * SAML2ArtifactDecoder.cpp
  *
- * SAML 2.0 Artifact binding message decoder
+ * SAML 2.0 Artifact binding message decoder.
  */
 
 #include "internal.h"
@@ -91,14 +91,14 @@ XMLObject* SAML2ArtifactDecoder::decode(
         throw BindingException("Artifact binding requires ArtifactResolver and MetadataProvider implementations be supplied.");
 
     // Import the artifact.
-    SAMLArtifact* artifact=NULL;
+    SAMLArtifact* artifact=nullptr;
     try {
         log.debug("processing encoded artifact (%s)", SAMLart);
 
         // Check replay.
         ReplayCache* replayCache = XMLToolingConfig::getConfig().getReplayCache();
         if (replayCache) {
-            if (!replayCache->check("SAML2Artifact", SAMLart, time(NULL) + (2*XMLToolingConfig::getConfig().clock_skew_secs))) {
+            if (!replayCache->check("SAML2Artifact", SAMLart, time(nullptr) + (2*XMLToolingConfig::getConfig().clock_skew_secs))) {
                 log.error("replay detected of artifact (%s)", SAMLart);
                 throw BindingException("Rejecting replayed artifact ($1).", params(1,SAMLart));
             }
@@ -116,8 +116,9 @@ XMLObject* SAML2ArtifactDecoder::decode(
     // Check the type.
     auto_ptr<SAML2Artifact> artifact2(dynamic_cast<SAML2Artifact*>(artifact));
     if (!artifact2.get()) {
-        throw BindingException("Artifact binding requires SAML 2.0 artifact.");
         delete artifact;
+        log.error("wrong artifact type");
+        throw BindingException("Artifact binding requires SAML 2.0 artifact.");
     }
 
     log.debug("attempting to determine source of artifact...");
@@ -158,8 +159,10 @@ XMLObject* SAML2ArtifactDecoder::decode(
 
     // Now extract details from the payload and check that message.
     XMLObject* payload = response->getPayload();
-    if (!payload)
+    if (!payload) {
+        log.error("ArtifactResponse message did not contain a protocol message");
         throw BindingException("ArtifactResponse message did not contain a protocol message.");
+    }
     extractMessageDetails(*payload, genericRequest, samlconstants::SAML20P_NS, policy);
     policy.evaluate(*payload, &genericRequest);
 

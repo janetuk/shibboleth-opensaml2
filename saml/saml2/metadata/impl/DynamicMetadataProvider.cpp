@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2009 Internet2
+ *  Copyright 2001-2010 Internet2
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,10 @@ using namespace std;
 #  define min(a,b)            (((a) < (b)) ? (a) : (b))
 # endif
 
-static const XMLCh maxCacheDuration[] = UNICODE_LITERAL_16(m,a,x,C,a,c,h,e,D,u,r,a,t,i,o,n);
-static const XMLCh validate[] =         UNICODE_LITERAL_8(v,a,l,i,d,a,t,e);
+static const XMLCh maxCacheDuration[] =     UNICODE_LITERAL_16(m,a,x,C,a,c,h,e,D,u,r,a,t,i,o,n);
+static const XMLCh minCacheDuration[] =     UNICODE_LITERAL_16(m,i,n,C,a,c,h,e,D,u,r,a,t,i,o,n);
+static const XMLCh refreshDelayFactor[] =   UNICODE_LITERAL_18(r,e,f,r,e,s,h,D,e,l,a,y,F,a,c,t,o,r);
+static const XMLCh validate[] =             UNICODE_LITERAL_8(v,a,l,i,d,a,t,e);
 
 namespace opensaml {
     namespace saml2md {
@@ -56,15 +58,30 @@ namespace opensaml {
 };
 
 DynamicMetadataProvider::DynamicMetadataProvider(const DOMElement* e)
-    : AbstractMetadataProvider(e), m_maxCacheDuration(28800), m_lock(RWLock::create())
+    : AbstractMetadataProvider(e),
+      m_validate(XMLHelper::getAttrBool(e, false, validate)),
+        m_lock(RWLock::create()),
+        m_refreshDelayFactor(0.75),
+        m_minCacheDuration(XMLHelper::getAttrInt(e, 600, minCacheDuration)),
+        m_maxCacheDuration(XMLHelper::getAttrInt(e, 28800, maxCacheDuration))
 {
-    const XMLCh* flag=e ? e->getAttributeNS(NULL,validate) : NULL;
-    m_validate=(XMLString::equals(flag,xmlconstants::XML_TRUE) || XMLString::equals(flag,xmlconstants::XML_ONE));
-    flag = e ? e->getAttributeNS(NULL,maxCacheDuration) : NULL;
-    if (flag && *flag) {
-        m_maxCacheDuration = XMLString::parseInt(flag);
-        if (m_maxCacheDuration == 0)
-            m_maxCacheDuration = 28800;
+    if (m_minCacheDuration > m_maxCacheDuration) {
+        Category::getInstance(SAML_LOGCAT".MetadataProvider.Dynamic").error(
+            "minCacheDuration setting exceeds maxCacheDuration setting, lowering to match it"
+            );
+        m_minCacheDuration = m_maxCacheDuration;
+    }
+
+    const XMLCh* delay = e ? e->getAttributeNS(nullptr, refreshDelayFactor) : nullptr;
+    if (delay && *delay) {
+        auto_ptr_char temp(delay);
+        m_refreshDelayFactor = atof(temp.get());
+        if (m_refreshDelayFactor <= 0.0 || m_refreshDelayFactor >= 1.0) {
+            Category::getInstance(SAML_LOGCAT".MetadataProvider.Dynamic").error(
+                "invalid refreshDelayFactor setting, using default"
+                );
+            m_refreshDelayFactor = 0.75;
+        }
     }
 }
 
@@ -97,14 +114,42 @@ void DynamicMetadataProvider::init()
 
 pair<const EntityDescriptor*,const RoleDescriptor*> DynamicMetadataProvider::getEntityDescriptor(const Criteria& criteria) const
 {
-    // Check cache while holding the read lock.
+    Category& log = Category::getInstance(SAML_LOGCAT".MetadataProvider.Dynamic");
+
+    // First we check the underlying cache.
     pair<const EntityDescriptor*,const RoleDescriptor*> entity = AbstractMetadataProvider::getEntityDescriptor(criteria);
-    if (entity.first)   // even if the role isn't found, we're done
-        return entity;
+
+    // Check to see if we're within the caching interval for a lookup of this entity.
+    // This applies *even if we didn't get a hit* because the cache map tracks failed
+    // lookups also, to prevent constant reload attempts.
+    cachemap_t::iterator cit;
+    if (entity.first) {
+        cit = m_cacheMap.find(entity.first->getEntityID());
+    }
+    else if (criteria.entityID_ascii) {
+        auto_ptr_XMLCh widetemp(criteria.entityID_ascii);
+        cit = m_cacheMap.find(widetemp.get());
+    }
+    else if (criteria.entityID_unicode) {
+        cit = m_cacheMap.find(criteria.entityID_unicode);
+    }
+    else if (criteria.artifact) {
+        auto_ptr_XMLCh widetemp(criteria.artifact->getSource().c_str());
+        cit = m_cacheMap.find(widetemp.get());
+    }
+    else {
+        cit = m_cacheMap.end();
+    }
+    if (cit != m_cacheMap.end()) {
+        if (time(nullptr) <= cit->second)
+            return entity;
+        m_cacheMap.erase(cit);
+    }
 
     string name;
-    if (criteria.entityID_ascii)
+    if (criteria.entityID_ascii) {
         name = criteria.entityID_ascii;
+    }
     else if (criteria.entityID_unicode) {
         auto_ptr_char temp(criteria.entityID_unicode);
         name = temp.get();
@@ -112,11 +157,14 @@ pair<const EntityDescriptor*,const RoleDescriptor*> DynamicMetadataProvider::get
     else if (criteria.artifact) {
         name = criteria.artifact->getSource();
     }
-    else
+    else {
         return entity;
+    }
 
-    Category& log = Category::getInstance(SAML_LOGCAT".MetadataProvider.Dynamic");
-    log.info("resolving metadata for (%s)", name.c_str());
+    if (entity.first)
+        log.info("metadata for (%s) is beyond caching interval, attempting to refresh", name.c_str());
+    else
+        log.info("resolving metadata for (%s)", name.c_str());
 
     try {
         // Try resolving it.
@@ -147,12 +195,27 @@ pair<const EntityDescriptor*,const RoleDescriptor*> DynamicMetadataProvider::get
         // Filter it, which may throw.
         doFilters(*entity2.get());
 
-        time_t now = time(NULL);
-
+        time_t now = time(nullptr);
         if (entity2->getValidUntil() && entity2->getValidUntilEpoch() < now + 60)
             throw MetadataException("Metadata was already invalid at the time of retrieval.");
 
         log.info("caching resolved metadata for (%s)", name.c_str());
+
+        // Compute the smaller of the validUntil / cacheDuration constraints.
+        time_t cacheExp = (entity2->getValidUntil() ? entity2->getValidUntilEpoch() : SAMLTIME_MAX) - now;
+        if (entity2->getCacheDuration())
+            cacheExp = min(cacheExp, entity2->getCacheDurationEpoch());
+            
+        // Adjust for the delay factor.
+        cacheExp *= m_refreshDelayFactor;
+
+        // Bound by max and min.
+        if (cacheExp > m_maxCacheDuration)
+            cacheExp = m_maxCacheDuration;
+        else if (cacheExp < m_minCacheDuration)
+            cacheExp = m_minCacheDuration;
+
+        log.info("next refresh of metadata for (%s) no sooner than %u seconds", name.c_str(), cacheExp);
 
         // Upgrade our lock so we can cache the new metadata.
         m_lock->unlock();
@@ -161,12 +224,12 @@ pair<const EntityDescriptor*,const RoleDescriptor*> DynamicMetadataProvider::get
         // Notify observers.
         emitChangeEvent();
 
+        // Record the proper refresh time.
+        m_cacheMap[entity2->getEntityID()] = now + cacheExp;
+
         // Make sure we clear out any existing copies, including stale metadata or if somebody snuck in.
-        time_t exp = m_maxCacheDuration;
-        if (entity2->getCacheDuration())
-            exp = min(m_maxCacheDuration, entity2->getCacheDurationEpoch());
-        exp += now;
-        index(entity2.release(), exp, true);
+        cacheExp = SAMLTIME_MAX;
+        indexEntity(entity2.release(), cacheExp, true);
 
         // Downgrade back to a read lock.
         m_lock->unlock();
@@ -174,6 +237,18 @@ pair<const EntityDescriptor*,const RoleDescriptor*> DynamicMetadataProvider::get
     }
     catch (exception& e) {
         log.error("error while resolving entityID (%s): %s", name.c_str(), e.what());
+        // This will return entries that are beyond their cache period,
+        // but not beyond their validity unless that criteria option was set.
+        // If it is a cache-expired entry, bump the cache period to prevent retries.
+        if (entity.first)
+            m_cacheMap[entity.first->getEntityID()] = time(nullptr) + m_minCacheDuration;
+        else if (criteria.entityID_unicode)
+            m_cacheMap[criteria.entityID_unicode] = time(nullptr) + m_minCacheDuration;
+        else {
+            auto_ptr_XMLCh widetemp(name.c_str());
+            m_cacheMap[widetemp.get()] = time(nullptr) + m_minCacheDuration;
+        }
+        log.warn("next refresh of metadata for (%s) no sooner than %u seconds", name.c_str(), m_minCacheDuration);
         return entity;
     }
 
@@ -196,7 +271,7 @@ EntityDescriptor* DynamicMetadataProvider::resolve(const Criteria& criteria) con
     }
 
     try {
-        DOMDocument* doc=NULL;
+        DOMDocument* doc=nullptr;
         auto_ptr_XMLCh widenit(name.c_str());
         URLInputSource src(widenit.get());
         Wrapper4InputSource dsrc(&src,false);

@@ -46,6 +46,10 @@ schemafiles = \
 	sstc-saml-attribute-ext.xsd \
 	sstc-saml-delegation.xsd \
 	sstc-saml-metadata-ext-query.xsd \
+	sstc-saml-metadata-algsupport-v1.0.xsd \
+	sstc-saml-metadata-ui-v1.0.xsd \
+	sstc-saml-idp-discovery.xsd \
+	sstc-request-initiation.xsd \
 	sstc-saml-protocol-ext-thirdparty.xsd
 
 pkgxml_DATA = \

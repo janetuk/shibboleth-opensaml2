@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2009 Internet2
+ *  Copyright 2001-2010 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,21 +55,24 @@ namespace opensaml {
         public:
             SAML2ArtifactEncoder(const DOMElement* e, const XMLCh* ns);
             virtual ~SAML2ArtifactEncoder() {}
-            
+
+            const XMLCh* getProtocolFamily() const {
+                return samlconstants::SAML20P_NS;
+            }
+
             long encode(
                 GenericResponse& genericResponse,
                 XMLObject* xmlObject,
                 const char* destination,
-                const EntityDescriptor* recipient=NULL,
-                const char* relayState=NULL,
-                const ArtifactGenerator* artifactGenerator=NULL,
-                const Credential* credential=NULL,
-                const XMLCh* signatureAlg=NULL,
-                const XMLCh* digestAlg=NULL
+                const EntityDescriptor* recipient=nullptr,
+                const char* relayState=nullptr,
+                const ArtifactGenerator* artifactGenerator=nullptr,
+                const Credential* credential=nullptr,
+                const XMLCh* signatureAlg=nullptr,
+                const XMLCh* digestAlg=nullptr
                 ) const;
         
         private:
-            bool m_post;
             string m_template;
         };
 
@@ -83,18 +86,12 @@ namespace opensaml {
     static const XMLCh postArtifact[] = UNICODE_LITERAL_12(p,o,s,t,A,r,t,i,f,a,c,t);
 };
 
-SAML2ArtifactEncoder::SAML2ArtifactEncoder(const DOMElement* e, const XMLCh* ns) : m_post(false)
+SAML2ArtifactEncoder::SAML2ArtifactEncoder(const DOMElement* e, const XMLCh* ns)
 {
-    if (e) {
-        const XMLCh* flag = e->getAttributeNS(ns, postArtifact);
-        m_post = (flag && (*flag==chLatin_t || *flag==chDigit_1));
-        if (m_post) {
-            auto_ptr_char t(e->getAttributeNS(ns, _template));
-            if (t.get() && *t.get()) {
-                m_template = t.get();
-                XMLToolingConfig::getConfig().getPathResolver()->resolve(m_template, PathResolver::XMLTOOLING_CFG_FILE);
-            }
-        }
+    if (XMLHelper::getAttrBool(e, false, postArtifact, ns)) {
+        m_template = XMLHelper::getAttrString(e, "bindingTemplate.html", _template, ns);
+        if (!m_template.empty())
+            XMLToolingConfig::getConfig().getPathResolver()->resolve(m_template, PathResolver::XMLTOOLING_CFG_FILE);
     }
 }
 
@@ -125,7 +122,7 @@ long SAML2ArtifactEncoder::encode(
     if (xmlObject->getParent())
         throw BindingException("Cannot encode XML content with parent.");
 
-    StatusResponseType* response = NULL;
+    StatusResponseType* response = nullptr;
     RequestAbstractType* request = dynamic_cast<RequestAbstractType*>(xmlObject);
     if (!request) {
         response = dynamic_cast<StatusResponseType*>(xmlObject);
@@ -140,7 +137,7 @@ long SAML2ArtifactEncoder::encode(
     // Obtain a fresh artifact.
     if (!artifactGenerator)
         throw BindingException("SAML 2.0 HTTP-Artifact Encoder requires an ArtifactGenerator instance.");
-    auto_ptr_char recipientID(recipient ? recipient->getEntityID() : NULL);
+    auto_ptr_char recipientID(recipient ? recipient->getEntityID() : nullptr);
     log.debug("obtaining new artifact for relying party (%s)", recipientID.get() ? recipientID.get() : "unknown");
     auto_ptr<SAMLArtifact> artifact(artifactGenerator->generateSAML2Artifact(recipient));
 
@@ -165,7 +162,7 @@ long SAML2ArtifactEncoder::encode(
             
             // Sign response while marshalling.
             vector<Signature*> sigs(1,sig);
-            xmlObject->marshall((DOMDocument*)NULL,&sigs,credential);
+            xmlObject->marshall((DOMDocument*)nullptr,&sigs,credential);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2009 Internet2
+ *  Copyright 2009-2010 Internet2
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ namespace opensaml {
         "</PolicyRule>";
 };
 
-ConditionsRule::ConditionsRule(const DOMElement* e) : m_doc(NULL)
+ConditionsRule::ConditionsRule(const DOMElement* e) : m_doc(nullptr)
 {
     Category& log=Category::getInstance(SAML_LOGCAT".SecurityPolicyRule.Conditions");
 
@@ -88,11 +88,11 @@ ConditionsRule::ConditionsRule(const DOMElement* e) : m_doc(NULL)
 
     e = XMLHelper::getFirstChildElement(e, Rule);
     while (e) {
-        auto_ptr_char temp(e->getAttributeNS(NULL, type));
-        if (temp.get() && *temp.get()) {
+        string t = XMLHelper::getAttrString(e, nullptr, type);
+        if (!t.empty()) {
             try {
-                log.info("building SecurityPolicyRule of type %s", temp.get());
-                m_rules.push_back(SAMLConfig::getConfig().SecurityPolicyRuleManager.newPlugin(temp.get(),e));
+                log.info("building SecurityPolicyRule of type %s", t.c_str());
+                m_rules.push_back(SAMLConfig::getConfig().SecurityPolicyRuleManager.newPlugin(t.c_str(), e));
             }
             catch (exception& ex) {
                 log.crit("error building SecurityPolicyRule: %s", ex.what());

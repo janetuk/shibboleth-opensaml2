@@ -1,5 +1,5 @@
 /*
- *  Copyright 2009 Internet2
+ *  Copyright 2009-2010 Internet2
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 /**
  * BearerConfirmationRule.cpp
  *
- * SAML 2.0 Bearer SubjectConfirmation SecurityPolicyRule
+ * SAML 2.0 Bearer SubjectConfirmation SecurityPolicyRule.
  */
 
 #include "internal.h"
@@ -66,16 +66,12 @@ namespace opensaml {
     };
 };
 
-BearerConfirmationRule::BearerConfirmationRule(const DOMElement* e) : m_validity(true), m_recipient(true), m_correlation(true), m_fatal(true)
+BearerConfirmationRule::BearerConfirmationRule(const DOMElement* e)
+    : m_validity(XMLHelper::getAttrBool(e, true, checkValidity)),
+        m_recipient(XMLHelper::getAttrBool(e, true, checkRecipient)),
+        m_correlation(XMLHelper::getAttrBool(e, true, checkCorrelation)),
+        m_fatal(XMLHelper::getAttrBool(e, true, missingFatal))
 {
-    const XMLCh* flag = e ? e->getAttributeNS(NULL, checkValidity) : NULL;
-    m_validity = (!flag || (*flag != chLatin_f && *flag != chDigit_0));
-    flag = e ? e->getAttributeNS(NULL, checkRecipient) : NULL;
-    m_recipient = (!flag || (*flag != chLatin_f && *flag != chDigit_0));
-    flag = e ? e->getAttributeNS(NULL, checkCorrelation) : NULL;
-    m_correlation = (!flag || (*flag != chLatin_f && *flag != chDigit_0));
-    flag = e ? e->getAttributeNS(NULL, missingFatal) : NULL;
-    m_fatal = (!flag || (*flag != chLatin_f && *flag != chDigit_0));
 }
 
 bool BearerConfirmationRule::evaluate(const XMLObject& message, const GenericRequest* request, opensaml::SecurityPolicy& policy) const
@@ -100,7 +96,7 @@ bool BearerConfirmationRule::evaluate(const XMLObject& message, const GenericReq
                     if (httpRequest && httpRequest->getRequestURL()) {
                         string dest = httpRequest->getRequestURL();
                         auto_ptr_XMLCh destination(dest.substr(0,dest.find('?')).c_str());
-                        if (!XMLString::equals(destination.get(), data ? data->getRecipient() : NULL)) {
+                        if (!XMLString::equals(destination.get(), data ? data->getRecipient() : nullptr)) {
                             msg = "bearer confirmation failed with recipient mismatch";
                             continue;
                         }
@@ -108,7 +104,7 @@ bool BearerConfirmationRule::evaluate(const XMLObject& message, const GenericReq
                 }
 
                 if (m_correlation && policy.getCorrelationID() && *(policy.getCorrelationID())) {
-                    if (!XMLString::equals(policy.getCorrelationID(), data ? data->getInResponseTo() : NULL)) {
+                    if (!XMLString::equals(policy.getCorrelationID(), data ? data->getInResponseTo() : nullptr)) {
                         msg = "bearer confirmation failed with request correlation mismatch";
                         continue;
                     }

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2009 Internet2
+ *  Copyright 2001-2010 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,11 @@ namespace opensaml {
     class SAML_API SAMLArtifact;
     class SAML_DLLLOCAL ArtifactMappings;
     
+#if defined (_MSC_VER)
+    #pragma warning( push )
+    #pragma warning( disable : 4251 )
+#endif
+
     /**
      * Helper class for SAMLArtifact mapping and retrieval.
      */
@@ -49,19 +54,19 @@ namespace opensaml {
         /**
          * Creates a map on top of a particular storage service context, or in-memory.
          * 
-         * @param storage       pointer to a StorageService, or NULL to keep map in memory
+         * @param storage       pointer to a StorageService, or nullptr to keep map in memory
          * @param context       optional label for storage context
          * @param artifactTTL   time to live in seconds, determines how long artifact remains valid
          */
-        ArtifactMap(xmltooling::StorageService* storage=NULL, const char* context=NULL, unsigned int artifactTTL=180);
+        ArtifactMap(xmltooling::StorageService* storage=nullptr, const char* context=nullptr, unsigned int artifactTTL=180);
 
         /**
          * Creates a map on top of a particular storage service context, or in-memory.
          * 
          * @param e         root of a DOM with optional XML attributes for context and artifactTTL
-         * @param storage   pointer to a StorageService, or NULL to keep map in memory
+         * @param storage   pointer to a StorageService, or nullptr to keep map in memory
          */
-        ArtifactMap(const xercesc::DOMElement* e, xmltooling::StorageService* storage=NULL);
+        ArtifactMap(const xercesc::DOMElement* e, xmltooling::StorageService* storage=nullptr);
 
         virtual ~ArtifactMap();
         
@@ -76,7 +81,7 @@ namespace opensaml {
          * @param relyingParty  entityID of the party authorized to resolve the artifact
          * @return the generated artifact
          */
-        virtual void storeContent(xmltooling::XMLObject* content, const SAMLArtifact* artifact, const char* relyingParty=NULL);
+        virtual void storeContent(xmltooling::XMLObject* content, const SAMLArtifact* artifact, const char* relyingParty=nullptr);
         
         /**
          * Retrieves the XML content represented by the artifact. The identity of the
@@ -88,7 +93,7 @@ namespace opensaml {
          * @param relyingParty  entityID of the party trying to resolve the artifact
          * @return the XML content
          */
-        virtual xmltooling::XMLObject* retrieveContent(const SAMLArtifact* artifact, const char* relyingParty=NULL);
+        virtual xmltooling::XMLObject* retrieveContent(const SAMLArtifact* artifact, const char* relyingParty=nullptr);
 
         /**
          * Retrieves the relying party to whom the artifact was issued.
@@ -104,6 +109,11 @@ namespace opensaml {
         ArtifactMappings* m_mappings;
         unsigned int m_artifactTTL;
     };
+
+#if defined (_MSC_VER)
+    #pragma warning( pop )
+#endif
+
 };
 
 #endif /* __saml_artmap_h__ */
