@@ -15,6 +15,12 @@ opensaml2 (2.4.1-1) UNRELEASED; urgency=low
     - Duplication and line feed fixes for DiscoFeed.
     - Fix reload interval backoff after reload failures
     - Strip whitespace from SAMLRequest URL parameter values
+  * Replace the version of jQuery installed by Doxygen in the
+    documentation package with a symlink to the version supplied by the
+    Debian package and add a dependency.
+  * Update to debhelper compatibility level V8.
+    - Use the autotools-dev debhelper module for config.{sub,guess}.
+    - Use debhelper rule minimization.
   * Update debian/copyright to the current DEP-5 specification.
   * Change to Debian source format 3.0 (quilt).  Force a single Debian
     patch for simplicity since the packaging is maintained in Git using
