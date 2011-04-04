@@ -15,6 +15,7 @@ opensaml2 (2.4.1-1) UNRELEASED; urgency=low
     - Duplication and line feed fixes for DiscoFeed.
     - Fix reload interval backoff after reload failures
     - Strip whitespace from SAMLRequest URL parameter values
+  * Update debian/copyright to the current DEP-5 specification.
   
  -- Russ Allbery <rra@debian.org>  Sun, 03 Apr 2011 17:59:57 -0700
 
