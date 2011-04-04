@@ -15,6 +15,9 @@ opensaml2 (2.4.1-1) UNRELEASED; urgency=low
     - Duplication and line feed fixes for DiscoFeed.
     - Fix reload interval backoff after reload failures
     - Strip whitespace from SAMLRequest URL parameter values
+  * Build-depend on xmltooling 1.4 or later.
+  * Force build dependency on xml-security-c 1.6 or later for consistent
+    build results.
   * Replace the version of jQuery installed by Doxygen in the
     documentation package with a symlink to the version supplied by the
     Debian package and add a dependency.
