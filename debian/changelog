@@ -31,6 +31,7 @@ opensaml2 (2.4.1-1) UNRELEASED; urgency=low
   * Change to Debian source format 3.0 (quilt).  Force a single Debian
     patch for simplicity since the packaging is maintained in Git using
     branches, and include a patch header explaining why.
+  * Update standards version to 3.9.1 (no changes required).
   
  -- Russ Allbery <rra@debian.org>  Sun, 03 Apr 2011 17:59:57 -0700
 
