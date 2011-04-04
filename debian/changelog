@@ -16,6 +16,9 @@ opensaml2 (2.4.1-1) UNRELEASED; urgency=low
     - Fix reload interval backoff after reload failures
     - Strip whitespace from SAMLRequest URL parameter values
   * Update debian/copyright to the current DEP-5 specification.
+  * Change to Debian source format 3.0 (quilt).  Force a single Debian
+    patch for simplicity since the packaging is maintained in Git using
+    branches, and include a patch header explaining why.
   
  -- Russ Allbery <rra@debian.org>  Sun, 03 Apr 2011 17:59:57 -0700
 
