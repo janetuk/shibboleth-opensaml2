@@ -1,4 +1,4 @@
-opensaml2 (2.4.1-1) UNRELEASED; urgency=low
+opensaml2 (2.4.1-1) unstable; urgency=low
 
   * New upstream release.
     - Don't download remote metadata if it hasn't changed
@@ -35,7 +35,7 @@ opensaml2 (2.4.1-1) UNRELEASED; urgency=low
     branches, and include a patch header explaining why.
   * Update standards version to 3.9.1 (no changes required).
 
- -- Russ Allbery <rra@debian.org>  Sun, 03 Apr 2011 17:59:57 -0700
+ -- Russ Allbery <rra@debian.org>  Sun, 03 Apr 2011 18:57:10 -0700
 
 opensaml2 (2.3-2) unstable; urgency=low
 
