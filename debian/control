@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Debian Shib Team <pkg-shibboleth-devel@lists.alioth.debian.org>
 Uploaders: Russ Allbery <rra@debian.org>, Ferenc Wagner <wferi@niif.hu>
 Build-Depends: debhelper (>= 8), autotools-dev (>= 20100122.1~), doxygen,
- liblog4cpp5-dev, libssl-dev, libxerces-c-dev (>= 3.0.1-2~),
+ graphviz, liblog4cpp5-dev, libssl-dev, libxerces-c-dev (>= 3.0.1-2~),
  libxml-security-c-dev (>= 1.6), libxmltooling-dev (>= 1.4), pkg-config
 Standards-Version: 3.8.4
 Homepage: https://spaces.internet2.edu/display/OpenSAML/Home

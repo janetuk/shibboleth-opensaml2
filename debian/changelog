@@ -20,6 +20,7 @@ opensaml2 (2.4.1-1) UNRELEASED; urgency=low
     build results.
   * Add build dependency on pkg-config, which upstream now uses to find
     the SSL libraries.
+  * Add build dependency on graphviz for better API documentation.
   * Replace the version of jQuery installed by Doxygen in the
     documentation package with a symlink to the version supplied by the
     Debian package and add a dependency.
