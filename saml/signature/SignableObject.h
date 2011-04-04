@@ -43,19 +43,26 @@ namespace opensaml {
         /**
          * Returns the enveloped Signature from the object.
          *
-         * @return the enveloped Signature, or NULL
+         * @return the enveloped Signature, or nullptr
          */
         virtual xmlsignature::Signature* getSignature() const=0;
 
         /**
          * Sets an enveloped Signature in the object.
          *
-         * @param sig the enveloped Signature, or NULL
+         * @param sig the enveloped Signature, or nullptr
          */
         virtual void setSignature(xmlsignature::Signature* sig)=0;
 
     protected:
         SignableObject();
+
+        /**
+         * Search the object for non-visible namespaces, and pin them
+         * on the root of the object where necessary, adding them to
+         * the inclusive prefix list for signing purposes.
+         */
+        void declareNonVisibleNamespaces() const;
     };
 
 };

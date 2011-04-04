@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2009 Internet2
+ *  Copyright 2001-2010 Internet2
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@
 #include <xercesc/util/XercesDefs.hpp>
 
 /**
- * SAML related constants.
+ * SAML-related constants.
  */
 namespace samlconstants {
 
@@ -130,17 +130,41 @@ namespace samlconstants {
     /** SAML Attribute Extension QName prefix ("ext") */
     extern SAML_API const XMLCh SAML20_ATTRIBUTE_EXT_PREFIX[];
 
+    /** SAML Metadata Extension for Algorithm Support XML Namespace ("urn:oasis:names:tc:SAML:metadata:algsupport") */
+    extern SAML_API const XMLCh SAML20MD_ALGSUPPORT_NS[];
+
+    /** SAML Metadata Extension for Algorithm Support QName prefix ("alg") */
+    extern SAML_API const XMLCh SAML20MD_ALGSUPPORT_PREFIX[];
+
     /** SAML Metadata Extension for Entity Attributes XML Namespace ("urn:oasis:names:tc:SAML:metadata:attribute") */
     extern SAML_API const XMLCh SAML20MD_ENTITY_ATTRIBUTE_NS[];
 
     /** SAML Metadata Extension for Entity Attributes QName prefix ("mdattr") */
     extern SAML_API const XMLCh SAML20MD_ENTITY_ATTRIBUTE_PREFIX[];
 
+    /** SAML Metadata Extension for Discovery and Login UI XML Namespace ("urn:oasis:names:tc:SAML:metadata:ui") */
+    extern SAML_API const XMLCh SAML20MD_UI_NS[];
+
+    /** SAML Metadata Extension for Discovery and Login UI QName prefix ("mdui") */
+    extern SAML_API const XMLCh SAML20MD_UI_PREFIX[];
+
     /** SAML Condition for Delegation Restriction XML Namespace ("urn:oasis:names:tc:SAML:2.0:conditions:delegation") */
     extern SAML_API const XMLCh SAML20_DELEGATION_CONDITION_NS[];
 
     /** SAML Condition for Delegation Restriction QName prefix ("del") */
     extern SAML_API const XMLCh SAML20_DELEGATION_CONDITION_PREFIX[];
+
+    /** Identity Provider Discovery Protocol and Profile XML Namespace ("urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol") */
+    extern SAML_API const XMLCh IDP_DISCOVERY_PROTOCOL_NS[];
+
+    /** Identity Provider Discovery Protocol and Profile QName prefix ("idpdisc") */
+    extern SAML_API const XMLCh IDP_DISCOVERY_PROTOCOL_PREFIX[];
+
+    /** Service Provider Request Initiation Protocol and Profile XML Namespace ("urn:oasis:names:tc:SAML:profiles:SSO:request-init") */
+    extern SAML_API const XMLCh SP_REQUEST_INIT_NS[];
+
+    /** Service Provider Request Initiation Protocol and Profile QName prefix ("init") */
+    extern SAML_API const XMLCh SP_REQUEST_INIT_PREFIX[];
 
     /** SAML 1.x SOAP binding ("urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding") */
     extern SAML_API const char SAML1_BINDING_SOAP[];

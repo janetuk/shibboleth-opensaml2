@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2007 Internet2
+ *  Copyright 2001-2010 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,6 +65,13 @@ namespace opensaml {
         virtual bool isUserAgentPresent() const;
 
         /**
+         * Returns identifier for the protocol family associated with the encoder.
+         *
+         * @return  a protocol family identifier, or nullptr
+         */
+        virtual const XMLCh* getProtocolFamily() const;
+
+        /**
          * Interface to caller-supplied artifact generation mechanism.
          * 
          * Generating an artifact for storage and retrieval requires knowledge of
@@ -124,12 +131,12 @@ namespace opensaml {
             xmltooling::GenericResponse& genericResponse,
             xmltooling::XMLObject* xmlObject,
             const char* destination,
-            const saml2md::EntityDescriptor* recipient=NULL,
-            const char* relayState=NULL,
-            const ArtifactGenerator* artifactGenerator=NULL,
-            const xmltooling::Credential* credential=NULL,
-            const XMLCh* signatureAlg=NULL,
-            const XMLCh* digestAlg=NULL
+            const saml2md::EntityDescriptor* recipient=nullptr,
+            const char* relayState=nullptr,
+            const ArtifactGenerator* artifactGenerator=nullptr,
+            const xmltooling::Credential* credential=nullptr,
+            const XMLCh* signatureAlg=nullptr,
+            const XMLCh* digestAlg=nullptr
             ) const=0;
 
     protected:

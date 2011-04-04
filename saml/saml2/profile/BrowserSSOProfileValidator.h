@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2009 Internet2
+ *  Copyright 2001-2010 Internet2
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,11 @@
 namespace opensaml {
     namespace saml2 {
 
+#if defined (_MSC_VER)
+    #pragma warning( push )
+    #pragma warning( disable : 4251 )
+#endif
+
         /**
          * @deprecated
          * SAML 2.0 Browser SSO Profile Assertion Validator
@@ -47,14 +52,14 @@ namespace opensaml {
              * @param audiences     additional audience values
              * @param ts            timestamp to evaluate assertion conditions, or 0 to bypass check
              * @param destination   server location to which assertion was delivered, or 0 to bypass check
-             * @param requestID     ID of request that resulted in assertion, or NULL if unsolicited
+             * @param requestID     ID of request that resulted in assertion, or nullptr if unsolicited
              */
             BrowserSSOProfileValidator(
                 const XMLCh* recipient,
-                const std::vector<const XMLCh*>* audiences=NULL,
+                const std::vector<const XMLCh*>* audiences=nullptr,
                 time_t ts=0,
-                const char* destination=NULL,
-                const char* requestID=NULL
+                const char* destination=nullptr,
+                const char* requestID=nullptr
                 );
 
             virtual ~BrowserSSOProfileValidator();
@@ -79,6 +84,10 @@ namespace opensaml {
             /** Address in confirmed bearer SubjectConfirmationData. */
             mutable std::string m_address;
         };
+
+#if defined (_MSC_VER)
+    #pragma warning( pop )
+#endif
 
     };
 };

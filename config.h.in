@@ -6,12 +6,6 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define if Xerces-C library was found */
-#undef HAVE_LIBXERCESC
-
-/* Define if XML-Security library was found */
-#undef HAVE_LIBXSEC
-
 /* Define to 1 if you have the `z' library (-lz). */
 #undef HAVE_LIBZ
 
@@ -54,13 +48,14 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Define if xmltooling library was found */
-#undef HAVE_XMLTOOLING
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
+#undef LT_OBJDIR
 
-/* Define if log4cpp library is used. */
+/* Define to 1 if log4cpp library is used. */
 #undef OPENSAML_LOG4CPP
 
-/* Define if log4shib library is used. */
+/* Define to 1 if log4shib library is used. */
 #undef OPENSAML_LOG4SHIB
 
 /* Define to 1 if Xerces XMLString includes XMLByte release. */
@@ -81,6 +76,9 @@
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
 
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
@@ -88,7 +86,7 @@
    your system. */
 #undef PTHREAD_CREATE_JOINABLE
 
-/* The size of a `time_t', as computed by sizeof. */
+/* The size of `time_t', as computed by sizeof. */
 #undef SIZEOF_TIME_T
 
 /* Define to 1 if you have the ANSI C header files. */
@@ -100,5 +98,5 @@
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
 
-/* Define to `unsigned' if <sys/types.h> does not define. */
+/* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t

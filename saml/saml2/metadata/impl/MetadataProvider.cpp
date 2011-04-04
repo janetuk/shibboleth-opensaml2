@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2009 Internet2
+ *  Copyright 2001-2010 Internet2
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,38 +85,38 @@ MetadataProvider::MetadataProvider(const DOMElement* e)
     NDC ndc("MetadataProvider");
 #endif
     Category& log = Category::getInstance(SAML_LOGCAT".Metadata");
-    SAMLConfig& conf=SAMLConfig::getConfig();
+    SAMLConfig& conf = SAMLConfig::getConfig();
 
     // Locate any default recognized filters and plugins.
     try {
-        DOMElement* child = e ? XMLHelper::getFirstChildElement(e) : NULL;
+        DOMElement* child = XMLHelper::getFirstChildElement(e);
         while (child) {
-            if (XMLString::equals(child->getLocalName(),_MetadataFilter)) {
-                auto_ptr_char t(child->getAttributeNS(NULL,type));
-                if (t.get() && *t.get()) {
-                    log.info("building MetadataFilter of type %s", t.get());
-                    m_filters.push_back(conf.MetadataFilterManager.newPlugin(t.get(),child));
+            if (XMLString::equals(child->getLocalName(), _MetadataFilter)) {
+                string t = XMLHelper::getAttrString(child, nullptr, type);
+                if (!t.empty()) {
+                    log.info("building MetadataFilter of type %s", t.c_str());
+                    m_filters.push_back(conf.MetadataFilterManager.newPlugin(t.c_str(), child));
                 }
             }
-            else if (XMLString::equals(child->getLocalName(),SigFilter)) {
+            else if (XMLString::equals(child->getLocalName(), SigFilter)) {
                 log.info("building MetadataFilter of type %s", SIGNATURE_METADATA_FILTER);
-                m_filters.push_back(conf.MetadataFilterManager.newPlugin(SIGNATURE_METADATA_FILTER,child));
+                m_filters.push_back(conf.MetadataFilterManager.newPlugin(SIGNATURE_METADATA_FILTER, child));
             }
-            else if (XMLString::equals(child->getLocalName(),Whitelist)) {
+            else if (XMLString::equals(child->getLocalName(), Whitelist)) {
                 log.info("building MetadataFilter of type %s", WHITELIST_METADATA_FILTER);
-                m_filters.push_back(conf.MetadataFilterManager.newPlugin(WHITELIST_METADATA_FILTER,child));
+                m_filters.push_back(conf.MetadataFilterManager.newPlugin(WHITELIST_METADATA_FILTER, child));
             }
-            else if (XMLString::equals(child->getLocalName(),Blacklist)) {
+            else if (XMLString::equals(child->getLocalName(), Blacklist)) {
                 log.info("building MetadataFilter of type %s", BLACKLIST_METADATA_FILTER);
-                m_filters.push_back(conf.MetadataFilterManager.newPlugin(BLACKLIST_METADATA_FILTER,child));
+                m_filters.push_back(conf.MetadataFilterManager.newPlugin(BLACKLIST_METADATA_FILTER, child));
             }
-            else if (XMLString::equals(child->getLocalName(),Include)) {
+            else if (XMLString::equals(child->getLocalName(), Include)) {
                 log.info("building MetadataFilter of type %s", WHITELIST_METADATA_FILTER);
-                m_filters.push_back(conf.MetadataFilterManager.newPlugin(WHITELIST_METADATA_FILTER,e));
+                m_filters.push_back(conf.MetadataFilterManager.newPlugin(WHITELIST_METADATA_FILTER, e));
             }
-            else if (XMLString::equals(child->getLocalName(),Exclude)) {
+            else if (XMLString::equals(child->getLocalName(), Exclude)) {
                 log.info("building MetadataFilter of type %s", BLACKLIST_METADATA_FILTER);
-                m_filters.push_back(conf.MetadataFilterManager.newPlugin(BLACKLIST_METADATA_FILTER,e));
+                m_filters.push_back(conf.MetadataFilterManager.newPlugin(BLACKLIST_METADATA_FILTER, e));
             }
             child = XMLHelper::getNextSiblingElement(child);
         }
@@ -130,7 +130,7 @@ MetadataProvider::MetadataProvider(const DOMElement* e)
 
 MetadataProvider::~MetadataProvider()
 {
-    for_each(m_filters.begin(),m_filters.end(),xmltooling::cleanup<MetadataFilter>());
+    for_each(m_filters.begin(), m_filters.end(), xmltooling::cleanup<MetadataFilter>());
 }
 
 void MetadataProvider::addMetadataFilter(MetadataFilter* newFilter)
@@ -146,7 +146,7 @@ MetadataFilter* MetadataProvider::removeMetadataFilter(MetadataFilter* oldFilter
             return oldFilter;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 void MetadataProvider::doFilters(XMLObject& xmlObject) const
@@ -168,22 +168,22 @@ const EntitiesDescriptor* MetadataProvider::getEntitiesDescriptor(const XMLCh* n
 }
 
 MetadataProvider::Criteria::Criteria()
-    : entityID_unicode(NULL), entityID_ascii(NULL), artifact(NULL), role(NULL), protocol(NULL), protocol2(NULL), validOnly(true)
+    : entityID_unicode(nullptr), entityID_ascii(nullptr), artifact(nullptr), role(nullptr), protocol(nullptr), protocol2(nullptr), validOnly(true)
 {
 }
 
 MetadataProvider::Criteria::Criteria(const XMLCh* id, const xmltooling::QName* q, const XMLCh* prot, bool valid)
-    : entityID_unicode(id), entityID_ascii(NULL), artifact(NULL), role(q), protocol(prot), protocol2(NULL), validOnly(valid)
+    : entityID_unicode(id), entityID_ascii(nullptr), artifact(nullptr), role(q), protocol(prot), protocol2(nullptr), validOnly(valid)
 {
 }
 
 MetadataProvider::Criteria::Criteria(const char* id, const xmltooling::QName* q, const XMLCh* prot, bool valid)
-    : entityID_unicode(NULL), entityID_ascii(id), artifact(NULL), role(q), protocol(prot), protocol2(NULL), validOnly(valid)
+    : entityID_unicode(nullptr), entityID_ascii(id), artifact(nullptr), role(q), protocol(prot), protocol2(nullptr), validOnly(valid)
 {
 }
 
 MetadataProvider::Criteria::Criteria(const SAMLArtifact* a, const xmltooling::QName* q, const XMLCh* prot, bool valid)
-    : entityID_unicode(NULL), entityID_ascii(NULL), artifact(a), role(q), protocol(prot), protocol2(NULL), validOnly(valid)
+    : entityID_unicode(nullptr), entityID_ascii(nullptr), artifact(a), role(q), protocol(prot), protocol2(nullptr), validOnly(valid)
 {
 }
 
@@ -193,12 +193,12 @@ MetadataProvider::Criteria::~Criteria()
 
 void MetadataProvider::Criteria::reset()
 {
-    entityID_unicode=NULL;
-    entityID_ascii=NULL;
-    artifact=NULL;
-    role=NULL;
-    protocol=NULL;
-    protocol2=NULL;
+    entityID_unicode=nullptr;
+    entityID_ascii=nullptr;
+    artifact=nullptr;
+    role=nullptr;
+    protocol=nullptr;
+    protocol2=nullptr;
     validOnly=true;
 }
 

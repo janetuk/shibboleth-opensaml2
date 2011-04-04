@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2009 Internet2
+ *  Copyright 2001-2010 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 /**
  * ContentReference.cpp
  * 
- * SAML-specific signature reference profile 
+ * SAML-specific signature reference profile.
  */
  
 #include "internal.h"
@@ -34,8 +34,27 @@ using namespace opensaml;
 using namespace xmltooling;
 using namespace std;
 
+void SignableObject::declareNonVisibleNamespaces() const
+{
+    ContentReference* cr = getSignature() ? dynamic_cast<ContentReference*>(getSignature()->getContentReference()) : nullptr;
+
+    // Compute inclusive prefix set.
+    map<xstring,xstring> decls;
+    XMLHelper::getNonVisiblyUsedPrefixes(*this, decls);
+
+    for (map<xstring,xstring>::const_iterator decl = decls.begin(); decl != decls.end(); ++decl) {
+
+        // Pin it to the object root. An existing copy of the prefix on the root will take precedence.
+        addNamespace(Namespace(decl->second.c_str(), decl->first.c_str(), true, Namespace::NonVisiblyUsed));
+
+        // Add to content reference, if any.
+        if (cr)
+            cr->addInclusivePrefix(decl->first.c_str());
+    }
+}
+
 ContentReference::ContentReference(const SignableObject& signableObject)
-    : m_signableObject(signableObject), m_digest(NULL), m_c14n(NULL)
+    : m_signableObject(signableObject), m_digest(nullptr), m_c14n(nullptr)
 {
 }
 
@@ -45,7 +64,7 @@ ContentReference::~ContentReference()
 
 void ContentReference::createReferences(DSIGSignature* sig)
 {
-    DSIGReference* ref=NULL;
+    DSIGReference* ref = nullptr;
     const XMLCh* id=m_signableObject.getXMLID();
     if (!id || !*id)
         ref=sig->createReference(&chNull, m_digest ? m_digest : DSIGConstants::s_unicodeStrURISHA1);  // whole doc reference
@@ -66,40 +85,25 @@ void ContentReference::createReferences(DSIGSignature* sig)
     
     ref->appendEnvelopedSignatureTransform();
     DSIGTransformC14n* c14n=ref->appendCanonicalizationTransform(m_c14n ? m_c14n : DSIGConstants::s_unicodeStrURIEXC_C14N_NOC);
+
     if (!m_c14n || m_c14n == DSIGConstants::s_unicodeStrURIEXC_C14N_NOC || m_c14n == DSIGConstants::s_unicodeStrURIEXC_C14N_COM) {
-        addPrefixes(m_signableObject);
-#ifdef HAVE_GOOD_STL
+        // Build up the string of prefixes.
         xstring prefixes;
-        for (set<xstring>::const_iterator p = m_prefixes.begin(); p!=m_prefixes.end(); ++p)
-            prefixes += *p + chSpace;
+        static const XMLCh _default[] = { chPound, chLatin_d, chLatin_e, chLatin_f, chLatin_a, chLatin_u, chLatin_l, chLatin_t, chNull };
+        for (set<xstring>::const_iterator p = m_prefixes.begin(); p != m_prefixes.end(); ++p) {
+            prefixes += (p->empty() ? _default : p->c_str());
+            prefixes += chSpace;
+        }
         if (!prefixes.empty()) {
             prefixes.erase(prefixes.begin() + prefixes.size() - 1);
-            c14n->setInclusiveNamespaces(XMLString::replicate(prefixes.c_str()));
+            c14n->setInclusiveNamespaces(const_cast<XMLCh*>(prefixes.c_str()));
         }
-#else
-        for (set<string>::const_iterator p = m_prefixes.begin(); p!=m_prefixes.end(); ++p)
-            c14n->addInclusiveNamespace(p->c_str());
-#endif
     }
 }
 
 void ContentReference::addInclusivePrefix(const XMLCh* prefix)
 {
-    static const XMLCh _default[] = { chPound, chLatin_d, chLatin_e, chLatin_f, chLatin_a, chLatin_u, chLatin_l, chLatin_t, chNull };
-
-#ifdef HAVE_GOOD_STL
-    if (prefix && *prefix)
-        m_prefixes.insert(prefix);
-    else
-        m_prefixes.insert(_default);
-#else
-    if (prefix && *prefix) {
-        auto_ptr_char p(prefix);
-        m_prefixes.insert(p.get());
-    }
-    else
-        m_prefixes.insert("#default");
-#endif
+    m_prefixes.insert(prefix ? prefix : &chNull);
 }
 
 void ContentReference::setDigestAlgorithm(const XMLCh* digest)
@@ -110,23 +114,4 @@ void ContentReference::setDigestAlgorithm(const XMLCh* digest)
 void ContentReference::setCanonicalizationMethod(const XMLCh* c14n)
 {
     m_c14n = c14n;
-}
-
-void ContentReference::addPrefixes(const std::set<Namespace>& namespaces)
-{
-    for (set<Namespace>::const_iterator n = namespaces.begin(); n!=namespaces.end(); ++n) {
-        // Check for xmlns:xml.
-        if (!XMLString::equals(n->getNamespacePrefix(), xmlconstants::XML_PREFIX) || !XMLString::equals(n->getNamespaceURI(), xmlconstants::XML_NS))
-            addInclusivePrefix(n->getNamespacePrefix());
-    }
-}
-
-void ContentReference::addPrefixes(const XMLObject& xmlObject)
-{
-    addPrefixes(xmlObject.getNamespaces());
-    const list<XMLObject*>& children = xmlObject.getOrderedChildren();
-    for (list<XMLObject*>::const_iterator child = children.begin(); child!=children.end(); ++child) {
-        if (*child)
-            addPrefixes(*(*child));
-    }
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2009 Internet2
+ *  Copyright 2001-2010 Internet2
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,13 @@ namespace opensaml {
         virtual ~MessageDecoder();
 
         /**
+         * Returns identifier for the protocol family associated with the decoder.
+         *
+         * @return  a protocol family identifier, or nullptr
+         */
+        virtual const XMLCh* getProtocolFamily() const;
+
+        /**
          * Indicates whether a web browser or similar user agent delivered the message.
          *
          * @return true iff the message was delivered by a user agent
@@ -112,7 +119,7 @@ namespace opensaml {
              * @param artifact          reference to a SAML 2.0 artifact
              * @param ssoDescriptor     reference to SSO role of artifact issuer (may be SP or IdP)
              * @param policy            reference to policy containing rules, MetadataProvider, TrustEngine, etc.
-             * @return the corresponding SAML protocol message or NULL
+             * @return the corresponding SAML protocol message or nullptr
              */
             virtual saml2p::ArtifactResponse* resolve(
                 const saml2p::SAML2Artifact& artifact,
@@ -141,7 +148,7 @@ namespace opensaml {
         /**
          * Decodes a transport request into a SAML protocol message, and evaluates it
          * against a supplied SecurityPolicy. If the transport request does not contain
-         * the information necessary to decode the request, NULL will be returned.
+         * the information necessary to decode the request, nullptr will be returned.
          * Errors during the decoding process will be raised as exceptions.
          *
          * <p>Artifact-based bindings require an ArtifactResolver be set to
@@ -150,7 +157,7 @@ namespace opensaml {
          * @param relayState        will be set to RelayState/TARGET value accompanying message
          * @param genericRequest    reference to interface for accessing transport request to decode
          * @param policy            reference to policy containing rules, MetadataProvider, TrustEngine, etc.
-         * @return  the decoded message, or NULL if the decoder did not recognize the request content
+         * @return  the decoded message, or nullptr if the decoder did not recognize the request content
          */
         virtual xmltooling::XMLObject* decode(
             std::string& relayState,

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2009 Internet2
+ *  Copyright 2001-2010 Internet2
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ namespace opensaml {
              *
              * @param e DOM to supply configuration for provider
              */
-            DynamicMetadataProvider(const xercesc::DOMElement* e=NULL);
+            DynamicMetadataProvider(const xercesc::DOMElement* e=nullptr);
 
             virtual ~DynamicMetadataProvider();
 
@@ -57,9 +57,6 @@ namespace opensaml {
             /** Controls XML schema validation. */
             bool m_validate;
 
-            /** Caps the allowable cache duration of a metadata instance. */
-            time_t m_maxCacheDuration;
-
             /**
              * Resolves a metadata instance using the supplied criteria.
              *
@@ -70,6 +67,10 @@ namespace opensaml {
 
         private:
             mutable xmltooling::RWLock* m_lock;
+            double m_refreshDelayFactor;
+            time_t m_minCacheDuration, m_maxCacheDuration;
+            typedef std::map<xmltooling::xstring,time_t> cachemap_t;
+            mutable cachemap_t m_cacheMap;
         };
 
     };

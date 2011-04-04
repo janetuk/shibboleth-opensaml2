@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2009 Internet2
+ *  Copyright 2001-2010 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 /**
  * ClientCertAuthRule.cpp
  * 
- * TLS client authentication SecurityPolicyRule
+ * TLS client authentication SecurityPolicyRule.
  */
 
 #include "internal.h"
@@ -64,12 +64,8 @@ namespace opensaml {
     static const XMLCh errorFatal[] = UNICODE_LITERAL_10(e,r,r,o,r,F,a,t,a,l);
 };
 
-ClientCertAuthRule::ClientCertAuthRule(const DOMElement* e) : m_errorFatal(false)
+ClientCertAuthRule::ClientCertAuthRule(const DOMElement* e) : m_errorFatal(XMLHelper::getAttrBool(e, false, errorFatal))
 {
-    if (e) {
-        const XMLCh* flag = e->getAttributeNS(NULL, errorFatal);
-        m_errorFatal = (flag && (*flag==chLatin_t || *flag==chDigit_1)); 
-    }
 }
 
 bool ClientCertAuthRule::evaluate(const XMLObject& message, const GenericRequest* request, SecurityPolicy& policy) const

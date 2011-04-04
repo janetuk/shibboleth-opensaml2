@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2009 Internet2
+ *  Copyright 2001-2010 Internet2
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,9 +54,9 @@ namespace opensaml {
             Lockable* lock() {return this;}
             void unlock() {}
 
-            const Credential* resolve(const CredentialCriteria* criteria=NULL) const {return NULL;}
+            const Credential* resolve(const CredentialCriteria* criteria=nullptr) const {return nullptr;}
             vector<const Credential*>::size_type resolve(
-                vector<const Credential*>& results, const CredentialCriteria* criteria=NULL
+                vector<const Credential*>& results, const CredentialCriteria* criteria=nullptr
                 ) const {return 0;}
         };
 
@@ -102,36 +102,37 @@ static const XMLCh verifyRoles[] =          UNICODE_LITERAL_11(v,e,r,i,f,y,R,o,l
 static const XMLCh verifyName[] =           UNICODE_LITERAL_10(v,e,r,i,f,y,N,a,m,e);
 
 SignatureMetadataFilter::SignatureMetadataFilter(const DOMElement* e)
-    : m_verifyRoles(false), m_verifyName(true), m_credResolver(NULL), m_trust(NULL), m_log(Category::getInstance(SAML_LOGCAT".MetadataFilter.Signature"))
+    : m_verifyRoles(XMLHelper::getAttrBool(e, false, verifyRoles)),
+        m_verifyName(XMLHelper::getAttrBool(e, true, verifyName)),
+        m_credResolver(nullptr), m_trust(nullptr),
+        m_log(Category::getInstance(SAML_LOGCAT".MetadataFilter.Signature"))
 {
-    const XMLCh* flag = e ? e->getAttributeNS(NULL,verifyRoles) : NULL;
-    m_verifyRoles = (flag && (*flag == chLatin_t || *flag == chDigit_1));
-
-    flag = e ? e->getAttributeNS(NULL,verifyName) : NULL;
-    m_verifyName = !(flag && (*flag == chLatin_f || *flag == chDigit_0));
-
-    if (e && e->hasAttributeNS(NULL,certificate)) {
+    if (e && e->hasAttributeNS(nullptr,certificate)) {
         // Use a file-based credential resolver rooted here.
-        m_credResolver = XMLToolingConfig::getConfig().CredentialResolverManager.newPlugin(FILESYSTEM_CREDENTIAL_RESOLVER,e);
+        m_credResolver = XMLToolingConfig::getConfig().CredentialResolverManager.newPlugin(FILESYSTEM_CREDENTIAL_RESOLVER, e);
         return;
     }
 
-    DOMElement* sub = e ? XMLHelper::getFirstChildElement(e, _CredentialResolver) : NULL;
-    auto_ptr_char t(sub ? sub->getAttributeNS(NULL,type) : NULL);
-    if (t.get()) {
-        m_credResolver = XMLToolingConfig::getConfig().CredentialResolverManager.newPlugin(t.get(),sub);
-        return;
-    }
-
-    sub = e ? XMLHelper::getFirstChildElement(e, _TrustEngine) : NULL;
-    auto_ptr_char t2(sub ? sub->getAttributeNS(NULL,type) : NULL);
-    if (t2.get()) {
-        TrustEngine* trust = XMLToolingConfig::getConfig().TrustEngineManager.newPlugin(t2.get(),sub);
-        if (!(m_trust = dynamic_cast<SignatureTrustEngine*>(trust))) {
-            delete trust;
-            throw MetadataFilterException("TrustEngine-based SignatureMetadataFilter requires a SignatureTrustEngine plugin.");
+    DOMElement* sub = XMLHelper::getFirstChildElement(e, _CredentialResolver);
+    if (sub) {
+        string t = XMLHelper::getAttrString(sub, nullptr, type);
+        if (!t.empty()) {
+            m_credResolver = XMLToolingConfig::getConfig().CredentialResolverManager.newPlugin(t.c_str(), sub);
+            return;
         }
-        return;
+    }
+
+    sub = XMLHelper::getFirstChildElement(e, _TrustEngine);
+    if (sub) {
+        string t = XMLHelper::getAttrString(sub, nullptr, type);
+        if (!t.empty()) {
+            TrustEngine* trust = XMLToolingConfig::getConfig().TrustEngineManager.newPlugin(t.c_str(), sub);
+            if (!(m_trust = dynamic_cast<SignatureTrustEngine*>(trust))) {
+                delete trust;
+                throw MetadataFilterException("TrustEngine-based SignatureMetadataFilter requires a SignatureTrustEngine plugin.");
+            }
+            return;
+        }
     }
 
     throw MetadataFilterException("SignatureMetadataFilter configuration requires <CredentialResolver> or <TrustEngine> element.");
@@ -357,7 +358,7 @@ void SignatureMetadataFilter::doFilter(EntityDescriptor& entity, bool rootObject
         catch (exception& e) {
             auto_ptr_char id(entity.getEntityID());
             m_log.warn("filtering out affiliation from entity (%s) after failed signature check: %s", id.get(), e.what());
-            entity.setAffiliationDescriptor(NULL);
+            entity.setAffiliationDescriptor(nullptr);
         }
     }
 }
@@ -392,10 +393,10 @@ void SignatureMetadataFilter::verifySignature(Signature* sig, const XMLCh* peerN
                 catch (exception&) {
                 }
             }
-            throw MetadataFilterException("CredentialResolver did not supply a successful verification key.");
+            throw MetadataFilterException("Unable to verify signature with supplied key(s).");
         }
         else {
-            throw MetadataFilterException("CredentialResolver did not supply a successful verification key.");
+            throw MetadataFilterException("CredentialResolver did not supply any candidate keys.");
         }
     }
     else if (m_trust) {

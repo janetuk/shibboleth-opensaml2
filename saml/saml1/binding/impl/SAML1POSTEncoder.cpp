@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2009 Internet2
+ *  Copyright 2001-2010 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,17 +53,21 @@ namespace opensaml {
         public:
             SAML1POSTEncoder(const DOMElement* e, const XMLCh* ns);
             virtual ~SAML1POSTEncoder() {}
-            
+
+            const XMLCh* getProtocolFamily() const {
+                return samlconstants::SAML11_PROTOCOL_ENUM;
+            }
+
             long encode(
                 GenericResponse& genericResponse,
                 XMLObject* xmlObject,
                 const char* destination,
-                const EntityDescriptor* recipient=NULL,
-                const char* relayState=NULL,
-                const ArtifactGenerator* artifactGenerator=NULL,
-                const Credential* credential=NULL,
-                const XMLCh* signatureAlg=NULL,
-                const XMLCh* digestAlg=NULL
+                const EntityDescriptor* recipient=nullptr,
+                const char* relayState=nullptr,
+                const ArtifactGenerator* artifactGenerator=nullptr,
+                const Credential* credential=nullptr,
+                const XMLCh* signatureAlg=nullptr,
+                const XMLCh* digestAlg=nullptr
                 ) const;
 
         protected:
@@ -81,12 +85,8 @@ namespace opensaml {
 static const XMLCh _template[] = UNICODE_LITERAL_8(t,e,m,p,l,a,t,e);
 
 SAML1POSTEncoder::SAML1POSTEncoder(const DOMElement* e, const XMLCh* ns)
+    : m_template(XMLHelper::getAttrString(e, "bindingTemplate.html", _template, ns))
 {
-    if (e) {
-        auto_ptr_char t(e->getAttributeNS(ns, _template));
-        if (t.get() && *t.get())
-            m_template = t.get();
-    }
     if (m_template.empty())
         throw XMLToolingException("SAML1POSTEncoder requires template XML attribute.");
     XMLToolingConfig::getConfig().getPathResolver()->resolve(m_template, PathResolver::XMLTOOLING_CFG_FILE);
@@ -122,7 +122,7 @@ long SAML1POSTEncoder::encode(
     if (!relayState)
         throw BindingException("SAML 1.x POST Encoder requires relay state (TARGET) value.");
     
-    DOMElement* rootElement = NULL;
+    DOMElement* rootElement = nullptr;
     if (credential) {
         // Signature based on native XML signing.
         if (response->getSignature()) {
@@ -144,7 +144,7 @@ long SAML1POSTEncoder::encode(
     
             // Sign response while marshalling.
             vector<Signature*> sigs(1,sig);
-            rootElement = response->marshall((DOMDocument*)NULL,&sigs,credential);
+            rootElement = response->marshall((DOMDocument*)nullptr,&sigs,credential);
         }
     }
     else {

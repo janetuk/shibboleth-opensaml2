@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2008 Internet2
+ *  Copyright 2001-2010 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,14 +58,9 @@ namespace opensaml {
 
 static const XMLCh maxValidityInterval[] =  UNICODE_LITERAL_19(m,a,x,V,a,l,i,d,i,t,y,I,n,t,e,r,v,a,l);
 
-RequireValidUntilMetadataFilter::RequireValidUntilMetadataFilter(const DOMElement* e) : m_maxValidityInterval(60 * 60 * 24 * 7)
+RequireValidUntilMetadataFilter::RequireValidUntilMetadataFilter(const DOMElement* e)
+    : m_maxValidityInterval(XMLHelper::getAttrInt(e, 60 * 60 * 24 * 7, maxValidityInterval))
 {
-    const XMLCh* mvi = e ? e->getAttributeNS(NULL,maxValidityInterval) : NULL;
-    if (mvi && *mvi) {
-        m_maxValidityInterval = XMLString::parseInt(mvi);
-        if (m_maxValidityInterval == 0)
-            m_maxValidityInterval = 60 * 60 * 24 * 7;
-    }
 }
 
 void RequireValidUntilMetadataFilter::doFilter(XMLObject& xmlObject) const
@@ -77,6 +72,6 @@ void RequireValidUntilMetadataFilter::doFilter(XMLObject& xmlObject) const
     if (!tbo->getValidUntil())
         throw MetadataFilterException("Metadata did not include a validUntil attribute.");
 
-    if (tbo->getValidUntilEpoch() - time(NULL) > m_maxValidityInterval)
+    if (tbo->getValidUntilEpoch() - time(nullptr) > m_maxValidityInterval)
         throw MetadataFilterException("Metadata validity interval is larger than permitted.");
 }

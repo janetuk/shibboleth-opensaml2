@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2009 Internet2
+ *  Copyright 2001-2010 Internet2
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ namespace opensaml {
         public:
             SAML2POSTDecoder() {}
             virtual ~SAML2POSTDecoder() {}
-            
+
             xmltooling::XMLObject* decode(
                 std::string& relayState,
                 const GenericRequest& genericRequest,
@@ -61,7 +61,7 @@ namespace opensaml {
                 ) const;
         };                
 
-        MessageDecoder* SAML_DLLLOCAL SAML2POSTDecoderFactory(const pair<const DOMElement*,const XMLCh*>& p)
+        MessageDecoder* SAML_DLLLOCAL SAML2POSTDecoderFactory(const pair<const DOMElement*,const XMLCh*>&)
         {
             return new SAML2POSTDecoder();
         }
@@ -112,8 +112,8 @@ XMLObject* SAML2POSTDecoder::decode(
     auto_ptr<XMLObject> xmlObject(XMLObjectBuilder::buildOneFromElement(doc->getDocumentElement(), true));
     janitor.release();
 
-    saml2::RootObject* root = NULL;
-    StatusResponseType* response = NULL;
+    saml2::RootObject* root = nullptr;
+    StatusResponseType* response = nullptr;
     RequestAbstractType* request = dynamic_cast<RequestAbstractType*>(xmlObject.get());
     if (!request) {
         response = dynamic_cast<StatusResponseType*>(xmlObject.get());

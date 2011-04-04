@@ -1,5 +1,5 @@
 /*
- *  Copyright 2001-2009 Internet2
+ *  Copyright 2001-2010 Internet2
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,13 @@
 
 #include <xmltooling/AbstractComplexElement.h>
 #include <xmltooling/AbstractSimpleElement.h>
+#include <xmltooling/XMLToolingConfig.h>
 #include <xmltooling/encryption/Encryption.h>
 #include <xmltooling/impl/AnyElement.h>
 #include <xmltooling/io/AbstractXMLObjectMarshaller.h>
 #include <xmltooling/io/AbstractXMLObjectUnmarshaller.h>
+#include <xmltooling/security/CredentialCriteria.h>
+#include <xmltooling/security/CredentialResolver.h>
 #include <xmltooling/signature/KeyInfo.h>
 #include <xmltooling/signature/Signature.h>
 #include <xmltooling/util/DateTime.h>
@@ -69,6 +72,9 @@ namespace opensaml {
 
         DECL_XMLOBJECTIMPL_SIMPLE(SAML_DLLLOCAL,ActionNamespace);
         DECL_XMLOBJECTIMPL_SIMPLE(SAML_DLLLOCAL,SourceID);
+        DECL_XMLOBJECTIMPL_SIMPLE(SAML_DLLLOCAL,IPHint);
+        DECL_XMLOBJECTIMPL_SIMPLE(SAML_DLLLOCAL,DomainHint);
+        DECL_XMLOBJECTIMPL_SIMPLE(SAML_DLLLOCAL,GeolocationHint);
 
         class SAML_DLLLOCAL localizedNameTypeImpl : public virtual localizedNameType,
             public AbstractSimpleElement,
@@ -77,8 +83,8 @@ namespace opensaml {
             public AbstractXMLObjectUnmarshaller
         {
             void init() {
-                m_Lang=NULL;
-                m_LangPrefix=NULL;
+                m_Lang=nullptr;
+                m_LangPrefix=nullptr;
             }
 
         protected:
@@ -111,9 +117,11 @@ namespace opensaml {
         protected:
             void marshallAttributes(DOMElement* domElement) const {
                 if (m_Lang && *m_Lang) {
-                    DOMAttr* attr=domElement->getOwnerDocument()->createAttributeNS(xmlconstants::XML_NS,LANG_ATTRIB_NAME);
+                    DOMAttr* attr=domElement->getOwnerDocument()->createAttributeNS(xmlconstants::XML_NS, LANG_ATTRIB_NAME);
                     if (m_LangPrefix && *m_LangPrefix)
                         attr->setPrefix(m_LangPrefix);
+                    else
+                        attr->setPrefix(xmlconstants::XML_PREFIX);
                     attr->setNodeValue(m_Lang);
                     domElement->setAttributeNodeNS(attr);
                 }
@@ -138,8 +146,8 @@ namespace opensaml {
             public AbstractXMLObjectUnmarshaller
         {
             void init() {
-                m_Lang=NULL;
-                m_LangPrefix=NULL;
+                m_Lang=nullptr;
+                m_LangPrefix=nullptr;
             }
 
         protected:
@@ -172,9 +180,11 @@ namespace opensaml {
         protected:
             void marshallAttributes(DOMElement* domElement) const {
                 if (m_Lang && *m_Lang) {
-                    DOMAttr* attr=domElement->getOwnerDocument()->createAttributeNS(xmlconstants::XML_NS,LANG_ATTRIB_NAME);
+                    DOMAttr* attr=domElement->getOwnerDocument()->createAttributeNS(xmlconstants::XML_NS, LANG_ATTRIB_NAME);
                     if (m_LangPrefix && *m_LangPrefix)
                         attr->setPrefix(m_LangPrefix);
+                    else
+                        attr->setPrefix(xmlconstants::XML_PREFIX);
                     attr->setNodeValue(m_Lang);
                     domElement->setAttributeNodeNS(attr);
                 }
@@ -319,10 +329,10 @@ namespace opensaml {
             list<XMLObject*>::iterator m_pos_OrganizationURL;
 
             void init() {
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_Extensions=NULL;
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_Extensions=nullptr;
                 m_pos_Extensions=m_children.begin();
                 m_pos_OrganizationDisplayName=m_pos_Extensions;
                 ++m_pos_OrganizationDisplayName;
@@ -397,16 +407,16 @@ namespace opensaml {
             list<XMLObject*>::iterator m_pos_TelephoneNumber;
 
             void init() {
-                m_ContactType=NULL;
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_Extensions=NULL;
-                m_Company=NULL;
-                m_GivenName=NULL;
-                m_SurName=NULL;
+                m_ContactType=nullptr;
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_Extensions=nullptr;
+                m_Company=nullptr;
+                m_GivenName=nullptr;
+                m_SurName=nullptr;
                 m_pos_Extensions=m_children.begin();
                 m_pos_Company=m_pos_Extensions;
                 ++m_pos_Company;
@@ -475,7 +485,7 @@ namespace opensaml {
 
         protected:
             void marshallAttributes(DOMElement* domElement) const {
-                MARSHALL_STRING_ATTRIB(ContactType,CONTACTTYPE,NULL);
+                MARSHALL_STRING_ATTRIB(ContactType,CONTACTTYPE,nullptr);
                 marshallExtensionAttributes(domElement);
             }
 
@@ -501,7 +511,7 @@ namespace opensaml {
             public AbstractXMLObjectUnmarshaller
         {
             void init() {
-                m_Namespace=NULL;
+                m_Namespace=nullptr;
             }
 
         public:
@@ -524,11 +534,11 @@ namespace opensaml {
 
         protected:
             void marshallAttributes(DOMElement* domElement) const {
-                MARSHALL_STRING_ATTRIB(Namespace,NAMESPACE,NULL);
+                MARSHALL_STRING_ATTRIB(Namespace,NAMESPACE,nullptr);
             }
 
             void processAttribute(const DOMAttr* attribute) {
-                PROC_STRING_ATTRIB(Namespace,NAMESPACE,NULL);
+                PROC_STRING_ATTRIB(Namespace,NAMESPACE,nullptr);
                 AbstractXMLObjectUnmarshaller::processAttribute(attribute);
             }
         };
@@ -540,9 +550,9 @@ namespace opensaml {
             public AbstractXMLObjectUnmarshaller
         {
 	        void init() {
-                m_Use=NULL;
-                m_KeyInfo=NULL;
-                m_children.push_back(NULL);
+                m_Use=nullptr;
+                m_KeyInfo=nullptr;
+                m_children.push_back(nullptr);
                 m_pos_KeyInfo=m_children.begin();
     	    }
         public:
@@ -576,7 +586,7 @@ namespace opensaml {
 
         protected:
             void marshallAttributes(DOMElement* domElement) const {
-                MARSHALL_STRING_ATTRIB(Use,USE,NULL);
+                MARSHALL_STRING_ATTRIB(Use,USE,nullptr);
             }
 
             void processChildElement(XMLObject* childXMLObject, const DOMElement* root) {
@@ -586,7 +596,7 @@ namespace opensaml {
             }
 
             void processAttribute(const DOMAttr* attribute) {
-                PROC_STRING_ATTRIB(Use,USE,NULL);
+                PROC_STRING_ATTRIB(Use,USE,nullptr);
                 AbstractXMLObjectUnmarshaller::processAttribute(attribute);
             }
         };
@@ -599,7 +609,7 @@ namespace opensaml {
             public AbstractXMLObjectUnmarshaller
         {
             void init() {
-                m_Binding=m_Location=m_ResponseLocation=NULL;
+                m_Binding=m_Location=m_ResponseLocation=nullptr;
             }
 
         protected:
@@ -656,9 +666,9 @@ namespace opensaml {
             }
         protected:
             void marshallAttributes(DOMElement* domElement) const {
-                MARSHALL_STRING_ATTRIB(Binding,BINDING,NULL);
-                MARSHALL_STRING_ATTRIB(Location,LOCATION,NULL);
-                MARSHALL_STRING_ATTRIB(ResponseLocation,RESPONSELOCATION,NULL);
+                MARSHALL_STRING_ATTRIB(Binding,BINDING,nullptr);
+                MARSHALL_STRING_ATTRIB(Location,LOCATION,nullptr);
+                MARSHALL_STRING_ATTRIB(ResponseLocation,RESPONSELOCATION,nullptr);
                 marshallExtensionAttributes(domElement);
             }
 
@@ -680,7 +690,7 @@ namespace opensaml {
         class SAML_DLLLOCAL IndexedEndpointTypeImpl : public virtual IndexedEndpointType, public EndpointTypeImpl
         {
             void init() {
-                m_Index=NULL;
+                m_Index=nullptr;
                 m_isDefault=XML_BOOL_NULL;
             }
 
@@ -725,8 +735,8 @@ namespace opensaml {
 
         protected:
             void marshallAttributes(DOMElement* domElement) const {
-                MARSHALL_INTEGER_ATTRIB(Index,INDEX,NULL);
-                MARSHALL_BOOLEAN_ATTRIB(isDefault,ISDEFAULT,NULL);
+                MARSHALL_INTEGER_ATTRIB(Index,INDEX,nullptr);
+                MARSHALL_BOOLEAN_ATTRIB(isDefault,ISDEFAULT,nullptr);
                 EndpointTypeImpl::marshallAttributes(domElement);
             }
         };
@@ -906,15 +916,15 @@ namespace opensaml {
             public AbstractXMLObjectUnmarshaller
         {
             void init() {
-                m_ID=m_ProtocolSupportEnumeration=m_ErrorURL=NULL;
-                m_ValidUntil=m_CacheDuration=NULL;
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_Signature=NULL;
-                m_Extensions=NULL;
-                m_Organization=NULL;
+                m_ID=m_ProtocolSupportEnumeration=m_ErrorURL=nullptr;
+                m_ValidUntil=m_CacheDuration=nullptr;
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_Signature=nullptr;
+                m_Extensions=nullptr;
+                m_Organization=nullptr;
                 m_pos_Signature=m_children.begin();
                 m_pos_Extensions=m_pos_Signature;
                 ++m_pos_Extensions;
@@ -993,7 +1003,7 @@ namespace opensaml {
                     m_Signature->setContentReference(new opensaml::ContentReference(*this));
             }
 
-            IMPL_ID_ATTRIB_EX(ID,ID,NULL);
+            IMPL_ID_ATTRIB_EX(ID,ID,nullptr);
             IMPL_STRING_ATTRIB(ProtocolSupportEnumeration);
             IMPL_STRING_ATTRIB(ErrorURL);
             IMPL_DATETIME_ATTRIB(ValidUntil,SAMLTIME_MAX);
@@ -1086,12 +1096,17 @@ namespace opensaml {
             }
 
         protected:
+            void prepareForMarshalling() const {
+                if (m_Signature)
+                    declareNonVisibleNamespaces();
+            }
+
             void marshallAttributes(DOMElement* domElement) const {
-                MARSHALL_ID_ATTRIB(ID,ID,NULL);
-                MARSHALL_STRING_ATTRIB(ProtocolSupportEnumeration,PROTOCOLSUPPORTENUMERATION,NULL);
-                MARSHALL_STRING_ATTRIB(ErrorURL,ERRORURL,NULL);
-                MARSHALL_DATETIME_ATTRIB(ValidUntil,VALIDUNTIL,NULL);
-                MARSHALL_DATETIME_ATTRIB(CacheDuration,CACHEDURATION,NULL);
+                MARSHALL_ID_ATTRIB(ID,ID,nullptr);
+                MARSHALL_STRING_ATTRIB(ProtocolSupportEnumeration,PROTOCOLSUPPORTENUMERATION,nullptr);
+                MARSHALL_STRING_ATTRIB(ErrorURL,ERRORURL,nullptr);
+                MARSHALL_DATETIME_ATTRIB(ValidUntil,VALIDUNTIL,nullptr);
+                MARSHALL_DATETIME_ATTRIB(CacheDuration,CACHEDURATION,nullptr);
                 marshallExtensionAttributes(domElement);
             }
 
@@ -1105,7 +1120,7 @@ namespace opensaml {
             }
 
             void processAttribute(const DOMAttr* attribute) {
-                PROC_ID_ATTRIB(ID,ID,NULL);
+                PROC_ID_ATTRIB(ID,ID,nullptr);
                 unmarshallExtensionAttribute(attribute);
             }
         };
@@ -1141,10 +1156,10 @@ namespace opensaml {
         class SAML_DLLLOCAL SSODescriptorTypeImpl : public virtual SSODescriptorType, public RoleDescriptorImpl
         {
             void init() {
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
                 m_pos_ArtifactResolutionService=m_pos_ContactPerson;
                 ++m_pos_ArtifactResolutionService;
                 m_pos_SingleLogoutService=m_pos_ArtifactResolutionService;
@@ -1225,10 +1240,10 @@ namespace opensaml {
 
             void init() {
                 m_WantAuthnRequestsSigned=XML_BOOL_NULL;
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
                 m_pos_SingleSignOnService=m_pos_NameIDFormat;
                 ++m_pos_SingleSignOnService;
                 m_pos_NameIDMappingService=m_pos_SingleSignOnService;
@@ -1309,7 +1324,7 @@ namespace opensaml {
 
         protected:
             void marshallAttributes(DOMElement* domElement) const {
-                MARSHALL_BOOLEAN_ATTRIB(WantAuthnRequestsSigned,WANTAUTHNREQUESTSSIGNED,NULL);
+                MARSHALL_BOOLEAN_ATTRIB(WantAuthnRequestsSigned,WANTAUTHNREQUESTSSIGNED,nullptr);
                 RoleDescriptorImpl::marshallAttributes(domElement);
             }
 
@@ -1331,7 +1346,7 @@ namespace opensaml {
             public AbstractXMLObjectUnmarshaller
         {
             void init() {
-                m_Name=m_NameFormat=m_FriendlyName=NULL;
+                m_Name=m_NameFormat=m_FriendlyName=nullptr;
                 m_isRequired=XML_BOOL_NULL;
             }
         public:
@@ -1397,10 +1412,10 @@ namespace opensaml {
 
         protected:
             void marshallAttributes(DOMElement* domElement) const {
-                MARSHALL_STRING_ATTRIB(Name,NAME,NULL);
-                MARSHALL_STRING_ATTRIB(NameFormat,NAMEFORMAT,NULL);
-                MARSHALL_STRING_ATTRIB(FriendlyName,FRIENDLYNAME,NULL);
-                MARSHALL_BOOLEAN_ATTRIB(isRequired,ISREQUIRED,NULL);
+                MARSHALL_STRING_ATTRIB(Name,NAME,nullptr);
+                MARSHALL_STRING_ATTRIB(NameFormat,NAMEFORMAT,nullptr);
+                MARSHALL_STRING_ATTRIB(FriendlyName,FRIENDLYNAME,nullptr);
+                MARSHALL_BOOLEAN_ATTRIB(isRequired,ISREQUIRED,nullptr);
                 marshallExtensionAttributes(domElement);
             }
 
@@ -1423,10 +1438,10 @@ namespace opensaml {
             list<XMLObject*>::iterator m_pos_RequestedAttribute;
 
 	        void init() {
-                m_Index=NULL;
+                m_Index=nullptr;
                 m_isDefault=XML_BOOL_NULL;
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
                 m_pos_ServiceDescription=m_children.begin();
                 m_pos_RequestedAttribute=m_pos_ServiceDescription;
                 ++m_pos_RequestedAttribute;
@@ -1476,8 +1491,8 @@ namespace opensaml {
 
         protected:
             void marshallAttributes(DOMElement* domElement) const {
-                MARSHALL_INTEGER_ATTRIB(Index,INDEX,NULL);
-                MARSHALL_BOOLEAN_ATTRIB(isDefault,ISDEFAULT,NULL);
+                MARSHALL_INTEGER_ATTRIB(Index,INDEX,nullptr);
+                MARSHALL_BOOLEAN_ATTRIB(isDefault,ISDEFAULT,nullptr);
             }
 
             void processChildElement(XMLObject* childXMLObject, const DOMElement* root) {
@@ -1488,8 +1503,8 @@ namespace opensaml {
             }
 
             void processAttribute(const DOMAttr* attribute) {
-                PROC_INTEGER_ATTRIB(Index,INDEX,NULL);
-                PROC_BOOLEAN_ATTRIB(isDefault,ISDEFAULT,NULL);
+                PROC_INTEGER_ATTRIB(Index,INDEX,nullptr);
+                PROC_BOOLEAN_ATTRIB(isDefault,ISDEFAULT,nullptr);
                 AbstractXMLObjectUnmarshaller::processAttribute(attribute);
             }
         };
@@ -1501,7 +1516,7 @@ namespace opensaml {
             void init() {
                 m_AuthnRequestsSigned=XML_BOOL_NULL;
                 m_WantAssertionsSigned=XML_BOOL_NULL;
-                m_children.push_back(NULL);
+                m_children.push_back(nullptr);
                 m_pos_AssertionConsumerService=m_pos_NameIDFormat;
                 ++m_pos_AssertionConsumerService;
             }
@@ -1561,8 +1576,8 @@ namespace opensaml {
 
         protected:
             void marshallAttributes(DOMElement* domElement) const {
-                MARSHALL_BOOLEAN_ATTRIB(AuthnRequestsSigned,AUTHNREQUESTSSIGNED,NULL);
-                MARSHALL_BOOLEAN_ATTRIB(WantAssertionsSigned,WANTASSERTIONSSIGNED,NULL);
+                MARSHALL_BOOLEAN_ATTRIB(AuthnRequestsSigned,AUTHNREQUESTSSIGNED,nullptr);
+                MARSHALL_BOOLEAN_ATTRIB(WantAssertionsSigned,WANTASSERTIONSSIGNED,nullptr);
                 RoleDescriptorImpl::marshallAttributes(domElement);
             }
 
@@ -1579,8 +1594,8 @@ namespace opensaml {
             list<XMLObject*>::iterator m_pos_AssertionIDRequestService;
 
             void init() {
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
                 m_pos_AuthnQueryService=m_pos_ContactPerson;
                 ++m_pos_AuthnQueryService;
                 m_pos_AssertionIDRequestService=m_pos_AuthnQueryService;
@@ -1641,8 +1656,8 @@ namespace opensaml {
             list<XMLObject*>::iterator m_pos_AssertionIDRequestService;
 
             void init() {
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
                 m_pos_AuthzService=m_pos_ContactPerson;
                 ++m_pos_AuthzService;
                 m_pos_AssertionIDRequestService=m_pos_AuthzService;
@@ -1705,10 +1720,10 @@ namespace opensaml {
             list<XMLObject*>::iterator m_pos_AttributeProfile;
 
             void init() {
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
                 m_pos_AttributeService=m_pos_ContactPerson;
                 ++m_pos_AttributeService;
                 m_pos_AssertionIDRequestService=m_pos_AttributeService;
@@ -1787,7 +1802,7 @@ namespace opensaml {
         {
             void init() {
                 m_WantAssertionsSigned=XML_BOOL_NULL;
-                m_children.push_back(NULL);
+                m_children.push_back(nullptr);
                 m_pos_NameIDFormat=m_pos_ContactPerson;
                 ++m_pos_NameIDFormat;
             }
@@ -1833,7 +1848,7 @@ namespace opensaml {
 
         protected:
             void marshallAttributes(DOMElement* domElement) const {
-                MARSHALL_BOOLEAN_ATTRIB(WantAssertionsSigned,WANTASSERTIONSSIGNED,NULL);
+                MARSHALL_BOOLEAN_ATTRIB(WantAssertionsSigned,WANTASSERTIONSSIGNED,nullptr);
                 RoleDescriptorImpl::marshallAttributes(domElement);
             }
 
@@ -1943,13 +1958,13 @@ namespace opensaml {
             list<XMLObject*>::iterator m_pos_AffiliateMember;
 
             void init() {
-                m_ID=m_AffiliationOwnerID=NULL;
-                m_ValidUntil=m_CacheDuration=NULL;
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_Signature=NULL;
-                m_Extensions=NULL;
+                m_ID=m_AffiliationOwnerID=nullptr;
+                m_ValidUntil=m_CacheDuration=nullptr;
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_Signature=nullptr;
+                m_Extensions=nullptr;
                 m_pos_Signature=m_children.begin();
                 m_pos_Extensions=m_pos_Signature;
                 ++m_pos_Extensions;
@@ -2017,7 +2032,7 @@ namespace opensaml {
                     m_Signature->setContentReference(new opensaml::ContentReference(*this));
             }
 
-            IMPL_ID_ATTRIB_EX(ID,ID,NULL);
+            IMPL_ID_ATTRIB_EX(ID,ID,nullptr);
             IMPL_STRING_ATTRIB(AffiliationOwnerID);
             IMPL_DATETIME_ATTRIB(ValidUntil,SAMLTIME_MAX);
             IMPL_DURATION_ATTRIB(CacheDuration,0);
@@ -2048,11 +2063,16 @@ namespace opensaml {
             }
 
         protected:
+            void prepareForMarshalling() const {
+                if (m_Signature)
+                    declareNonVisibleNamespaces();
+            }
+
             void marshallAttributes(DOMElement* domElement) const {
-                MARSHALL_ID_ATTRIB(ID,ID,NULL);
-                MARSHALL_STRING_ATTRIB(AffiliationOwnerID,AFFILIATIONOWNERID,NULL);
-                MARSHALL_DATETIME_ATTRIB(ValidUntil,VALIDUNTIL,NULL);
-                MARSHALL_DATETIME_ATTRIB(CacheDuration,CACHEDURATION,NULL);
+                MARSHALL_ID_ATTRIB(ID,ID,nullptr);
+                MARSHALL_STRING_ATTRIB(AffiliationOwnerID,AFFILIATIONOWNERID,nullptr);
+                MARSHALL_DATETIME_ATTRIB(ValidUntil,VALIDUNTIL,nullptr);
+                MARSHALL_DATETIME_ATTRIB(CacheDuration,CACHEDURATION,nullptr);
                 marshallExtensionAttributes(domElement);
             }
 
@@ -2065,7 +2085,7 @@ namespace opensaml {
             }
 
             void processAttribute(const DOMAttr* attribute) {
-                PROC_ID_ATTRIB(ID,ID,NULL);
+                PROC_ID_ATTRIB(ID,ID,nullptr);
                 unmarshallExtensionAttribute(attribute);
             }
         };
@@ -2081,17 +2101,17 @@ namespace opensaml {
             list<XMLObject*>::iterator m_pos_ContactPerson;
 
             void init() {
-                m_ID=m_EntityID=NULL;
-                m_ValidUntil=m_CacheDuration=NULL;
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_Signature=NULL;
-                m_Extensions=NULL;
-                m_AffiliationDescriptor=NULL;
-                m_Organization=NULL;
+                m_ID=m_EntityID=nullptr;
+                m_ValidUntil=m_CacheDuration=nullptr;
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_Signature=nullptr;
+                m_Extensions=nullptr;
+                m_AffiliationDescriptor=nullptr;
+                m_Organization=nullptr;
                 m_pos_Signature=m_children.begin();
                 m_pos_Extensions=m_pos_Signature;
                 ++m_pos_Extensions;
@@ -2225,7 +2245,7 @@ namespace opensaml {
                     m_Signature->setContentReference(new opensaml::ContentReference(*this));
             }
 
-            IMPL_ID_ATTRIB_EX(ID,ID,NULL);
+            IMPL_ID_ATTRIB_EX(ID,ID,nullptr);
             IMPL_STRING_ATTRIB(EntityID);
             IMPL_DATETIME_ATTRIB(ValidUntil,SAMLTIME_MAX);
             IMPL_DURATION_ATTRIB(CacheDuration,0);
@@ -2287,15 +2307,20 @@ namespace opensaml {
 
                 vector<RoleDescriptor*>::const_iterator i =
                     find_if(m_RoleDescriptors.begin(), m_RoleDescriptors.end(), ofTypeValidForProtocol(qname,protocol));
-                return (i!=m_RoleDescriptors.end()) ? *i : NULL;
+                return (i!=m_RoleDescriptors.end()) ? *i : nullptr;
             }
 
         protected:
+            void prepareForMarshalling() const {
+                if (m_Signature)
+                    declareNonVisibleNamespaces();
+            }
+
             void marshallAttributes(DOMElement* domElement) const {
-                MARSHALL_ID_ATTRIB(ID,ID,NULL);
-                MARSHALL_STRING_ATTRIB(EntityID,ENTITYID,NULL);
-                MARSHALL_DATETIME_ATTRIB(ValidUntil,VALIDUNTIL,NULL);
-                MARSHALL_DATETIME_ATTRIB(CacheDuration,CACHEDURATION,NULL);
+                MARSHALL_ID_ATTRIB(ID,ID,nullptr);
+                MARSHALL_STRING_ATTRIB(EntityID,ENTITYID,nullptr);
+                MARSHALL_DATETIME_ATTRIB(ValidUntil,VALIDUNTIL,nullptr);
+                MARSHALL_DATETIME_ATTRIB(CacheDuration,CACHEDURATION,nullptr);
                 marshallExtensionAttributes(domElement);
             }
 
@@ -2319,7 +2344,7 @@ namespace opensaml {
             }
 
             void processAttribute(const DOMAttr* attribute) {
-                PROC_ID_ATTRIB(ID,ID,NULL);
+                PROC_ID_ATTRIB(ID,ID,nullptr);
                 unmarshallExtensionAttribute(attribute);
             }
         };
@@ -2332,12 +2357,12 @@ namespace opensaml {
             public AbstractXMLObjectUnmarshaller
         {
             void init() {
-                m_ID=m_Name=NULL;
-                m_ValidUntil=m_CacheDuration=NULL;
-                m_children.push_back(NULL);
-                m_children.push_back(NULL);
-                m_Signature=NULL;
-                m_Extensions=NULL;
+                m_ID=m_Name=nullptr;
+                m_ValidUntil=m_CacheDuration=nullptr;
+                m_children.push_back(nullptr);
+                m_children.push_back(nullptr);
+                m_Signature=nullptr;
+                m_Extensions=nullptr;
                 m_pos_Signature=m_children.begin();
                 m_pos_Extensions=m_pos_Signature;
                 ++m_pos_Extensions;
@@ -2405,7 +2430,7 @@ namespace opensaml {
                     m_Signature->setContentReference(new opensaml::ContentReference(*this));
             }
 
-            IMPL_ID_ATTRIB_EX(ID,ID,NULL);
+            IMPL_ID_ATTRIB_EX(ID,ID,nullptr);
             IMPL_STRING_ATTRIB(Name);
             IMPL_DATETIME_ATTRIB(ValidUntil,SAMLTIME_MAX);
             IMPL_DURATION_ATTRIB(CacheDuration,0);
@@ -2414,11 +2439,16 @@ namespace opensaml {
             IMPL_TYPED_CHILDREN(EntitiesDescriptor,m_children.end());
 
         protected:
+            void prepareForMarshalling() const {
+                if (m_Signature)
+                    declareNonVisibleNamespaces();
+            }
+
             void marshallAttributes(DOMElement* domElement) const {
-                MARSHALL_ID_ATTRIB(ID,ID,NULL);
-                MARSHALL_STRING_ATTRIB(Name,NAME,NULL);
-                MARSHALL_DATETIME_ATTRIB(ValidUntil,VALIDUNTIL,NULL);
-                MARSHALL_DATETIME_ATTRIB(CacheDuration,CACHEDURATION,NULL);
+                MARSHALL_ID_ATTRIB(ID,ID,nullptr);
+                MARSHALL_STRING_ATTRIB(Name,NAME,nullptr);
+                MARSHALL_DATETIME_ATTRIB(ValidUntil,VALIDUNTIL,nullptr);
+                MARSHALL_DATETIME_ATTRIB(CacheDuration,CACHEDURATION,nullptr);
             }
 
             void processChildElement(XMLObject* childXMLObject, const DOMElement* root) {
@@ -2430,10 +2460,45 @@ namespace opensaml {
             }
 
             void processAttribute(const DOMAttr* attribute) {
-                PROC_ID_ATTRIB(ID,ID,NULL);
-                PROC_STRING_ATTRIB(Name,NAME,NULL);
-                PROC_DATETIME_ATTRIB(ValidUntil,VALIDUNTIL,NULL);
-                PROC_DATETIME_ATTRIB(CacheDuration,CACHEDURATION,NULL);
+                PROC_ID_ATTRIB(ID,ID,nullptr);
+                PROC_STRING_ATTRIB(Name,NAME,nullptr);
+                PROC_DATETIME_ATTRIB(ValidUntil,VALIDUNTIL,nullptr);
+                PROC_DATETIME_ATTRIB(CacheDuration,CACHEDURATION,nullptr);
+            }
+        };
+
+        class SAML_DLLLOCAL DiscoveryResponseImpl : public virtual DiscoveryResponse, public IndexedEndpointTypeImpl
+        {
+        public:
+            virtual ~DiscoveryResponseImpl() {}
+
+            DiscoveryResponseImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
+                : AbstractXMLObject(nsURI, localName, prefix, schemaType) {}
+
+            DiscoveryResponseImpl(const DiscoveryResponseImpl& src) : AbstractXMLObject(src), IndexedEndpointTypeImpl(src) {}
+
+            IMPL_XMLOBJECT_CLONE(DiscoveryResponse);
+            IndexedEndpointType* cloneIndexedEndpointType() const {
+                return new DiscoveryResponseImpl(*this);
+            }
+            EndpointType* cloneEndpointType() const {
+                return new DiscoveryResponseImpl(*this);
+            }
+        };
+
+        class SAML_DLLLOCAL RequestInitiatorImpl : public virtual RequestInitiator, public EndpointTypeImpl
+        {
+        public:
+            virtual ~RequestInitiatorImpl() {}
+
+            RequestInitiatorImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
+                : AbstractXMLObject(nsURI, localName, prefix, schemaType) {}
+
+            RequestInitiatorImpl(const RequestInitiatorImpl& src) : AbstractXMLObject(src), EndpointTypeImpl(src) {}
+
+            IMPL_XMLOBJECT_CLONE(RequestInitiator);
+            EndpointType* cloneEndpointType() const {
+                return new RequestInitiatorImpl(*this);
             }
         };
 
@@ -2481,6 +2546,459 @@ namespace opensaml {
                 AbstractXMLObjectUnmarshaller::processChildElement(childXMLObject,root);
             }
         };
+
+        class SAML_DLLLOCAL DigestMethodImpl : public virtual DigestMethod,
+            public AbstractComplexElement,
+            public AbstractDOMCachingXMLObject,
+            public AbstractXMLObjectMarshaller,
+            public AbstractXMLObjectUnmarshaller
+        {
+        public:
+            virtual ~DigestMethodImpl() {
+                XMLString::release(&m_Algorithm);
+            }
+
+            DigestMethodImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
+                : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
+                m_Algorithm = nullptr;
+            }
+
+            DigestMethodImpl(const DigestMethodImpl& src)
+                    : AbstractXMLObject(src), AbstractComplexElement(src), AbstractDOMCachingXMLObject(src) {
+                setAlgorithm(src.getAlgorithm());
+                VectorOf(XMLObject) v=getUnknownXMLObjects();
+                for (vector<XMLObject*>::const_iterator i=src.m_UnknownXMLObjects.begin(); i!=src.m_UnknownXMLObjects.end(); ++i)
+                    v.push_back((*i)->clone());
+            }
+
+            IMPL_STRING_ATTRIB(Algorithm);
+
+            IMPL_XMLOBJECT_CLONE(DigestMethod);
+            IMPL_XMLOBJECT_CHILDREN(UnknownXMLObject,m_children.end());
+
+        protected:
+            void marshallAttributes(DOMElement* domElement) const {
+                MARSHALL_STRING_ATTRIB(Algorithm,ALGORITHM,nullptr);
+            }
+
+            void processChildElement(XMLObject* childXMLObject, const DOMElement* root) {
+                // Unknown child.
+                getUnknownXMLObjects().push_back(childXMLObject);
+            }
+
+            void processAttribute(const DOMAttr* attribute) {
+                PROC_STRING_ATTRIB(Algorithm,ALGORITHM,nullptr);
+            }
+        };
+
+        class SAML_DLLLOCAL SigningMethodImpl : public virtual SigningMethod,
+            public AbstractComplexElement,
+            public AbstractDOMCachingXMLObject,
+            public AbstractXMLObjectMarshaller,
+            public AbstractXMLObjectUnmarshaller
+        {
+        public:
+            virtual ~SigningMethodImpl() {
+                XMLString::release(&m_Algorithm);
+                XMLString::release(&m_MinKeySize);
+                XMLString::release(&m_MaxKeySize);
+            }
+
+            SigningMethodImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
+                : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
+                m_Algorithm = nullptr;
+                m_MinKeySize = nullptr;
+                m_MaxKeySize = nullptr;
+            }
+
+            SigningMethodImpl(const SigningMethodImpl& src)
+                    : AbstractXMLObject(src), AbstractComplexElement(src), AbstractDOMCachingXMLObject(src) {
+                setAlgorithm(src.getAlgorithm());
+                setMinKeySize(src.m_MinKeySize);
+                setMaxKeySize(src.m_MaxKeySize);
+                VectorOf(XMLObject) v=getUnknownXMLObjects();
+                for (vector<XMLObject*>::const_iterator i=src.m_UnknownXMLObjects.begin(); i!=src.m_UnknownXMLObjects.end(); ++i)
+                    v.push_back((*i)->clone());
+            }
+
+            IMPL_XMLOBJECT_CLONE(SigningMethod);
+            IMPL_XMLOBJECT_CHILDREN(UnknownXMLObject,m_children.end());
+
+            IMPL_STRING_ATTRIB(Algorithm);
+            IMPL_INTEGER_ATTRIB(MinKeySize);
+            IMPL_INTEGER_ATTRIB(MaxKeySize);
+
+        protected:
+            void marshallAttributes(DOMElement* domElement) const {
+                MARSHALL_STRING_ATTRIB(Algorithm,ALGORITHM,nullptr);
+                MARSHALL_INTEGER_ATTRIB(MinKeySize,MINKEYSIZE,nullptr);
+                MARSHALL_INTEGER_ATTRIB(MaxKeySize,MAXKEYSIZE,nullptr);
+            }
+
+            void processChildElement(XMLObject* childXMLObject, const DOMElement* root) {
+                // Unknown child.
+                getUnknownXMLObjects().push_back(childXMLObject);
+            }
+
+            void processAttribute(const DOMAttr* attribute) {
+                PROC_STRING_ATTRIB(Algorithm,ALGORITHM,nullptr);
+                PROC_INTEGER_ATTRIB(MinKeySize,MINKEYSIZE,nullptr);
+                PROC_INTEGER_ATTRIB(MaxKeySize,MAXKEYSIZE,nullptr);
+            }
+        };
+
+        class SAML_DLLLOCAL DisplayNameImpl : public virtual DisplayName, public localizedNameTypeImpl
+        {
+        public:
+            virtual ~DisplayNameImpl() {}
+
+            DisplayNameImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
+                : AbstractXMLObject(nsURI, localName, prefix, schemaType) {}
+
+            DisplayNameImpl(const DisplayNameImpl& src) : AbstractXMLObject(src), localizedNameTypeImpl(src) {}
+
+            IMPL_XMLOBJECT_CLONE(DisplayName);
+            localizedNameType* clonelocalizedNameType() const {
+                return new DisplayNameImpl(*this);
+            }
+        };
+
+        class SAML_DLLLOCAL DescriptionImpl : public virtual Description, public localizedNameTypeImpl
+        {
+        public:
+            virtual ~DescriptionImpl() {}
+
+            DescriptionImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
+                : AbstractXMLObject(nsURI, localName, prefix, schemaType) {}
+
+            DescriptionImpl(const DescriptionImpl& src) : AbstractXMLObject(src), localizedNameTypeImpl(src) {}
+
+            IMPL_XMLOBJECT_CLONE(Description);
+            localizedNameType* clonelocalizedNameType() const {
+                return new DescriptionImpl(*this);
+            }
+        };
+
+        class SAML_DLLLOCAL InformationURLImpl : public virtual InformationURL, public localizedURITypeImpl
+        {
+        public:
+            virtual ~InformationURLImpl() {}
+
+            InformationURLImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
+                : AbstractXMLObject(nsURI, localName, prefix, schemaType) {}
+
+            InformationURLImpl(const InformationURLImpl& src) : AbstractXMLObject(src), localizedURITypeImpl(src) {}
+
+            IMPL_XMLOBJECT_CLONE(InformationURL);
+            localizedURIType* clonelocalizedURIType() const {
+                return new InformationURLImpl(*this);
+            }
+        };
+
+        class SAML_DLLLOCAL PrivacyStatementURLImpl : public virtual PrivacyStatementURL, public localizedURITypeImpl
+        {
+        public:
+            virtual ~PrivacyStatementURLImpl() {}
+
+            PrivacyStatementURLImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
+                : AbstractXMLObject(nsURI, localName, prefix, schemaType) {}
+
+            PrivacyStatementURLImpl(const PrivacyStatementURLImpl& src) : AbstractXMLObject(src), localizedURITypeImpl(src) {}
+
+            IMPL_XMLOBJECT_CLONE(PrivacyStatementURL);
+            localizedURIType* clonelocalizedURIType() const {
+                return new PrivacyStatementURLImpl(*this);
+            }
+        };
+
+        class SAML_DLLLOCAL KeywordsImpl : public virtual Keywords,
+            public AbstractSimpleElement,
+            public AbstractDOMCachingXMLObject,
+            public AbstractXMLObjectMarshaller,
+            public AbstractXMLObjectUnmarshaller
+        {
+            void init() {
+                m_Lang=nullptr;
+                m_LangPrefix=nullptr;
+            }
+
+        protected:
+            KeywordsImpl() {
+                init();
+            }
+
+        public:
+            virtual ~KeywordsImpl() {
+                XMLString::release(&m_Lang);
+                XMLString::release(&m_LangPrefix);
+            }
+
+            KeywordsImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
+                    : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
+                init();
+            }
+
+            KeywordsImpl(const KeywordsImpl& src)
+                    : AbstractXMLObject(src), AbstractSimpleElement(src), AbstractDOMCachingXMLObject(src) {
+                init();
+                setLang(src.getLang());
+                if (src.m_LangPrefix)
+                    m_LangPrefix = XMLString::replicate(src.m_LangPrefix);
+            }
+
+            IMPL_XMLOBJECT_CLONE(Keywords);
+            IMPL_XMLOBJECT_FOREIGN_ATTRIB(Lang,XMLCh);
+
+        protected:
+            void marshallAttributes(DOMElement* domElement) const {
+                if (m_Lang && *m_Lang) {
+                    DOMAttr* attr=domElement->getOwnerDocument()->createAttributeNS(xmlconstants::XML_NS, LANG_ATTRIB_NAME);
+                    if (m_LangPrefix && *m_LangPrefix)
+                        attr->setPrefix(m_LangPrefix);
+                    else
+                        attr->setPrefix(xmlconstants::XML_PREFIX);
+                    attr->setNodeValue(m_Lang);
+                    domElement->setAttributeNodeNS(attr);
+                }
+            }
+
+            void processAttribute(const DOMAttr* attribute) {
+                if (XMLHelper::isNodeNamed(attribute, xmlconstants::XML_NS, LANG_ATTRIB_NAME)) {
+                    setLang(attribute->getValue());
+                    const XMLCh* temp = attribute->getPrefix();
+                    if (temp && *temp && !XMLString::equals(temp, xmlconstants::XML_NS))
+                        m_LangPrefix = XMLString::replicate(temp);
+                    return;
+                }
+                AbstractXMLObjectUnmarshaller::processAttribute(attribute);
+            }
+        };
+
+        class SAML_DLLLOCAL LogoImpl : public virtual Logo,
+            public AbstractSimpleElement,
+            public AbstractDOMCachingXMLObject,
+            public AbstractXMLObjectMarshaller,
+            public AbstractXMLObjectUnmarshaller
+        {
+            void init() {
+                m_Lang=nullptr;
+                m_LangPrefix=nullptr;
+                m_Height=nullptr;
+                m_Width=nullptr;
+            }
+
+        protected:
+            LogoImpl() {
+                init();
+            }
+
+        public:
+            virtual ~LogoImpl() {
+                XMLString::release(&m_Lang);
+                XMLString::release(&m_LangPrefix);
+                XMLString::release(&m_Height);
+                XMLString::release(&m_Width);
+            }
+
+            LogoImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
+                    : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
+                init();
+            }
+
+            LogoImpl(const LogoImpl& src)
+                    : AbstractXMLObject(src), AbstractSimpleElement(src), AbstractDOMCachingXMLObject(src) {
+                init();
+                setLang(src.getLang());
+                if (src.m_LangPrefix)
+                    m_LangPrefix = XMLString::replicate(src.m_LangPrefix);
+                setHeight(src.m_Height);
+                setWidth(src.m_Width);
+            }
+
+            IMPL_XMLOBJECT_CLONE(Logo);
+            IMPL_XMLOBJECT_FOREIGN_ATTRIB(Lang,XMLCh);
+            IMPL_INTEGER_ATTRIB(Height);
+            IMPL_INTEGER_ATTRIB(Width);
+
+        protected:
+            void marshallAttributes(DOMElement* domElement) const {
+                if (m_Lang && *m_Lang) {
+                    DOMAttr* attr=domElement->getOwnerDocument()->createAttributeNS(xmlconstants::XML_NS, LANG_ATTRIB_NAME);
+                    if (m_LangPrefix && *m_LangPrefix)
+                        attr->setPrefix(m_LangPrefix);
+                    else
+                        attr->setPrefix(xmlconstants::XML_PREFIX);
+                    attr->setNodeValue(m_Lang);
+                    domElement->setAttributeNodeNS(attr);
+                }
+                MARSHALL_INTEGER_ATTRIB(Height,HEIGHT,nullptr);
+                MARSHALL_INTEGER_ATTRIB(Width,WIDTH,nullptr);
+            }
+
+            void processAttribute(const DOMAttr* attribute) {
+                if (XMLHelper::isNodeNamed(attribute, xmlconstants::XML_NS, LANG_ATTRIB_NAME)) {
+                    setLang(attribute->getValue());
+                    const XMLCh* temp = attribute->getPrefix();
+                    if (temp && *temp && !XMLString::equals(temp, xmlconstants::XML_NS))
+                        m_LangPrefix = XMLString::replicate(temp);
+                    return;
+                }
+                PROC_INTEGER_ATTRIB(Height,HEIGHT,nullptr);
+                PROC_INTEGER_ATTRIB(Width,WIDTH,nullptr);
+                AbstractXMLObjectUnmarshaller::processAttribute(attribute);
+            }
+        };
+
+        class SAML_DLLLOCAL UIInfoImpl : public virtual UIInfo,
+            public AbstractComplexElement,
+            public AbstractDOMCachingXMLObject,
+            public AbstractXMLObjectMarshaller,
+            public AbstractXMLObjectUnmarshaller
+        {
+        public:
+            virtual ~UIInfoImpl() {}
+
+            UIInfoImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
+                : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
+            }
+
+            UIInfoImpl(const UIInfoImpl& src)
+                    : AbstractXMLObject(src), AbstractComplexElement(src), AbstractDOMCachingXMLObject(src) {
+                for (list<XMLObject*>::const_iterator i=src.m_children.begin(); i!=src.m_children.end(); i++) {
+                    if (*i) {
+                        DisplayName* dn=dynamic_cast<DisplayName*>(*i);
+                        if (dn) {
+                            getDisplayNames().push_back(dn->cloneDisplayName());
+                            continue;
+                        }
+
+                        Description* des=dynamic_cast<Description*>(*i);
+                        if (des) {
+                            getDescriptions().push_back(des->cloneDescription());
+                            continue;
+                        }
+
+                        Keywords* key=dynamic_cast<Keywords*>(*i);
+                        if (key) {
+                            getKeywordss().push_back(key->cloneKeywords());
+                            continue;
+                        }
+
+						Logo* logo=dynamic_cast<Logo*>(*i);
+                        if (logo) {
+                            getLogos().push_back(logo->cloneLogo());
+                            continue;
+                        }
+
+                        InformationURL* inf=dynamic_cast<InformationURL*>(*i);
+                        if (inf) {
+                            getInformationURLs().push_back(inf->cloneInformationURL());
+                            continue;
+                        }
+
+                        PrivacyStatementURL* priv=dynamic_cast<PrivacyStatementURL*>(*i);
+                        if (priv) {
+                            getPrivacyStatementURLs().push_back(priv->clonePrivacyStatementURL());
+                            continue;
+                        }
+
+                        getUnknownXMLObjects().push_back((*i)->clone());
+                    }
+                }
+            }
+
+            IMPL_XMLOBJECT_CLONE(UIInfo);
+            IMPL_TYPED_CHILDREN(DisplayName,m_children.end());
+            IMPL_TYPED_CHILDREN(Description,m_children.end());
+			IMPL_TYPED_CHILDREN(Keywords,m_children.end());
+            IMPL_TYPED_CHILDREN(Logo,m_children.end());
+            IMPL_TYPED_CHILDREN(InformationURL,m_children.end());
+            IMPL_TYPED_CHILDREN(PrivacyStatementURL,m_children.end());
+            IMPL_XMLOBJECT_CHILDREN(UnknownXMLObject,m_children.end());
+
+        protected:
+            void processChildElement(XMLObject* childXMLObject, const DOMElement* root) {
+                PROC_TYPED_CHILDREN(DisplayName,SAML20MD_UI_NS,false);
+                PROC_TYPED_CHILDREN(Description,SAML20MD_UI_NS,false);
+				PROC_TYPED_CHILDREN(Keywords,SAML20MD_UI_NS,false);
+                PROC_TYPED_CHILDREN(Logo,SAML20MD_UI_NS,false);
+                PROC_TYPED_CHILDREN(InformationURL,SAML20MD_UI_NS,false);
+                PROC_TYPED_CHILDREN(PrivacyStatementURL,SAML20MD_UI_NS,false);
+
+                // Unknown child.
+                const XMLCh* nsURI=root->getNamespaceURI();
+                if (!XMLString::equals(nsURI,SAML20MD_UI_NS) && nsURI && *nsURI) {
+                    getUnknownXMLObjects().push_back(childXMLObject);
+                    return;
+                }
+
+                AbstractXMLObjectUnmarshaller::processChildElement(childXMLObject,root);
+            }
+        };
+
+        class SAML_DLLLOCAL DiscoHintsImpl : public virtual DiscoHints,
+            public AbstractComplexElement,
+            public AbstractDOMCachingXMLObject,
+            public AbstractXMLObjectMarshaller,
+            public AbstractXMLObjectUnmarshaller
+        {
+        public:
+            virtual ~DiscoHintsImpl() {}
+
+            DiscoHintsImpl(const XMLCh* nsURI, const XMLCh* localName, const XMLCh* prefix, const xmltooling::QName* schemaType)
+                : AbstractXMLObject(nsURI, localName, prefix, schemaType) {
+            }
+
+            DiscoHintsImpl(const DiscoHintsImpl& src)
+                    : AbstractXMLObject(src), AbstractComplexElement(src), AbstractDOMCachingXMLObject(src) {
+                for (list<XMLObject*>::const_iterator i=src.m_children.begin(); i!=src.m_children.end(); i++) {
+                    if (*i) {
+                        IPHint* ip=dynamic_cast<IPHint*>(*i);
+                        if (ip) {
+                            getIPHints().push_back(ip->cloneIPHint());
+                            continue;
+                        }
+
+                        DomainHint* dom=dynamic_cast<DomainHint*>(*i);
+                        if (dom) {
+                            getDomainHints().push_back(dom->cloneDomainHint());
+                            continue;
+                        }
+
+                        GeolocationHint* geo=dynamic_cast<GeolocationHint*>(*i);
+                        if (geo) {
+                            getGeolocationHints().push_back(geo->cloneGeolocationHint());
+                            continue;
+                        }
+
+                        getUnknownXMLObjects().push_back((*i)->clone());
+                    }
+                }
+            }
+
+            IMPL_XMLOBJECT_CLONE(DiscoHints);
+            IMPL_TYPED_CHILDREN(IPHint,m_children.end());
+            IMPL_TYPED_CHILDREN(DomainHint,m_children.end());
+            IMPL_TYPED_CHILDREN(GeolocationHint,m_children.end());
+            IMPL_XMLOBJECT_CHILDREN(UnknownXMLObject,m_children.end());
+
+        protected:
+            void processChildElement(XMLObject* childXMLObject, const DOMElement* root) {
+                PROC_TYPED_CHILDREN(IPHint,SAML20MD_UI_NS,false);
+                PROC_TYPED_CHILDREN(DomainHint,SAML20MD_UI_NS,false);
+                PROC_TYPED_CHILDREN(GeolocationHint,SAML20MD_UI_NS,false);
+
+                // Unknown child.
+                const XMLCh* nsURI=root->getNamespaceURI();
+                if (!XMLString::equals(nsURI,SAML20MD_UI_NS) && nsURI && *nsURI) {
+                    getUnknownXMLObjects().push_back(childXMLObject);
+                    return;
+                }
+
+                AbstractXMLObjectUnmarshaller::processChildElement(childXMLObject,root);
+            }
+        };
+
     };
 };
 
@@ -2547,7 +3065,22 @@ IMPL_XMLOBJECTBUILDER(TelephoneNumber);
 
 IMPL_XMLOBJECTBUILDER(ActionNamespace);
 IMPL_XMLOBJECTBUILDER(SourceID);
+IMPL_XMLOBJECTBUILDER(DiscoveryResponse);
+IMPL_XMLOBJECTBUILDER(RequestInitiator);
 IMPL_XMLOBJECTBUILDER(EntityAttributes);
+IMPL_XMLOBJECTBUILDER(DigestMethod);
+IMPL_XMLOBJECTBUILDER(SigningMethod);
+IMPL_XMLOBJECTBUILDER(DisplayName);
+IMPL_XMLOBJECTBUILDER(Description);
+IMPL_XMLOBJECTBUILDER(Keywords);
+IMPL_XMLOBJECTBUILDER(Logo);
+IMPL_XMLOBJECTBUILDER(InformationURL);
+IMPL_XMLOBJECTBUILDER(PrivacyStatementURL);
+IMPL_XMLOBJECTBUILDER(UIInfo);
+IMPL_XMLOBJECTBUILDER(IPHint);
+IMPL_XMLOBJECTBUILDER(DomainHint);
+IMPL_XMLOBJECTBUILDER(GeolocationHint);
+IMPL_XMLOBJECTBUILDER(DiscoHints);
 
 #ifdef HAVE_COVARIANT_RETURNS
 RoleDescriptor* RoleDescriptorBuilder::buildObject(
@@ -2558,6 +3091,101 @@ xmltooling::XMLObject* RoleDescriptorBuilder::buildObject(
     ) const
 {
     return new RoleDescriptorTypeImpl(nsURI,localName,prefix,schemaType);
+}
+
+const DigestMethod* RoleDescriptor::getDigestMethod() const
+{
+    bool roleLevel = false;
+    XMLToolingConfig& conf = XMLToolingConfig::getConfig();
+
+    if (getExtensions()) {
+        const vector<XMLObject*>& exts = const_cast<const Extensions*>(getExtensions())->getUnknownXMLObjects();
+        for (vector<XMLObject*>::const_iterator i = exts.begin(); i != exts.end(); ++i) {
+            const opensaml::saml2md::DigestMethod* dm = dynamic_cast<opensaml::saml2md::DigestMethod*>(*i);
+            if (dm) {
+                if (dm->getAlgorithm() && conf.isXMLAlgorithmSupported(dm->getAlgorithm(), XMLToolingConfig::ALGTYPE_DIGEST))
+                    return dm;
+                roleLevel = true;
+            }
+        }
+    }
+
+    if (!roleLevel) {
+        const EntityDescriptor* entity = dynamic_cast<EntityDescriptor*>(getParent());
+        if (entity && entity->getExtensions()) {
+            const vector<XMLObject*>& exts = const_cast<const Extensions*>(entity->getExtensions())->getUnknownXMLObjects();
+            for (vector<XMLObject*>::const_iterator i = exts.begin(); i != exts.end(); ++i) {
+                const opensaml::saml2md::DigestMethod* dm = dynamic_cast<opensaml::saml2md::DigestMethod*>(*i);
+                if (dm && dm->getAlgorithm() && conf.isXMLAlgorithmSupported(dm->getAlgorithm(), XMLToolingConfig::ALGTYPE_DIGEST))
+                    return dm;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+pair<const SigningMethod*,const Credential*> RoleDescriptor::getSigningMethod(const CredentialResolver& resolver, CredentialCriteria& cc) const
+{
+    bool roleLevel = false;
+    XMLToolingConfig& conf = XMLToolingConfig::getConfig();
+
+    if (getExtensions()) {
+        const vector<XMLObject*>& exts = const_cast<const Extensions*>(getExtensions())->getUnknownXMLObjects();
+        for (vector<XMLObject*>::const_iterator i = exts.begin(); i != exts.end(); ++i) {
+            const SigningMethod* sm = dynamic_cast<SigningMethod*>(*i);
+            if (sm) {
+                roleLevel = true;
+                if (sm->getAlgorithm() && conf.isXMLAlgorithmSupported(sm->getAlgorithm(), XMLToolingConfig::ALGTYPE_SIGN)) {
+                    cc.setXMLAlgorithm(sm->getAlgorithm());
+                    pair<bool,int> minsize = sm->getMinKeySize(), maxsize = sm->getMaxKeySize();
+                    if (minsize.first || maxsize.first) {
+                        cc.setKeySize(minsize.first ? minsize.second : 0);
+                        cc.setMaxKeySize(maxsize.first ? maxsize.second : UINT_MAX);
+                    }
+                    else {
+                        cc.setKeySize(0);
+                        cc.setMaxKeySize(0);
+                    }
+                    const Credential* cred = resolver.resolve(&cc);
+                    if (cred)
+                        return make_pair(sm, cred);
+                }
+            }
+        }
+    }
+
+    if (!roleLevel) {
+        const EntityDescriptor* entity = dynamic_cast<EntityDescriptor*>(getParent());
+        if (entity && entity->getExtensions()) {
+            const vector<XMLObject*>& exts = const_cast<const Extensions*>(entity->getExtensions())->getUnknownXMLObjects();
+            for (vector<XMLObject*>::const_iterator i = exts.begin(); i != exts.end(); ++i) {
+                const SigningMethod* sm = dynamic_cast<SigningMethod*>(*i);
+                if (sm) {
+                    if (sm->getAlgorithm() && conf.isXMLAlgorithmSupported(sm->getAlgorithm(), XMLToolingConfig::ALGTYPE_SIGN)) {
+                        cc.setXMLAlgorithm(sm->getAlgorithm());
+                        pair<bool,int> minsize = sm->getMinKeySize(), maxsize = sm->getMaxKeySize();
+                        if (minsize.first || maxsize.first) {
+                            cc.setKeySize(minsize.first ? minsize.second : 0);
+                            cc.setMaxKeySize(maxsize.first ? maxsize.second : UINT_MAX);
+                        }
+                        else {
+                            cc.setKeySize(0);
+                            cc.setMaxKeySize(0);
+                        }
+                        const Credential* cred = resolver.resolve(&cc);
+                        if (cred)
+                            return make_pair(sm, cred);
+                    }
+                }
+            }
+        }
+    }
+
+    cc.setKeySize(0);
+    cc.setMaxKeySize(0);
+    cc.setXMLAlgorithm(nullptr);
+    return pair<const SigningMethod*,const Credential*>(nullptr, resolver.resolve(&cc));
 }
 
 const XMLCh ActionNamespace::LOCAL_NAME[] =             UNICODE_LITERAL_15(A,c,t,i,o,n,N,a,m,e,s,p,a,c,e);
@@ -2600,6 +3228,15 @@ const XMLCh ContactPerson::CONTACT_SUPPORT[] =          UNICODE_LITERAL_7(s,u,p,
 const XMLCh ContactPerson::CONTACT_ADMINISTRATIVE[] =   UNICODE_LITERAL_14(a,d,m,i,n,i,s,t,r,a,t,i,v,e);
 const XMLCh ContactPerson::CONTACT_BILLING[] =          UNICODE_LITERAL_7(b,i,l,l,i,n,g);
 const XMLCh ContactPerson::CONTACT_OTHER[] =            UNICODE_LITERAL_5(o,t,h,e,r);
+const XMLCh Description::LOCAL_NAME[] =                 UNICODE_LITERAL_11(D,e,s,c,r,i,p,t,i,o,n);
+const XMLCh DigestMethod::LOCAL_NAME[] =                UNICODE_LITERAL_12(D,i,g,e,s,t,M,e,t,h,o,d);
+const XMLCh DigestMethod::TYPE_NAME[] =                 UNICODE_LITERAL_16(D,i,g,e,s,t,M,e,t,h,o,d,T,y,p,e);
+const XMLCh DigestMethod::ALGORITHM_ATTRIB_NAME[] =     UNICODE_LITERAL_9(A,l,g,o,r,i,t,h,m);
+const XMLCh DiscoHints::LOCAL_NAME[] =                  UNICODE_LITERAL_10(D,i,s,c,o,H,i,n,t,s);
+const XMLCh DiscoHints::TYPE_NAME[] =                   UNICODE_LITERAL_14(D,i,s,c,o,H,i,n,t,s,T,y,p,e);
+const XMLCh DiscoveryResponse::LOCAL_NAME[] =           UNICODE_LITERAL_17(D,i,s,c,o,v,e,r,y,R,e,s,p,o,n,s,e);
+const XMLCh DisplayName::LOCAL_NAME[] =                 UNICODE_LITERAL_11(D,i,s,p,l,a,y,N,a,m,e);
+const XMLCh DomainHint::LOCAL_NAME[] =                  UNICODE_LITERAL_10(D,o,m,a,i,n,H,i,n,t);
 const XMLCh EmailAddress::LOCAL_NAME[] =                UNICODE_LITERAL_12(E,m,a,i,l,A,d,d,r,e,s,s);
 const XMLCh EndpointType::LOCAL_NAME[] =                {chNull};
 const XMLCh EndpointType::TYPE_NAME[] =                 UNICODE_LITERAL_12(E,n,d,p,o,i,n,t,T,y,p,e);
@@ -2618,6 +3255,7 @@ const XMLCh EntityAttributes::LOCAL_NAME[] =            UNICODE_LITERAL_16(E,n,t
 const XMLCh EntityAttributes::TYPE_NAME[] =             UNICODE_LITERAL_20(E,n,t,i,t,y,A,t,t,r,i,b,u,t,e,s,T,y,p,e);
 const XMLCh Extensions::LOCAL_NAME[] =                  UNICODE_LITERAL_10(E,x,t,e,n,s,i,o,n,s);
 const XMLCh Extensions::TYPE_NAME[] =                   UNICODE_LITERAL_14(E,x,t,e,n,s,i,o,n,s,T,y,p,e);
+const XMLCh GeolocationHint::LOCAL_NAME[] =             UNICODE_LITERAL_15(G,e,o,l,o,c,a,t,i,o,n,H,i,n,t);
 const XMLCh GivenName::LOCAL_NAME[] =                   UNICODE_LITERAL_9(G,i,v,e,n,N,a,m,e);
 const XMLCh IDPSSODescriptor::LOCAL_NAME[] =            UNICODE_LITERAL_16(I,D,P,S,S,O,D,e,s,c,r,i,p,t,o,r);
 const XMLCh IDPSSODescriptor::TYPE_NAME[] =             UNICODE_LITERAL_20(I,D,P,S,S,O,D,e,s,c,r,i,p,t,o,r,T,y,p,e);
@@ -2626,11 +3264,21 @@ const XMLCh IndexedEndpointType::LOCAL_NAME[] =         {chNull};
 const XMLCh IndexedEndpointType::TYPE_NAME[] =          UNICODE_LITERAL_19(I,n,d,e,x,e,d,E,n,d,p,o,i,n,t,T,y,p,e);
 const XMLCh IndexedEndpointType::INDEX_ATTRIB_NAME[] =  UNICODE_LITERAL_5(i,n,d,e,x);
 const XMLCh IndexedEndpointType::ISDEFAULT_ATTRIB_NAME[] =  UNICODE_LITERAL_9(i,s,D,e,f,a,u,l,t);
+const XMLCh InformationURL::LOCAL_NAME[] =              UNICODE_LITERAL_14(I,n,f,o,r,m,a,t,i,o,n,U,R,L);
+const XMLCh IPHint::LOCAL_NAME[] =                      UNICODE_LITERAL_6(I,P,H,i,n,t);
 const XMLCh KeyDescriptor::LOCAL_NAME[] =               UNICODE_LITERAL_13(K,e,y,D,e,s,c,r,i,p,t,o,r);
 const XMLCh KeyDescriptor::TYPE_NAME[] =                UNICODE_LITERAL_17(K,e,y,D,e,s,c,r,i,p,t,o,r,T,y,p,e);
 const XMLCh KeyDescriptor::USE_ATTRIB_NAME[] =          UNICODE_LITERAL_3(u,s,e);
 const XMLCh KeyDescriptor::KEYTYPE_ENCRYPTION[] =       UNICODE_LITERAL_10(e,n,c,r,y,p,t,i,o,n);
 const XMLCh KeyDescriptor::KEYTYPE_SIGNING[] =          UNICODE_LITERAL_7(s,i,g,n,i,n,g);
+const XMLCh Keywords::LOCAL_NAME[] =					UNICODE_LITERAL_8(K,e,y,w,o,r,d,s);
+const XMLCh Keywords::TYPE_NAME[] =						UNICODE_LITERAL_12(K,e,y,w,o,r,d,s,T,y,p,e);
+const XMLCh Keywords::LANG_ATTRIB_NAME[] =              UNICODE_LITERAL_4(l,a,n,g);
+const XMLCh Logo::LOCAL_NAME[] =                        UNICODE_LITERAL_4(L,o,g,o);
+const XMLCh Logo::TYPE_NAME[] =                         UNICODE_LITERAL_8(L,o,g,o,T,y,p,e);
+const XMLCh Logo::LANG_ATTRIB_NAME[] =                  UNICODE_LITERAL_4(l,a,n,g);
+const XMLCh Logo::HEIGHT_ATTRIB_NAME[] =                UNICODE_LITERAL_6(h,e,i,g,h,t);
+const XMLCh Logo::WIDTH_ATTRIB_NAME[] =                 UNICODE_LITERAL_5(w,i,d,t,h);
 const XMLCh localizedNameType::LOCAL_NAME[] =           {chNull};
 const XMLCh localizedNameType::TYPE_NAME[] =            UNICODE_LITERAL_17(l,o,c,a,l,i,z,e,d,N,a,m,e,T,y,p,e);
 const XMLCh localizedNameType::LANG_ATTRIB_NAME[] =     UNICODE_LITERAL_4(l,a,n,g);
@@ -2647,18 +3295,25 @@ const XMLCh OrganizationDisplayName::LOCAL_NAME[] =     UNICODE_LITERAL_23(O,r,g
 const XMLCh OrganizationURL::LOCAL_NAME[] =             UNICODE_LITERAL_15(O,r,g,a,n,i,z,a,t,i,o,n,U,R,L);
 const XMLCh PDPDescriptor::LOCAL_NAME[] =               UNICODE_LITERAL_13(P,D,P,D,e,s,c,r,i,p,t,o,r);
 const XMLCh PDPDescriptor::TYPE_NAME[] =                UNICODE_LITERAL_17(P,D,P,D,e,s,c,r,i,p,t,o,r,T,y,p,e);
+const XMLCh PrivacyStatementURL::LOCAL_NAME[] =         UNICODE_LITERAL_19(P,r,i,v,a,c,y,S,t,a,t,e,m,e,n,t,U,R,L);
 const XMLCh QueryDescriptorType::LOCAL_NAME[] =         {chNull};
 const XMLCh QueryDescriptorType::TYPE_NAME[] =          UNICODE_LITERAL_19(Q,u,e,r,y,D,e,s,c,r,i,p,t,o,r,T,y,p,e);
 const XMLCh QueryDescriptorType::WANTASSERTIONSSIGNED_ATTRIB_NAME[] =   UNICODE_LITERAL_20(W,a,n,t,A,s,s,e,r,t,i,o,n,s,S,i,g,n,e,d);
 const XMLCh RequestedAttribute::LOCAL_NAME[] =          UNICODE_LITERAL_18(R,e,q,u,e,s,t,e,d,A,t,t,r,i,b,u,t,e);
 const XMLCh RequestedAttribute::TYPE_NAME[] =           UNICODE_LITERAL_22(R,e,q,u,e,s,t,e,d,A,t,t,r,i,b,u,t,e,T,y,p,e);
 const XMLCh RequestedAttribute::ISREQUIRED_ATTRIB_NAME[] =  UNICODE_LITERAL_10(i,s,R,e,q,u,i,r,e,d);
+const XMLCh RequestInitiator::LOCAL_NAME[] =            UNICODE_LITERAL_16(R,e,q,u,e,s,t,I,n,i,t,i,a,t,o,r);
 const XMLCh RoleDescriptor::LOCAL_NAME[] =              UNICODE_LITERAL_14(R,o,l,e,D,e,s,c,r,i,p,t,o,r);
 const XMLCh RoleDescriptor::ID_ATTRIB_NAME[] =          UNICODE_LITERAL_2(I,D);
 const XMLCh RoleDescriptor::PROTOCOLSUPPORTENUMERATION_ATTRIB_NAME[] =  UNICODE_LITERAL_26(p,r,o,t,o,c,o,l,S,u,p,p,o,r,t,E,n,u,m,e,r,a,t,i,o,n);
 const XMLCh RoleDescriptor::ERRORURL_ATTRIB_NAME[] =    UNICODE_LITERAL_8(e,r,r,o,r,U,R,L);
 const XMLCh ServiceDescription::LOCAL_NAME[] =          UNICODE_LITERAL_18(S,e,r,v,i,c,e,D,e,s,c,r,i,p,t,i,o,n);
 const XMLCh ServiceName::LOCAL_NAME[] =                 UNICODE_LITERAL_11(S,e,r,v,i,c,e,N,a,m,e);
+const XMLCh SigningMethod::LOCAL_NAME[] =               UNICODE_LITERAL_13(S,i,g,n,i,n,g,M,e,t,h,o,d);
+const XMLCh SigningMethod::TYPE_NAME[] =                UNICODE_LITERAL_17(S,i,g,n,i,n,g,M,e,t,h,o,d,T,y,p,e);
+const XMLCh SigningMethod::ALGORITHM_ATTRIB_NAME[] =    UNICODE_LITERAL_9(A,l,g,o,r,i,t,h,m);
+const XMLCh SigningMethod::MINKEYSIZE_ATTRIB_NAME[] =   UNICODE_LITERAL_10(M,i,n,K,e,y,S,i,z,e);
+const XMLCh SigningMethod::MAXKEYSIZE_ATTRIB_NAME[] =   UNICODE_LITERAL_10(M,a,x,K,e,y,S,i,z,e);
 const XMLCh SingleLogoutService::LOCAL_NAME[] =         UNICODE_LITERAL_19(S,i,n,g,l,e,L,o,g,o,u,t,S,e,r,v,i,c,e);
 const XMLCh SingleSignOnService::LOCAL_NAME[] =         UNICODE_LITERAL_19(S,i,n,g,l,e,S,i,g,n,O,n,S,e,r,v,i,c,e);
 const XMLCh SourceID::LOCAL_NAME[] =                    UNICODE_LITERAL_8(S,o,u,r,c,e,I,D);
@@ -2671,3 +3326,5 @@ const XMLCh SSODescriptorType::TYPE_NAME[] =            UNICODE_LITERAL_17(S,S,O
 const XMLCh SurName::LOCAL_NAME[] =                     UNICODE_LITERAL_7(S,u,r,N,a,m,e);
 const XMLCh TelephoneNumber::LOCAL_NAME[] =             UNICODE_LITERAL_15(T,e,l,e,p,h,o,n,e,N,u,m,b,e,r);
 const XMLCh TimeBoundSAMLObject::VALIDUNTIL_ATTRIB_NAME[] =   UNICODE_LITERAL_10(v,a,l,i,d,U,n,t,i,l);
+const XMLCh UIInfo::LOCAL_NAME[] =                      UNICODE_LITERAL_6(U,I,I,n,f,o);
+const XMLCh UIInfo::TYPE_NAME[] =                       UNICODE_LITERAL_10(U,I,I,n,f,o,T,y,p,e);
