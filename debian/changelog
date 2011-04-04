@@ -1,3 +1,23 @@
+opensaml2 (2.4.1-1) UNRELEASED; urgency=low
+
+  * New upstream release.
+    - Don't download remote metadata if it hasn't changed
+    - Verify that fetched metadata is valid, even after filters, before
+      overwriting the previous metadata.  Improve metadata downloads.
+    - Logging improvements for OpenSAML.MetadataProvider.XML
+    - Add keywords/tags element to UIInfo extension and disco feed
+    - Fix overuse of InclusivePrefixes list when signing
+    - Do not use cacheDuration for validity
+    - Fix memory leaks
+    - Fix crash when encrypting unmarshalled object
+    - Resolve sibling EncryptedKey element for decryption
+    - Add xml prefix on newly-created xml:lang attributes
+    - Duplication and line feed fixes for DiscoFeed.
+    - Fix reload interval backoff after reload failures
+    - Strip whitespace from SAMLRequest URL parameter values
+  
+ -- Russ Allbery <rra@debian.org>  Sun, 03 Apr 2011 17:59:57 -0700
+
 opensaml2 (2.3-2) unstable; urgency=low
 
   * Force source format 1.0 for now since it makes backporting easier.
