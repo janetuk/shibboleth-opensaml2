@@ -18,6 +18,8 @@ opensaml2 (2.4.1-1) UNRELEASED; urgency=low
   * Build-depend on xmltooling 1.4 or later.
   * Force build dependency on xml-security-c 1.6 or later for consistent
     build results.
+  * Add build dependency on pkg-config, which upstream now uses to find
+    the SSL libraries.
   * Replace the version of jQuery installed by Doxygen in the
     documentation package with a symlink to the version supplied by the
     Debian package and add a dependency.
