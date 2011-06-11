@@ -1,0 +1,116 @@
+
+# /
+/*.ncb
+/*.suo
+/debug
+/aclocal.m4
+/autom4te.cache
+/config.guess
+/config.h
+/config.h.in
+/config.log
+/config.status
+/config.sub
+/configure
+/depcomp
+/install-sh
+/libtool
+/Makefile
+/Makefile.in
+/missing
+/opensaml.spec
+/pkginfo
+/stamp-h1
+/.settings
+/doxyfile
+/release
+/x64
+/Portfile
+/*.gz
+/*.sdf
+/*.opensdf
+/ipch
+/build-aux
+/build
+
+# /doc/
+/doc/api
+/doc/Makefile
+/doc/Makefile.in
+
+# /m4/
+/m4/lt~obsolete.m4
+/m4/ltoptions.m4
+/m4/ltsugar.m4
+/m4/ltversion.m4
+/m4/libtool.m4
+
+# /saml/
+/saml/Debug
+/saml/*.user
+/saml/.deps
+/saml/.libs
+/saml/Makefile
+/saml/Makefile.in
+/saml/Release
+/saml/x64
+
+# /samlsign/
+/samlsign/Debug
+/samlsign/Release
+/samlsign/*.user
+/samlsign/Makefile.in
+/samlsign/Makefile
+/samlsign/x64
+/samlsign/samlsign
+/samlsign/.libs
+/samlsign/.deps
+
+# /samltest/
+/samltest/Debug
+/samltest/*.user
+/samltest/*.cpp
+/samltest/.deps
+/samltest/.libs
+/samltest/Makefile
+/samltest/Makefile.in
+/samltest/samltest
+/samltest/Release
+/samltest/x64
+
+# /samltest/encryption/
+/samltest/encryption/*.cpp
+
+# /samltest/saml1/binding/
+/samltest/saml1/binding/*.cpp
+
+# /samltest/saml1/core/impl/
+/samltest/saml1/core/impl/*.cpp
+
+# /samltest/saml1/profile/
+/samltest/saml1/profile/*.cpp
+
+# /samltest/saml2/binding/
+/samltest/saml2/binding/*.cpp
+
+# /samltest/saml2/core/impl/
+/samltest/saml2/core/impl/*.cpp
+
+# /samltest/saml2/metadata/
+/samltest/saml2/metadata/*.cpp
+
+# /samltest/saml2/profile/
+/samltest/saml2/profile/*.cpp
+
+# /samltest/security/
+/samltest/security/*.cpp
+
+# /samltest/signature/
+/samltest/signature/*.cpp
+
+# /schemas/
+/schemas/Makefile
+/schemas/Makefile.in
+/schemas/saml10-catalog.xml
+/schemas/saml11-catalog.xml
+/schemas/saml20-catalog.xml
