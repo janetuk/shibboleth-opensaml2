@@ -92,7 +92,7 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(encincludedir)" \
 	"$(DESTDIR)$(utilincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libsaml_la_LIBADD =
-am_libsaml_la_OBJECTS = SAMLConfig.lo ArtifactMap.lo \
+am_libsaml_la_OBJECTS = SAMLConfig.lo version.lo ArtifactMap.lo \
 	ClientCertAuthRule.lo MessageDecoder.lo MessageEncoder.lo \
 	MessageFlowRule.lo NullSecurityRule.lo SAMLArtifact.lo \
 	SecurityPolicy.lo SimpleSigningRule.lo SOAPClient.lo \
@@ -400,6 +400,7 @@ noinst_HEADERS = \
 
 libsaml_la_SOURCES = \
 	SAMLConfig.cpp \
+    version.cpp \
 	binding/impl/ArtifactMap.cpp \
 	binding/impl/ClientCertAuthRule.cpp \
 	binding/impl/MessageDecoder.cpp \
@@ -482,7 +483,7 @@ libsaml_la_SOURCES = \
 
 # this is different from the project version
 # http://sources.redhat.com/autobook/autobook/autobook_91.html
-libsaml_la_LDFLAGS = -version-info 7:1:0
+libsaml_la_LDFLAGS = -version-info 8:0:0
 EXTRA_DIST = saml.vcxproj saml.vcxproj.filters resource.h saml.rc
 all: all-am
 
@@ -637,6 +638,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WhitelistMetadataFilter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLMetadataProvider.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLSigningRule.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/version.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
