@@ -3,6 +3,7 @@
 /*.ncb
 /*.suo
 /debug
+/Debug
 /aclocal.m4
 /autom4te.cache
 /config.guess
@@ -27,6 +28,7 @@
 /.project
 /doxyfile
 /release
+/Release
 /x64
 /Portfile
 /*.gz
