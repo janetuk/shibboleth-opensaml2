@@ -1,17 +1,21 @@
-/*
- *  Copyright 2001-2010 Internet2
+/**
+ * Licensed to the University Corporation for Advanced Internet
+ * Development, Inc. (UCAID) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for
+ * additional information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * UCAID licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the
+ * License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific
+ * language governing permissions and limitations under the License.
  */
 
 /**
@@ -113,7 +117,7 @@ public:
 
 int main(int argc,char* argv[])
 {
-    bool verify=true;
+    bool verify=true,validate=false;
     char* url_param=nullptr;
     char* path_param=nullptr;
     char* key_param=nullptr;
@@ -157,6 +161,8 @@ int main(int argc,char* argv[])
             prot=argv[++i];
         else if (!strcmp(argv[i],"-r") && i+1<argc)
             rname=argv[++i];
+        else if (!strcmp(argv[i],"-V"))
+            validate = true;
         else if (!strcmp(argv[i],"-ns") && i+1<argc)
             rns=argv[++i];
         else if (!strcmp(argv[i],"-alg") && i+1<argc)
@@ -190,6 +196,8 @@ int main(int argc,char* argv[])
 
     XMLToolingConfig& xmlconf = XMLToolingConfig::getConfig();
     xmlconf.log_config(getenv("OPENSAML_LOG_CONFIG"));
+    if (getenv("OPENSAML_SCHEMAS"))
+        xmlconf.catalog_path = getenv("OPENSAML_SCHEMAS");
     SAMLConfig& conf=SAMLConfig::getConfig();
     if (!conf.init())
         return -2;
@@ -204,18 +212,27 @@ int main(int argc,char* argv[])
             auto_ptr_XMLCh wideurl(url_param);
             URLInputSource src(wideurl.get());
             Wrapper4InputSource dsrc(&src,false);
-            doc=xmlconf.getParser().parse(dsrc);
+            if (validate)
+                doc = xmlconf.getValidatingParser().parse(dsrc);
+            else
+                doc = xmlconf.getParser().parse(dsrc);
         }
         else if (path_param) {
             auto_ptr_XMLCh widenit(path_param);
             LocalFileInputSource src(widenit.get());
             Wrapper4InputSource dsrc(&src,false);
-            doc=xmlconf.getParser().parse(dsrc);
+            if (validate)
+                doc = xmlconf.getValidatingParser().parse(dsrc);
+            else
+                doc = xmlconf.getParser().parse(dsrc);
         }
         else {
             StdInInputSource src;
             Wrapper4InputSource dsrc(&src,false);
-            doc=xmlconf.getParser().parse(dsrc);
+            if (validate)
+                doc = xmlconf.getValidatingParser().parse(dsrc);
+            else
+                doc = xmlconf.getParser().parse(dsrc);
         }
 
         // Unmarshall it.

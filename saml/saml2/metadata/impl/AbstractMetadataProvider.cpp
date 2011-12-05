@@ -1,17 +1,21 @@
-/*
- *  Copyright 2001-2010 Internet2
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+/**
+ * Licensed to the University Corporation for Advanced Internet
+ * Development, Inc. (UCAID) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for
+ * additional information regarding copyright ownership.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * UCAID licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the
+ * License at
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific
+ * language governing permissions and limitations under the License.
  */
 
 /**
@@ -33,6 +37,7 @@
 #include <xmltooling/security/Credential.h>
 #include <xmltooling/security/KeyInfoResolver.h>
 #include <xmltooling/security/SecurityHelper.h>
+#include <xmltooling/util/DateTime.h>
 #include <xmltooling/util/Threads.h>
 #include <xmltooling/util/XMLHelper.h>
 
@@ -46,7 +51,7 @@ static const XMLCh _KeyInfoResolver[] = UNICODE_LITERAL_15(K,e,y,I,n,f,o,R,e,s,o
 static const XMLCh type[] =             UNICODE_LITERAL_4(t,y,p,e);
 
 AbstractMetadataProvider::AbstractMetadataProvider(const DOMElement* e)
-    : ObservableMetadataProvider(e), m_resolver(nullptr), m_credentialLock(nullptr)
+    : ObservableMetadataProvider(e), m_lastUpdate(0),  m_resolver(nullptr), m_credentialLock(nullptr)
 {
     e = XMLHelper::getFirstChildElement(e, _KeyInfoResolver);
     if (e) {
@@ -65,6 +70,24 @@ AbstractMetadataProvider::~AbstractMetadataProvider()
         for_each(c->second.begin(), c->second.end(), xmltooling::cleanup<Credential>());
     delete m_credentialLock;
     delete m_resolver;
+}
+
+void AbstractMetadataProvider::outputStatus(ostream& os) const
+{
+    os << "<MetadataProvider";
+
+    if (getId() && *getId()) {
+        os << " id='" << getId() << "'";
+    }
+
+    if (m_lastUpdate > 0) {
+        DateTime ts(m_lastUpdate);
+        ts.parseDateTime();
+        auto_ptr_char timestamp(ts.getFormattedString());
+        os << " lastUpdate='" << timestamp.get() << "'";
+    }
+
+    os << "/>";
 }
 
 void AbstractMetadataProvider::emitChangeEvent() const

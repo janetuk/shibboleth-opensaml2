@@ -1,17 +1,21 @@
-/*
- *  Copyright 2001-2010 Internet2
+/**
+ * Licensed to the University Corporation for Advanced Internet
+ * Development, Inc. (UCAID) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for
+ * additional information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * UCAID licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the
+ * License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific
+ * language governing permissions and limitations under the License.
  */
 
 /**
@@ -30,6 +34,7 @@
 #include <fstream>
 #include <xmltooling/XMLToolingConfig.h>
 #include <xmltooling/io/HTTPResponse.h>
+#include <xmltooling/util/DateTime.h>
 #include <xmltooling/util/NDC.h>
 #include <xmltooling/util/PathResolver.h>
 #include <xmltooling/util/ReloadableXMLFile.h>
@@ -87,6 +92,35 @@ namespace opensaml {
                 if (!m_id.empty()) {
                     logging::NDC::pop();
                 }
+            }
+
+            const char* getId() const {
+                return m_id.c_str();
+            }
+
+            void outputStatus(ostream& os) const {
+                os << "<MetadataProvider";
+
+                if (getId() && *getId()) {
+                    os << " id='" << getId() << "'";
+                }
+
+                if (!m_source.empty()) {
+                    os << " source='" << m_source << "'";
+                }
+
+                if (m_lastUpdate > 0) {
+                    DateTime ts(m_lastUpdate);
+                    ts.parseDateTime();
+                    auto_ptr_char timestamp(ts.getFormattedString());
+                    os << " lastUpdate='" << timestamp.get() << "'";
+                }
+
+                if (!m_local && m_reloadInterval > 0) {
+                    os << " reloadInterval='" << m_reloadInterval << "'";
+                }
+
+                os << "/>";
             }
 
             const XMLObject* getMetadata() const {
@@ -232,6 +266,7 @@ pair<bool,DOMElement*> XMLMetadataProvider::load(bool backup)
         generateFeed();
     if (changed)
         emitChangeEvent();
+    m_lastUpdate = time(nullptr);
 
     // Tracking cacheUntil through the tree is TBD, but
     // validUntil is the tightest interval amongst the children.

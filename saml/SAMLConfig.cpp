@@ -1,18 +1,21 @@
-
-/*
- *  Copyright 2001-2010 Internet2
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+/**
+ * Licensed to the University Corporation for Advanced Internet
+ * Development, Inc. (UCAID) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for
+ * additional information regarding copyright ownership.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * UCAID licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the
+ * License at
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific
+ * language governing permissions and limitations under the License.
  */
 
 /**
@@ -56,6 +59,7 @@
 #include <xmltooling/signature/Signature.h>
 #include <xmltooling/util/NDC.h>
 #include <xmltooling/util/PathResolver.h>
+#include <xmltooling/util/Threads.h>
 
 #include <xsec/enc/XSECCryptoException.hpp>
 #include <xsec/enc/XSECCryptoProvider.hpp>
@@ -123,16 +127,40 @@ void SAMLConfig::setArtifactMap(ArtifactMap* artifactMap)
     m_artifactMap = artifactMap;
 }
 
+SAMLInternalConfig::SAMLInternalConfig() : m_initCount(0), m_lock(Mutex::create())
+{
+}
+
+SAMLInternalConfig::~SAMLInternalConfig()
+{
+    delete m_lock;
+}
+
 bool SAMLInternalConfig::init(bool initXMLTooling)
 {
 #ifdef _DEBUG
     xmltooling::NDC ndc("init");
 #endif
-    Category& log=Category::getInstance(SAML_LOGCAT".SAMLConfig");
+    Category& log=Category::getInstance(SAML_LOGCAT".Config");
+
+    Lock initLock(m_lock);
+
+    if (m_initCount == INT_MAX) {
+        log.crit("library initialized too many times");
+        return false;
+    }
+
+    if (m_initCount >= 1) {
+        ++m_initCount;
+        return true;
+    }
+
     log.debug("library initialization started");
 
-    if (initXMLTooling)
-        XMLToolingConfig::getConfig().init();
+    if (initXMLTooling && !XMLToolingConfig::getConfig().init()) {
+        return false;
+    }
+
     XMLToolingConfig::getConfig().getPathResolver()->setDefaultPackageName("opensaml");
 
     REGISTER_XMLTOOLING_EXCEPTION_FACTORY(ArtifactException,opensaml);
@@ -157,6 +185,7 @@ bool SAMLInternalConfig::init(bool initXMLTooling)
     registerSecurityPolicyRules();
 
     log.info("%s library initialization complete", PACKAGE_STRING);
+    ++m_initCount;
     return true;
 }
 
@@ -165,7 +194,15 @@ void SAMLInternalConfig::term(bool termXMLTooling)
 #ifdef _DEBUG
     xmltooling::NDC ndc("term");
 #endif
-    Category& log=Category::getInstance(SAML_LOGCAT".SAMLConfig");
+
+    Lock initLock(m_lock);
+    if (m_initCount == 0) {
+        Category::getInstance(SAML_LOGCAT".Config").crit("term without corresponding init");
+        return;
+    }
+    else if (--m_initCount > 0) {
+        return;
+    }
 
     MessageDecoderManager.deregisterFactories();
     MessageEncoderManager.deregisterFactories();
@@ -180,7 +217,7 @@ void SAMLInternalConfig::term(bool termXMLTooling)
     if (termXMLTooling)
         XMLToolingConfig::getConfig().term();
     
-    log.info("%s library shutdown complete", PACKAGE_STRING);
+    Category::getInstance(SAML_LOGCAT".Config").info("%s library shutdown complete", PACKAGE_STRING);
 }
 
 void SAMLInternalConfig::generateRandomBytes(void* buf, unsigned int len)
@@ -197,8 +234,8 @@ void SAMLInternalConfig::generateRandomBytes(void* buf, unsigned int len)
 void SAMLInternalConfig::generateRandomBytes(std::string& buf, unsigned int len)
 {
     buf.erase();
-    auto_ptr<unsigned char> hold(new unsigned char[len]);
-    generateRandomBytes(hold.get(),len);
+    auto_arrayptr<unsigned char> hold(new unsigned char[len]);
+    generateRandomBytes(const_cast<unsigned char*>(hold.get()), len);
     for (unsigned int i=0; i<len; i++)
         buf+=(hold.get())[i];
 }

@@ -1,17 +1,21 @@
-/*
- *  Copyright 2001-2010 Internet2
+/**
+ * Licensed to the University Corporation for Advanced Internet
+ * Development, Inc. (UCAID) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for
+ * additional information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * UCAID licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the
+ * License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific
+ * language governing permissions and limitations under the License.
  */
 
 /**
@@ -43,6 +47,7 @@ using namespace std;
 #  define min(a,b)            (((a) < (b)) ? (a) : (b))
 # endif
 
+static const XMLCh id[] =                   UNICODE_LITERAL_2(i,d);
 static const XMLCh maxCacheDuration[] =     UNICODE_LITERAL_16(m,a,x,C,a,c,h,e,D,u,r,a,t,i,o,n);
 static const XMLCh minCacheDuration[] =     UNICODE_LITERAL_16(m,i,n,C,a,c,h,e,D,u,r,a,t,i,o,n);
 static const XMLCh refreshDelayFactor[] =   UNICODE_LITERAL_18(r,e,f,r,e,s,h,D,e,l,a,y,F,a,c,t,o,r);
@@ -60,6 +65,7 @@ namespace opensaml {
 DynamicMetadataProvider::DynamicMetadataProvider(const DOMElement* e)
     : AbstractMetadataProvider(e),
       m_validate(XMLHelper::getAttrBool(e, false, validate)),
+        m_id(XMLHelper::getAttrString(e, "Dynamic", id)),
         m_lock(RWLock::create()),
         m_refreshDelayFactor(0.75),
         m_minCacheDuration(XMLHelper::getAttrInt(e, 600, minCacheDuration)),
@@ -110,6 +116,11 @@ void DynamicMetadataProvider::unlock()
 
 void DynamicMetadataProvider::init()
 {
+}
+
+const char* DynamicMetadataProvider::getId() const
+{
+    return m_id.c_str();
 }
 
 pair<const EntityDescriptor*,const RoleDescriptor*> DynamicMetadataProvider::getEntityDescriptor(const Criteria& criteria) const
@@ -230,6 +241,8 @@ pair<const EntityDescriptor*,const RoleDescriptor*> DynamicMetadataProvider::get
         // Make sure we clear out any existing copies, including stale metadata or if somebody snuck in.
         cacheExp = SAMLTIME_MAX;
         indexEntity(entity2.release(), cacheExp, true);
+
+        m_lastUpdate = now;
 
         // Downgrade back to a read lock.
         m_lock->unlock();

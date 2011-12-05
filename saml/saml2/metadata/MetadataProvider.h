@@ -1,17 +1,21 @@
-/*
- *  Copyright 2001-2010 Internet2
+/**
+ * Licensed to the University Corporation for Advanced Internet
+ * Development, Inc. (UCAID) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for
+ * additional information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * UCAID licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the
+ * License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific
+ * language governing permissions and limitations under the License.
  */
 
 /**
@@ -26,6 +30,7 @@
 #include <saml/base.h>
 
 #include <vector>
+#include <iostream>
 #include <xmltooling/exceptions.h>
 #include <xmltooling/security/CredentialResolver.h>
 
@@ -92,6 +97,13 @@ namespace opensaml {
             virtual ~MetadataProvider();
 
             /**
+             * Returns an identifier for the provider for logging/status purposes.
+             *
+             * @return an identifier, or null
+             */
+            virtual const char* getId() const;
+
+            /**
              * Adds a metadata filter to apply to any resolved metadata. Will not be applied
              * to metadata that is already loaded.
              *
@@ -115,6 +127,14 @@ namespace opensaml {
              * this method so as to report/log any errors that would affect later processing.
              */
             virtual void init()=0;
+
+            /**
+             * Generate an XML representation of the provider's status. The XML must be
+             * well-formed, but is otherwise arbitrary.
+             *
+             * @param os    stream to write status information to
+             */
+            virtual void outputStatus(std::ostream& os) const;
 
             /**
              * Gets the entire metadata tree, after the registered filter has been applied.
@@ -250,6 +270,9 @@ namespace opensaml {
 
         /** MetadataProvider that wraps a sequence of metadata providers. */
         #define CHAINING_METADATA_PROVIDER  "Chaining"
+
+        /** MetadataProvider that loads a directory of files. */
+        #define FOLDER_METADATA_PROVIDER  "Folder"
 
         /** MetadataProvider that returns an empty "dummy" entity descriptor. */
         #define NULL_METADATA_PROVIDER  "Null"
