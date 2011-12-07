@@ -414,15 +414,18 @@ samltest_h = \
     saml2/profile/SAML2PolicyTest.h
 
 noinst_HEADERS = \
-	binding.h \
+    binding.h \
     internal.h \
-    signature/SAMLSignatureTestBase.h
+    signature/SAMLSignatureTestBase.h \
+    $(samltest_h)
 
 nodist_samltest_SOURCES = $(samltest_h:.h=.cpp)
-CLEANFILES = $(nodist_samltest_SOURCES)
+@BUILD_UNITTEST_TRUE@BUILT_SOURCES = $(nodist_samltest_SOURCES)
+@BUILD_UNITTEST_TRUE@CLEANFILES = $(nodist_samltest_SOURCES)
 samltest_LDADD = $(top_builddir)/saml/libsaml.la
-EXTRA_DIST = samltest.vcxproj samltest.vcxproj.filters $(samltest_h) data
-all: all-am
+EXTRA_DIST = samltest.vcxproj samltest.vcxproj.filters data
+all: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
 .SUFFIXES: .cpp .lo .o .obj
@@ -1940,13 +1943,15 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-check: check-am
+check: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(PROGRAMS) $(HEADERS)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: install-am
+install: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -1972,6 +1977,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
@@ -2042,7 +2048,7 @@ ps-am:
 
 uninstall-am: uninstall-binPROGRAMS
 
-.MAKE: install-am install-strip
+.MAKE: all check install install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
 	clean-generic clean-libtool ctags distclean distclean-compile \
@@ -2060,7 +2066,7 @@ uninstall-am: uninstall-binPROGRAMS
 
 
 do-cxxtestgen:
-	if test $(HFILE) = "samltest.h"; then \
+	if test "$(CPPFILE)" = "samltest.cpp"; then \
 		$(CXXTEST) --error-printer --have-eh --have-std --abort-on-fail -o $(CPPFILE) $(HFILE); \
 	else \
 		$(CXXTEST) --part --have-eh --have-std --abort-on-fail -o $(CPPFILE) $(HFILE); \

@@ -65,9 +65,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(srcdir)/Portfile.in \
-	$(srcdir)/config.h.in $(srcdir)/doxygen.am \
-	$(srcdir)/opensaml.spec.in $(srcdir)/pkginfo.in \
+	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
+	$(srcdir)/doxygen.am $(srcdir)/opensaml.spec.in \
 	$(top_srcdir)/configure build-aux/config.guess \
 	build-aux/config.sub build-aux/depcomp build-aux/install-sh \
 	build-aux/ltmain.sh build-aux/missing
@@ -86,7 +85,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = opensaml.spec pkginfo Portfile
+CONFIG_CLEAN_FILES = opensaml.spec
 CONFIG_CLEAN_VPATH_FILES =
 SOURCES =
 DIST_SOURCES =
@@ -354,13 +353,12 @@ DISTCLEANFILES = \
 SUBDIRS = doc schemas saml samltest samlsign
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = @PACKAGE_NAME@.pc
-GENFILES = @PACKAGE_NAME@.spec pkginfo Portfile
+GENFILES = @PACKAGE_NAME@.spec
 EXTRA_DIST = $(DX_CONFIG) \
 	cpp-opensaml2.sln \
 	config_win32.h \
 	$(GENFILES) \
-	$(GENFILES:%=%.in) \
-	postinstall
+	$(GENFILES:%=%.in)
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -418,10 +416,6 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 distclean-hdr:
 	-rm -f config.h stamp-h1
 opensaml.spec: $(top_builddir)/config.status $(srcdir)/opensaml.spec.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-pkginfo: $(top_builddir)/config.status $(srcdir)/pkginfo.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-Portfile: $(top_builddir)/config.status $(srcdir)/Portfile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:
