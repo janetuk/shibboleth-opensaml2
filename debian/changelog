@@ -2,7 +2,7 @@ opensaml2 (2.5+dfsg~moonshot1-2) unstable; urgency=low
 
   * Update to libsaml8
 
- -- Russ Allbery <hartmans@project-moonshot.org>  Wed, 07 Dec 2011 11:54:44 -0500
+ -- Sam Hartman <hartmans@project-moonshot.org>  Wed, 07 Dec 2011 11:54:44 -0500
 
 opensaml2 (2.5+dfsg~moonshot1-1) unstable; urgency=low
 
