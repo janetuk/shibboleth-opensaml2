@@ -49,16 +49,19 @@ if test "$GCC" = "yes" ; then
 #        ])
     CFLAGS="$GCC_CFLAGS"
     CXXFLAGS="$GCC_CXXFLAGS"
-else
-# Fix for Sun Workshop compiler in debug mode, may be Sun case #6360993
-	case "${host_cpu}-${host_os}" in
-	        *solaris*)
-			if test "$CXX" = "CC" ; then
-				CXXFLAGS="$CXXFLAGS -Qoption ccfe -stabs=no%dfltlit+no%dflthlp"
-			fi
-	        ;;
-	esac
 fi
+
+# Fix for Sun Workshop compiler in debug mode, may be Sun case #6360993
+# Also enables POSIX semantics for some functions.
+case "${host_cpu}-${host_os}" in
+    *solaris*)
+	CFLAGS="$CFLAGS -D_POSIX_PTHREAD_SEMANTICS"
+	CXXFLAGS="$CXXFLAGS -D_POSIX_PTHREAD_SEMANTICS"
+	if test "$CXX" = "CC" ; then
+		CXXFLAGS="$CXXFLAGS -Qoption ccfe -stabs=no%dfltlit+no%dflthlp"
+	fi
+    ;;
+esac
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -90,8 +93,23 @@ AC_ARG_WITH(zlib,
         fi
     ]
 )
+
+AC_ARG_WITH(zlib,
+    AS_HELP_STRING([--with-zlib=PATH],[where zlib is installed]),,
+    [with_zlib=/usr])
+if test x_$with_zlib != x_/usr; then
+    CPPFLAGS="-I${with_zlib}/include $CPPFLAGS"
+    LIBS="-L${with_zlib}/lib -lz $LIBS"
+else
+    LIBS="-lz $LIBS"
+fi
+
 AC_CHECK_HEADER([zlib.h],,AC_MSG_ERROR([unable to find zlib header files]))
-AC_CHECK_LIB([z],[deflateInit2_],,AC_MSG_ERROR([unable to link with zlib library]))
+AC_LINK_IFELSE(
+    [AC_LANG_PROGRAM([[#include <zlib.h>]],
+        [[zlibVersion()]])],,
+    [AC_MSG_ERROR([unable to link with zlib])])
+
 
 # OpenSSL settings
 AC_ARG_WITH(openssl,
@@ -175,12 +193,15 @@ fi
 
 # Xerces settings
 AC_ARG_WITH(xerces,
-    AS_HELP_STRING([--with-xerces=PATH],[where xerces-c is installed]),
-    [if test x_$with_xerces != x_/usr; then
-        LDFLAGS="-L${with_xerces}/lib $LDFLAGS"
-        CPPFLAGS="-I${with_xerces}/include $CPPFLAGS"
-    fi])
-LIBS="-lxerces-c $LIBS"
+    AS_HELP_STRING([--with-xerces=PATH],[where xerces-c is installed]),,
+    [with_xerces=/usr])
+if test x_$with_xerces != x_/usr; then
+    CPPFLAGS="-I${with_xerces}/include $CPPFLAGS"
+    LIBS="-L${with_xerces}/lib -lxerces-c $LIBS"
+else
+    LIBS="-lxerces-c $LIBS"
+fi
+
 AC_CHECK_HEADER([xercesc/dom/DOM.hpp],,AC_MSG_ERROR([unable to find xerces header files]))
 AC_MSG_CHECKING([Xerces version])
 AC_PREPROC_IFELSE(
@@ -205,12 +226,14 @@ AC_COMPILE_IFELSE(
 
 # XML-Security settings
 AC_ARG_WITH(xmlsec,
-    AS_HELP_STRING([--with-xmlsec=PATH],[where xmlsec is installed]),
-    [if test x_$with_xmlsec != x_/usr; then
-        LDFLAGS="-L${with_xmlsec}/lib $LDFLAGS"
-        CPPFLAGS="-I${with_xmlsec}/include $CPPFLAGS"
-    fi])
-LIBS="-lxml-security-c $LIBS"
+    AS_HELP_STRING([--with-xmlsec=PATH],[where xmlsec is installed]),,
+    [with_xmlsec=/usr])
+if test x_$with_xmlsec != x_/usr; then
+    CPPFLAGS="-I${with_xmlsec}/include $CPPFLAGS"
+    LIBS="-L${with_xmlsec}/lib -lxml-security-c $LIBS"
+else
+    LIBS="-lxml-security-c $LIBS"
+fi
 AC_CHECK_HEADER([xsec/utils/XSECPlatformUtils.hpp],,AC_MSG_ERROR([unable to find xmlsec header files]))
 AC_MSG_CHECKING([XML-Security version])
 AC_PREPROC_IFELSE(
@@ -229,13 +252,16 @@ int i = 0;
 
 # XML-Tooling settings
 AC_ARG_WITH(xmltooling,
-    AS_HELP_STRING([--with-xmltooling=PATH],[where xmltooling is installed]),
-    [if test x_$with_xmltooling != x_/usr; then
-        LDFLAGS="-L${with_xmltooling}/lib $LDFLAGS"
-        CPPFLAGS="-I${with_xmltooling}/include $CPPFLAGS"
-        DX_INCLUDE="${with_xmltooling}/include"
-    fi])
-LIBS="-lxmltooling $LIBS"
+    AS_HELP_STRING([--with-xmltooling=PATH],[where xmltooling is installed]),,
+    [with_xmltooling=/usr])
+if test x_$with_xmltooling != x_/usr; then
+    CPPFLAGS="-I${with_xmltooling}/include $CPPFLAGS"
+    DX_INCLUDE="${with_xmltooling}/include"
+    LIBS="-L${with_xmltooling}/lib -lxmltooling $LIBS"
+else
+    LIBS="-lxmltooling $LIBS"
+fi
+
 AC_CHECK_HEADER([xmltooling/XMLToolingConfig.h],,AC_MSG_ERROR([unable to find xmltooling header files]))
 
 AC_LINK_IFELSE(
