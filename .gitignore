@@ -38,6 +38,11 @@
 /ipch
 /build-aux
 /build
+/config.cache
+/opensaml-uninstalled.pc
+/opensaml-uninstalled.sh
+/opensaml.pc
+/opensaml.pc.in
 
 # /doc/
 /doc/api
