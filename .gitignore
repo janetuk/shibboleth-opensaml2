@@ -2,6 +2,7 @@
 # /
 /*.ncb
 /*.suo
+/msbuild
 /debug
 /Debug
 /aclocal.m4
