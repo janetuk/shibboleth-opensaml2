@@ -1,5 +1,26 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Defined if the requested minimum BOOST version is satisfied */
+#undef HAVE_BOOST
+
+/* Define to 1 if you have <boost/algorithm/string.hpp> */
+#undef HAVE_BOOST_ALGORITHM_STRING_HPP
+
+/* Define to 1 if you have <boost/bind.hpp> */
+#undef HAVE_BOOST_BIND_HPP
+
+/* Define to 1 if you have <boost/lambda/lambda.hpp> */
+#undef HAVE_BOOST_LAMBDA_LAMBDA_HPP
+
+/* Define to 1 if you have <boost/ptr_container/ptr_vector.hpp> */
+#undef HAVE_BOOST_PTR_CONTAINER_PTR_VECTOR_HPP
+
+/* Define to 1 if you have <boost/scoped_ptr.hpp> */
+#undef HAVE_BOOST_SCOPED_PTR_HPP
+
+/* Define to 1 if you have <boost/shared_ptr.hpp> */
+#undef HAVE_BOOST_SHARED_PTR_HPP
+
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
 #undef HAVE_DIRENT_H
