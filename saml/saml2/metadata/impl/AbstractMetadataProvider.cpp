@@ -104,6 +104,14 @@ void AbstractMetadataProvider::emitChangeEvent() const
     ObservableMetadataProvider::emitChangeEvent();
 }
 
+void AbstractMetadataProvider::emitChangeEvent(const EntityDescriptor& entity) const
+{
+    for (credmap_t::iterator c = m_credentialMap.begin(); c!=m_credentialMap.end(); ++c)
+        for_each(c->second.begin(), c->second.end(), xmltooling::cleanup<Credential>());
+    m_credentialMap.clear();
+    ObservableMetadataProvider::emitChangeEvent(entity);
+}
+
 void AbstractMetadataProvider::indexEntity(EntityDescriptor* site, time_t& validUntil, bool replace) const
 {
     // If child expires later than input, reset child, otherwise lower input to match.
@@ -316,7 +324,7 @@ const Credential* AbstractMetadataProvider::resolve(const CredentialCriteria* cr
     if (!metacrit)
         throw MetadataException("Cannot resolve credentials without a MetadataCredentialCriteria object.");
 
-    Lock lock(m_credentialLock.get());
+    Lock lock(m_credentialLock);
     const credmap_t::mapped_type& creds = resolveCredentials(metacrit->getRole());
 
     for (credmap_t::mapped_type::const_iterator c = creds.begin(); c!=creds.end(); ++c)
@@ -333,7 +341,7 @@ vector<const Credential*>::size_type AbstractMetadataProvider::resolve(
     if (!metacrit)
         throw MetadataException("Cannot resolve credentials without a MetadataCredentialCriteria object.");
 
-    Lock lock(m_credentialLock.get());
+    Lock lock(m_credentialLock);
     const credmap_t::mapped_type& creds = resolveCredentials(metacrit->getRole());
 
    for (credmap_t::mapped_type::const_iterator c = creds.begin(); c!=creds.end(); ++c)

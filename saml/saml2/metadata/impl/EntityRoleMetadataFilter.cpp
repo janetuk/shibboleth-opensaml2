@@ -29,7 +29,6 @@
 #include "saml2/metadata/MetadataFilter.h"
 
 #include <xmltooling/logging.h>
-#include <xmltooling/util/NDC.h>
 
 using namespace opensaml::saml2md;
 using namespace xmltooling::logging;
@@ -95,7 +94,7 @@ EntityRoleMetadataFilter::EntityRoleMetadataFilter(const DOMElement* e)
             else if (*q == AuthzDecisionQueryDescriptorType::TYPE_QNAME)
                 m_authzq = true;
             else
-                m_roles.insert(*q.get());
+                m_roles.insert(*q);
         }
         e = XMLHelper::getNextSiblingElement(e, RetainedRole);
     }
@@ -103,33 +102,27 @@ EntityRoleMetadataFilter::EntityRoleMetadataFilter(const DOMElement* e)
 
 void EntityRoleMetadataFilter::doFilter(XMLObject& xmlObject) const
 {
-#ifdef _DEBUG
-    NDC ndc("doFilter");
-#endif
-
-    try {
-        doFilter(dynamic_cast<EntitiesDescriptor&>(xmlObject));
-        return;
+    EntitiesDescriptor* group = dynamic_cast<EntitiesDescriptor*>(&xmlObject);
+    if (group) {
+        doFilter(*group);
     }
-    catch (bad_cast) {
+    else {
+        EntityDescriptor* entity = dynamic_cast<EntityDescriptor*>(&xmlObject);
+        if (entity) {
+            doFilter(*entity);
+        }
+        else {
+            throw MetadataFilterException(ENTITYROLE_METADATA_FILTER" MetadataFilter was given an improper metadata instance to filter.");
+        }
     }
-
-    try {
-        doFilter(dynamic_cast<EntityDescriptor&>(xmlObject));
-        return;
-    }
-    catch (bad_cast) {
-    }
-
-    throw MetadataFilterException("EntityRoleWhiteList MetadataFilter was given an improper metadata instance to filter.");
 }
 
 void EntityRoleMetadataFilter::doFilter(EntitiesDescriptor& entities) const
 {
-    Category& log=Category::getInstance(SAML_LOGCAT".MetadataFilter.EntityRoleWhiteList");
+    Category& log=Category::getInstance(SAML_LOGCAT".MetadataFilter."ENTITYROLE_METADATA_FILTER);
 
-    VectorOf(EntityDescriptor) v=entities.getEntityDescriptors();
-    for (VectorOf(EntityDescriptor)::size_type i=0; i<v.size(); ) {
+    VectorOf(EntityDescriptor) v = entities.getEntityDescriptors();
+    for (VectorOf(EntityDescriptor)::size_type i = 0; i < v.size(); ) {
         doFilter(*v[i]);
         if (m_removeRolelessEntityDescriptors) {
             const EntityDescriptor& e = const_cast<const EntityDescriptor&>(*v[i]);
@@ -151,8 +144,8 @@ void EntityRoleMetadataFilter::doFilter(EntitiesDescriptor& entities) const
         i++;
     }
 
-    VectorOf(EntitiesDescriptor) groups=entities.getEntitiesDescriptors();
-    for (VectorOf(EntitiesDescriptor)::size_type j=0; j<groups.size(); ) {
+    VectorOf(EntitiesDescriptor) groups = entities.getEntitiesDescriptors();
+    for (VectorOf(EntitiesDescriptor)::size_type j = 0; j < groups.size(); ) {
         EntitiesDescriptor* group = groups[j];
         doFilter(*group);
         if (m_removeEmptyEntitiesDescriptors && group->getEntitiesDescriptors().empty() && group->getEntityDescriptors().empty()) {
@@ -191,7 +184,7 @@ void EntityRoleMetadataFilter::doFilter(EntityDescriptor& entity) const
         entity.getAuthzDecisionQueryDescriptorTypes().clear();
 
     VectorOf(RoleDescriptor) v = entity.getRoleDescriptors();
-    for (VectorOf(RoleDescriptor)::size_type i=0; i<v.size(); ) {
+    for (VectorOf(RoleDescriptor)::size_type i = 0; i < v.size(); ) {
         const xmltooling::QName* type = v[i]->getSchemaType();
         if (!type || m_roles.find(*type) != m_roles.end())
             v.erase(v.begin() + i);

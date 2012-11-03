@@ -46,8 +46,12 @@ namespace opensaml {
     class SAML_API SecurityPolicyRule;
 
     namespace saml2md {
+        class SAML_API ContactPerson;
+        class SAML_API EntityDescriptor;
+        class SAML_API EntityMatcher;
         class SAML_API MetadataProvider;
         class SAML_API MetadataFilter;
+        class SAML_API RoleDescriptor;
     };
 
 #if defined (_MSC_VER)
@@ -147,6 +151,29 @@ namespace opensaml {
          */
         virtual std::string hashSHA1(const char* s, bool toHex=false)=0;
 
+        /**
+         * Sets the order of contact types to use in annotating exceptions with contact information.
+         *
+         * @param contactTypes  whitespace-delimited list of contact types
+         */
+        virtual void setContactPriority(const XMLCh* contactTypes)=0;
+
+        /**
+         * Returns the appropriate contact to use for the entity.
+         *
+         * @param entity    the entity to search
+         * @return  a contact to use, or nullptr
+         */
+        virtual const saml2md::ContactPerson* getContactPerson(const saml2md::EntityDescriptor& entity) const=0;
+
+        /**
+         * Returns the appropriate contact to use for the role.
+         *
+         * @param entity    the role to search
+         * @return  a contact to use, or nullptr
+         */
+        virtual const saml2md::ContactPerson* getContactPerson(const saml2md::RoleDescriptor& role) const=0;
+
         /** Manages factories for MessageDecoder plugins. */
         xmltooling::PluginManager< MessageDecoder,std::string,std::pair<const xercesc::DOMElement*,const XMLCh*> > MessageDecoderManager;
 
@@ -164,6 +191,9 @@ namespace opensaml {
         
         /** Manages factories for MetadataFilter plugins. */
         xmltooling::PluginManager<saml2md::MetadataFilter,std::string,const xercesc::DOMElement*> MetadataFilterManager;
+
+        /** Manages factories for EntityMatcher plugins. */
+        xmltooling::PluginManager<saml2md::EntityMatcher,std::string,const xercesc::DOMElement*> EntityMatcherManager;
 
     protected:
         SAMLConfig();

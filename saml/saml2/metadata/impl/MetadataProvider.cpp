@@ -29,6 +29,7 @@
 #include "saml2/metadata/MetadataProvider.h"
 
 #include <algorithm>
+#include <boost/lambda/lambda.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xmltooling/logging.h>
 #include <xmltooling/unicode.h>
@@ -39,6 +40,8 @@ using namespace opensaml::saml2md;
 using namespace opensaml;
 using namespace xmltooling::logging;
 using namespace xmltooling;
+using namespace boost::lambda;
+using namespace boost;
 using namespace std;
 
 namespace opensaml {
@@ -53,6 +56,7 @@ namespace opensaml {
         SAML_DLLLOCAL PluginManager<MetadataFilter,string,const DOMElement*>::Factory SignatureMetadataFilterFactory;
         SAML_DLLLOCAL PluginManager<MetadataFilter,string,const DOMElement*>::Factory RequireValidUntilMetadataFilterFactory;
         SAML_DLLLOCAL PluginManager<MetadataFilter,string,const DOMElement*>::Factory EntityRoleMetadataFilterFactory;
+        SAML_DLLLOCAL PluginManager<MetadataFilter,string,const DOMElement*>::Factory EntityAttributesMetadataFilterFactory;
     };
 };
 
@@ -75,6 +79,8 @@ void SAML_API opensaml::saml2md::registerMetadataFilters()
     // additional name matching Java code
     SAMLConfig::getConfig().MetadataFilterManager.registerFactory("RequiredValidUntil", RequireValidUntilMetadataFilterFactory);
     SAMLConfig::getConfig().MetadataFilterManager.registerFactory(ENTITYROLE_METADATA_FILTER, EntityRoleMetadataFilterFactory);
+    SAMLConfig::getConfig().MetadataFilterManager.registerFactory(ENTITYATTR_METADATA_FILTER, EntityAttributesMetadataFilterFactory);
+
 }
 
 static const XMLCh _MetadataFilter[] =  UNICODE_LITERAL_14(M,e,t,a,d,a,t,a,F,i,l,t,e,r);
@@ -83,9 +89,9 @@ static const XMLCh Whitelist[] =        UNICODE_LITERAL_23(W,h,i,t,e,l,i,s,t,M,e
 static const XMLCh SigFilter[] =        UNICODE_LITERAL_23(S,i,g,n,a,t,u,r,e,M,e,t,a,d,a,t,a,F,i,l,t,e,r);
 static const XMLCh Exclude[] =          UNICODE_LITERAL_7(E,x,c,l,u,d,e);
 static const XMLCh Include[] =          UNICODE_LITERAL_7(I,n,c,l,u,d,e);
-static const XMLCh type[] =             UNICODE_LITERAL_4(t,y,p,e);
+static const XMLCh _type[] =            UNICODE_LITERAL_4(t,y,p,e);
 
-MetadataProvider::MetadataProvider(const DOMElement* e)
+MetadataProvider::MetadataProvider(const DOMElement* e) : m_filterContext(nullptr)
 {
 #ifdef _DEBUG
     NDC ndc("MetadataProvider");
@@ -98,10 +104,15 @@ MetadataProvider::MetadataProvider(const DOMElement* e)
         DOMElement* child = XMLHelper::getFirstChildElement(e);
         while (child) {
             if (XMLString::equals(child->getLocalName(), _MetadataFilter)) {
-                string t = XMLHelper::getAttrString(child, nullptr, type);
+                string t = XMLHelper::getAttrString(child, nullptr, _type);
                 if (!t.empty()) {
                     log.info("building MetadataFilter of type %s", t.c_str());
-                    m_filters.push_back(conf.MetadataFilterManager.newPlugin(t.c_str(), child));
+                    auto_ptr<MetadataFilter> np(conf.MetadataFilterManager.newPlugin(t.c_str(), child));
+                    m_filters.push_back(np.get());
+                    np.release();
+                }
+                else {
+                    log.error("MetadataFilter element missing type attribute");
                 }
             }
             else if (XMLString::equals(child->getLocalName(), SigFilter)) {
@@ -129,14 +140,12 @@ MetadataProvider::MetadataProvider(const DOMElement* e)
     }
     catch (XMLToolingException& ex) {
         log.error("caught exception while installing filters: %s", ex.what());
-        for_each(m_filters.begin(),m_filters.end(),xmltooling::cleanup<MetadataFilter>());
         throw;
     }
 }
 
 MetadataProvider::~MetadataProvider()
 {
-    for_each(m_filters.begin(), m_filters.end(), xmltooling::cleanup<MetadataFilter>());
 }
 
 const char* MetadataProvider::getId() const
@@ -151,24 +160,24 @@ void MetadataProvider::addMetadataFilter(MetadataFilter* newFilter)
 
 MetadataFilter* MetadataProvider::removeMetadataFilter(MetadataFilter* oldFilter)
 {
-    for (vector<MetadataFilter*>::iterator i=m_filters.begin(); i!=m_filters.end(); i++) {
-        if (oldFilter==(*i)) {
-            m_filters.erase(i);
-            return oldFilter;
-        }
+    ptr_vector<MetadataFilter>::iterator i = find_if(m_filters.begin(), m_filters.end(), (&_1 == oldFilter));
+    if (i != m_filters.end()) {
+        return m_filters.release(i).release();
     }
     return nullptr;
 }
 
+void MetadataProvider::setContext(const MetadataFilterContext* ctx)
+{
+    m_filterContext = ctx;
+}
+
 void MetadataProvider::doFilters(XMLObject& xmlObject) const
 {
-#ifdef _DEBUG
-    NDC ndc("doFilters");
-#endif
-    Category& log=Category::getInstance(SAML_LOGCAT".Metadata");
-    for (std::vector<MetadataFilter*>::const_iterator i=m_filters.begin(); i!=m_filters.end(); i++) {
-        log.info("applying metadata filter (%s)", (*i)->getId());
-        (*i)->doFilter(xmlObject);
+    Category& log = Category::getInstance(SAML_LOGCAT".Metadata");
+    for (ptr_vector<MetadataFilter>::const_iterator i = m_filters.begin(); i != m_filters.end(); i++) {
+        log.info("applying metadata filter (%s)", i->getId());
+        i->doFilter(m_filterContext, xmlObject);
     }
 }
 
@@ -208,13 +217,13 @@ MetadataProvider::Criteria::~Criteria()
 
 void MetadataProvider::Criteria::reset()
 {
-    entityID_unicode=nullptr;
-    entityID_ascii=nullptr;
-    artifact=nullptr;
-    role=nullptr;
-    protocol=nullptr;
-    protocol2=nullptr;
-    validOnly=true;
+    entityID_unicode = nullptr;
+    entityID_ascii = nullptr;
+    artifact = nullptr;
+    role = nullptr;
+    protocol = nullptr;
+    protocol2 = nullptr;
+    validOnly = true;
 }
 
 MetadataFilter::MetadataFilter()
@@ -222,5 +231,24 @@ MetadataFilter::MetadataFilter()
 }
 
 MetadataFilter::~MetadataFilter()
+{
+}
+
+void MetadataFilter::doFilter(const MetadataFilterContext* ctx, xmltooling::XMLObject& xmlObject) const
+{
+    // Default call into deprecated method.
+    doFilter(xmlObject);
+}
+
+void MetadataFilter::doFilter(xmltooling::XMLObject& xmlObject) const
+{
+    // Empty default for deprecated method.
+}
+
+MetadataFilterContext::MetadataFilterContext()
+{
+}
+
+MetadataFilterContext::~MetadataFilterContext()
 {
 }

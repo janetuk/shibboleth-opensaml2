@@ -95,7 +95,6 @@ DynamicMetadataProvider::~DynamicMetadataProvider()
 {
     // Each entity in the map is unique (no multimap semantics), so this is safe.
     clearDescriptorIndex(true);
-    delete m_lock;
 }
 
 const XMLObject* DynamicMetadataProvider::getMetadata() const
@@ -204,7 +203,7 @@ pair<const EntityDescriptor*,const RoleDescriptor*> DynamicMetadataProvider::get
         }
 
         // Filter it, which may throw.
-        doFilters(*entity2.get());
+        doFilters(*entity2);
 
         time_t now = time(nullptr);
         if (entity2->getValidUntil() && entity2->getValidUntilEpoch() < now + 60)
@@ -233,14 +232,15 @@ pair<const EntityDescriptor*,const RoleDescriptor*> DynamicMetadataProvider::get
         m_lock->wrlock();
 
         // Notify observers.
-        emitChangeEvent();
+        emitChangeEvent(*entity2);
 
         // Record the proper refresh time.
         m_cacheMap[entity2->getEntityID()] = now + cacheExp;
 
         // Make sure we clear out any existing copies, including stale metadata or if somebody snuck in.
         cacheExp = SAMLTIME_MAX;
-        indexEntity(entity2.release(), cacheExp, true);
+        indexEntity(entity2.get(), cacheExp, true);
+        entity2.release();
 
         m_lastUpdate = now;
 

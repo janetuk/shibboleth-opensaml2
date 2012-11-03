@@ -25,15 +25,16 @@
  */
 
 #include "internal.h"
+#include "saml2/metadata/EntityMatcher.h"
 #include "saml2/metadata/Metadata.h"
 #include "saml2/metadata/MetadataFilter.h"
 
 #include <boost/bind.hpp>
-#include <boost/iterator/indirect_iterator.hpp>
+#include <boost/scoped_ptr.hpp>
 #include <xmltooling/logging.h>
-#include <xmltooling/util/NDC.h>
 
 using namespace opensaml::saml2md;
+using namespace opensaml::saml2;
 using namespace xmltooling::logging;
 using namespace xmltooling;
 using namespace boost;
@@ -41,7 +42,6 @@ using namespace std;
 
 namespace opensaml {
     namespace saml2md {
-
         class SAML_DLLLOCAL WhitelistMetadataFilter : public MetadataFilter
         {
         public:
@@ -52,15 +52,11 @@ namespace opensaml {
             void doFilter(XMLObject& xmlObject) const;
 
         private:
-            void doFilter(EntitiesDescriptor& entities) const;
+            void filterGroup(EntitiesDescriptor*) const;
+            bool included(const EntityDescriptor&) const;
 
-            bool found(const XMLCh* id) const {
-                if (!id)
-                    return false;
-                return m_set.count(id)==1;
-            }
-
-            set<xstring> m_set;
+            set<xstring> m_entities;
+            scoped_ptr<EntityMatcher> m_matcher;
         };
 
         MetadataFilter* SAML_DLLLOCAL WhitelistMetadataFilterFactory(const DOMElement* const & e)
@@ -68,57 +64,56 @@ namespace opensaml {
             return new WhitelistMetadataFilter(e);
         }
 
+        static const XMLCh Include[] = UNICODE_LITERAL_7(I,n,c,l,u,d,e);
+        static const XMLCh _matcher[] = UNICODE_LITERAL_7(m,a,t,c,h,e,r);
     };
 };
 
-static const XMLCh Include[] =  UNICODE_LITERAL_7(I,n,c,l,u,d,e);
 
 WhitelistMetadataFilter::WhitelistMetadataFilter(const DOMElement* e)
 {
-    e = XMLHelper::getFirstChildElement(e);
+    string matcher(XMLHelper::getAttrString(e, nullptr, _matcher));
+    if (!matcher.empty())
+        m_matcher.reset(SAMLConfig::getConfig().EntityMatcherManager.newPlugin(matcher.c_str(), e));
+
+    e = XMLHelper::getFirstChildElement(e, Include);
     while (e) {
-        if (XMLString::equals(e->getLocalName(), Include) && e->hasChildNodes()) {
-            m_set.insert(e->getFirstChild()->getTextContent());
+        if (e->hasChildNodes()) {
+            const XMLCh* incl = e->getTextContent();
+            if (incl && *incl)
+                m_entities.insert(incl);
         }
-        e = XMLHelper::getNextSiblingElement(e);
+        e = XMLHelper::getNextSiblingElement(e, Include);
     }
 }
 
 void WhitelistMetadataFilter::doFilter(XMLObject& xmlObject) const
 {
-#ifdef _DEBUG
-    NDC ndc("doFilter");
-#endif
-
-    try {
-        doFilter(dynamic_cast<EntitiesDescriptor&>(xmlObject));
-        return;
+    EntitiesDescriptor* group = dynamic_cast<EntitiesDescriptor*>(&xmlObject);
+    if (group) {
+        filterGroup(group);
     }
-    catch (bad_cast&) {
+    else {
+        EntityDescriptor* entity = dynamic_cast<EntityDescriptor*>(&xmlObject);
+        if (entity) {
+            if (!included(*entity))
+                throw MetadataFilterException(WHITELIST_METADATA_FILTER" MetadataFilter instructed to filter the root/only entity in the metadata.");
+        }
+        else {
+            throw MetadataFilterException(WHITELIST_METADATA_FILTER" MetadataFilter was given an improper metadata instance to filter.");
+        }
     }
-
-    try {
-        EntityDescriptor& entity = dynamic_cast<EntityDescriptor&>(xmlObject);
-        if (!found(entity.getEntityID()))
-            throw MetadataFilterException("WhitelistMetadataFilter instructed to filter the root/only entity in the metadata.");
-        return;
-    }
-    catch (bad_cast&) {
-    }
-
-    throw MetadataFilterException("WhitelistMetadataFilter was given an improper metadata instance to filter.");
 }
 
-void WhitelistMetadataFilter::doFilter(EntitiesDescriptor& entities) const
+void WhitelistMetadataFilter::filterGroup(EntitiesDescriptor* entities) const
 {
-    Category& log=Category::getInstance(SAML_LOGCAT".MetadataFilter.Whitelist");
+    Category& log = Category::getInstance(SAML_LOGCAT".MetadataFilter."WHITELIST_METADATA_FILTER);
 
-    VectorOf(EntityDescriptor) v=entities.getEntityDescriptors();
-    for (VectorOf(EntityDescriptor)::size_type i=0; i<v.size(); ) {
-        const XMLCh* id=v[i]->getEntityID();
-        if (!found(id)) {
-            auto_ptr_char id2(id);
-            log.info("filtering out non-whitelisted entity (%s)", id2.get());
+    VectorOf(EntityDescriptor) v = entities->getEntityDescriptors();
+    for (VectorOf(EntityDescriptor)::size_type i = 0; i < v.size(); ) {
+        if (!included(*v[i])) {
+            auto_ptr_char id(v[i]->getEntityID());
+            log.info("filtering out non-whitelisted entity (%s)", id.get());
             v.erase(v.begin() + i);
         }
         else {
@@ -126,11 +121,18 @@ void WhitelistMetadataFilter::doFilter(EntitiesDescriptor& entities) const
         }
     }
 
-    const vector<EntitiesDescriptor*>& groups=const_cast<const EntitiesDescriptor&>(entities).getEntitiesDescriptors();
-    for_each(
-        make_indirect_iterator(groups.begin()), make_indirect_iterator(groups.end()),
-        boost::bind(
-            static_cast<void (WhitelistMetadataFilter::*)(EntitiesDescriptor&) const>(&WhitelistMetadataFilter::doFilter), boost::ref(this), _1
-            )
-        );
+    const vector<EntitiesDescriptor*>& groups = const_cast<const EntitiesDescriptor*>(entities)->getEntitiesDescriptors();
+    for_each(groups.begin(), groups.end(), boost::bind(&WhitelistMetadataFilter::filterGroup, this, _1));
+}
+
+bool WhitelistMetadataFilter::included(const EntityDescriptor& entity) const
+{
+    // Check for entityID.
+    if (entity.getEntityID() && !m_entities.empty() && m_entities.count(entity.getEntityID()) > 0)
+        return true;
+
+    if (m_matcher && m_matcher->matches(entity))
+        return true;
+
+    return false;
 }

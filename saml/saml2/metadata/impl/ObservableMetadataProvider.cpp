@@ -27,10 +27,12 @@
 #include "internal.h"
 #include "saml2/metadata/ObservableMetadataProvider.h"
 
+#include <boost/bind.hpp>
 #include <xmltooling/util/Threads.h>
 
 using namespace opensaml::saml2md;
 using namespace xmltooling;
+using namespace boost;
 using namespace std;
 
 ObservableMetadataProvider::ObservableMetadataProvider(const xercesc::DOMElement* e)
@@ -40,15 +42,18 @@ ObservableMetadataProvider::ObservableMetadataProvider(const xercesc::DOMElement
 
 ObservableMetadataProvider::~ObservableMetadataProvider()
 {
-    delete m_observerLock;
 }
 
 void ObservableMetadataProvider::emitChangeEvent() const
 {
     Lock lock(m_observerLock);
-    for (vector<const Observer*>::const_iterator i=m_observers.begin(); i!=m_observers.end(); i++) {
-        (*i)->onEvent(*this);
-    }
+    for_each(m_observers.begin(), m_observers.end(), boost::bind(&Observer::onEvent, _1, boost::cref(*this)));
+}
+
+void ObservableMetadataProvider::emitChangeEvent(const EntityDescriptor& entity) const
+{
+    Lock lock(m_observerLock);
+    for_each(m_observers.begin(), m_observers.end(), boost::bind(&Observer::onEvent, _1, boost::cref(*this), boost::cref(entity)));
 }
 
 void ObservableMetadataProvider::addObserver(const Observer* newObserver) const
@@ -60,11 +65,10 @@ void ObservableMetadataProvider::addObserver(const Observer* newObserver) const
 const ObservableMetadataProvider::Observer* ObservableMetadataProvider::removeObserver(const Observer* oldObserver) const
 {
     Lock lock(m_observerLock);
-    for (vector<const Observer*>::iterator i=m_observers.begin(); i!=m_observers.end(); i++) {
-        if (oldObserver==(*i)) {
-            m_observers.erase(i);
-            return oldObserver;
-        }
+    vector<const Observer*>::iterator i = find(m_observers.begin(), m_observers.end(), oldObserver);
+    if (i != m_observers.end()) {
+        m_observers.erase(i);
+        return oldObserver;
     }
     return nullptr;
 }
@@ -75,4 +79,9 @@ ObservableMetadataProvider::Observer::Observer()
 
 ObservableMetadataProvider::Observer::~Observer()
 {
+}
+
+void ObservableMetadataProvider::Observer::onEvent(const ObservableMetadataProvider& provider, const EntityDescriptor&) const
+{ 
+    onEvent(provider);
 }

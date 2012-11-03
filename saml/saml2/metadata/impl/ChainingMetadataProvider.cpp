@@ -67,17 +67,18 @@ namespace opensaml {
 
             Lockable* lock();
             void unlock();
+            void setContext(const MetadataFilterContext*);
             void init();
-            void outputStatus(ostream& os) const;
+            void outputStatus(ostream&) const;
             const XMLObject* getMetadata() const;
-            const EntitiesDescriptor* getEntitiesDescriptor(const char* name, bool requireValidMetadata=true) const;
-            pair<const EntityDescriptor*,const RoleDescriptor*> getEntityDescriptor(const Criteria& criteria) const;
+            const EntitiesDescriptor* getEntitiesDescriptor(const char*, bool requireValidMetadata=true) const;
+            pair<const EntityDescriptor*,const RoleDescriptor*> getEntityDescriptor(const Criteria&) const;
     
             const Credential* resolve(const CredentialCriteria* criteria=nullptr) const;
-            vector<const Credential*>::size_type resolve(vector<const Credential*>& results, const CredentialCriteria* criteria=nullptr) const;
+            vector<const Credential*>::size_type resolve(vector<const Credential*>&, const CredentialCriteria* criteria=nullptr) const;
 
             string getCacheTag() const {
-                Lock lock(m_trackerLock.get());
+                Lock lock(m_trackerLock);
                 return m_feedTag;
             }
 
@@ -98,7 +99,7 @@ namespace opensaml {
 
             void onEvent(const ObservableMetadataProvider& provider) const {
                 // Reset the cache tag for the feed.
-                Lock lock(m_trackerLock.get());
+                Lock lock(m_trackerLock);
                 SAMLConfig::getConfig().generateRandomBytes(m_feedTag, 4);
                 m_feedTag = SAMLArtifact::toHex(m_feedTag);
                 emitChangeEvent();
@@ -111,7 +112,7 @@ namespace opensaml {
 
         private:
             bool m_firstMatch;
-            auto_ptr<Mutex> m_trackerLock;
+            mutable auto_ptr<Mutex> m_trackerLock;
             auto_ptr<ThreadKey> m_tlsKey;
             mutable ptr_vector<MetadataProvider> m_providers;
             mutable set<tracker_t*> m_trackers;
@@ -122,7 +123,7 @@ namespace opensaml {
 
         struct SAML_DLLLOCAL tracker_t {
             tracker_t(const ChainingMetadataProvider* m) : m_metadata(m) {
-                Lock lock(m_metadata->m_trackerLock.get());
+                Lock lock(m_metadata->m_trackerLock);
                 m_metadata->m_trackers.insert(this);
             }
 
@@ -169,7 +170,7 @@ void ChainingMetadataProvider::tracker_cleanup(void* ptr)
     if (ptr) {
         // free the tracker after removing it from the parent plugin's tracker set
         tracker_t* t = reinterpret_cast<tracker_t*>(ptr);
-        Lock lock(t->m_metadata->m_trackerLock.get());
+        Lock lock(t->m_metadata->m_trackerLock);
         t->m_metadata->m_trackers.erase(t);
         delete t;
     }
@@ -195,9 +196,12 @@ ChainingMetadataProvider::ChainingMetadataProvider(const DOMElement* e)
                 m_providers.push_back(provider.get());
                 provider.release();
             }
-            catch (exception& ex) {
+            catch (std::exception& ex) {
                 m_log.error("error building MetadataProvider: %s", ex.what());
             }
+        }
+        else {
+            m_log.error("MetadataProvider element missing type attribute");
         }
         e = XMLHelper::getNextSiblingElement(e, _MetadataProvider);
     }
@@ -205,7 +209,13 @@ ChainingMetadataProvider::ChainingMetadataProvider(const DOMElement* e)
 
 ChainingMetadataProvider::~ChainingMetadataProvider()
 {
+    m_tlsKey.reset();   // need to free this ahead of trackers in a command line case
     for_each(m_trackers.begin(), m_trackers.end(), xmltooling::cleanup<tracker_t>());
+}
+
+void ChainingMetadataProvider::setContext(const MetadataFilterContext* ctx)
+{
+    for_each(m_providers.begin(), m_providers.end(), boost::bind(&MetadataProvider::setContext, _1, ctx));
 }
 
 void ChainingMetadataProvider::init()
@@ -214,7 +224,7 @@ void ChainingMetadataProvider::init()
         try {
             i->init();
         }
-        catch (exception& ex) {
+        catch (std::exception& ex) {
             m_log.crit("failure initializing MetadataProvider: %s", ex.what());
         }
     }
@@ -269,7 +279,7 @@ const EntitiesDescriptor* ChainingMetadataProvider::getEntitiesDescriptor(const 
     const EntitiesDescriptor* cur = nullptr;
     for (ptr_vector<MetadataProvider>::iterator i = m_providers.begin(); i != m_providers.end(); ++i) {
         tracker->lock_if(&(*i));
-        if (cur=i->getEntitiesDescriptor(name,requireValidMetadata)) {
+        if ((cur = i->getEntitiesDescriptor(name,requireValidMetadata))) {
             // Are we using a first match policy?
             if (m_firstMatch) {
                 // Save locked provider.

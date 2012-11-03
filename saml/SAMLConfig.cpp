@@ -48,6 +48,7 @@
 #include "saml1/core/Assertions.h"
 #include "saml1/core/Protocols.h"
 #include "saml2/core/Protocols.h"
+#include "saml2/metadata/EntityMatcher.h"
 #include "saml2/metadata/Metadata.h"
 #include "saml2/metadata/MetadataFilter.h"
 #include "saml2/metadata/MetadataProvider.h"
@@ -68,6 +69,7 @@
 #include <xsec/enc/XSECCryptoException.hpp>
 #include <xsec/enc/XSECCryptoProvider.hpp>
 #include <xsec/utils/XSECPlatformUtils.hpp>
+#include <xercesc/util/XMLStringTokenizer.hpp>
 
 using namespace opensaml;
 using namespace xmlsignature;
@@ -140,7 +142,6 @@ SAMLInternalConfig::SAMLInternalConfig() : m_initCount(0), m_lock(Mutex::create(
 
 SAMLInternalConfig::~SAMLInternalConfig()
 {
-    delete m_lock;
 }
 
 bool SAMLInternalConfig::init(bool initXMLTooling)
@@ -186,10 +187,14 @@ bool SAMLInternalConfig::init(bool initXMLTooling)
     saml2md::registerMetadataClasses();
     saml2md::registerMetadataProviders();
     saml2md::registerMetadataFilters();
+    saml2md::registerEntityMatchers();
     registerSAMLArtifacts();
     registerMessageEncoders();
     registerMessageDecoders();
     registerSecurityPolicyRules();
+
+    m_contactPriority.push_back(saml2md::ContactPerson::CONTACT_SUPPORT);
+    m_contactPriority.push_back(saml2md::ContactPerson::CONTACT_TECHNICAL);
 
     log.info("%s library initialization complete", PACKAGE_STRING);
     ++m_initCount;
@@ -215,6 +220,7 @@ void SAMLInternalConfig::term(bool termXMLTooling)
     MessageEncoderManager.deregisterFactories();
     SecurityPolicyRuleManager.deregisterFactories();
     SAMLArtifactManager.deregisterFactories();
+    EntityMatcherManager.deregisterFactories();
     MetadataFilterManager.deregisterFactories();
     MetadataProviderManager.deregisterFactories();
 
@@ -265,6 +271,40 @@ string SAMLInternalConfig::hashSHA1(const char* s, bool toHex)
     return SecurityHelper::doHash("SHA1", s, strlen(s), toHex);
 }
 
+void SAMLInternalConfig::setContactPriority(const XMLCh* contactTypes)
+{
+    const XMLCh* ctype;
+    m_contactPriority.clear();
+    XMLStringTokenizer tokens(contactTypes);
+    while (tokens.hasMoreTokens()) {
+        ctype = tokens.nextToken();
+        if (ctype && *ctype)
+            m_contactPriority.push_back(ctype);
+    }
+}
+
+using namespace saml2md;
+
+const ContactPerson* SAMLInternalConfig::getContactPerson(const EntityDescriptor& entity) const
+{
+    for (vector<xstring>::const_iterator ctype = m_contactPriority.begin(); ctype != m_contactPriority.end(); ++ctype) {
+        const ContactPerson* cp = find_if(entity.getContactPersons(), *ctype == lambda::bind(&ContactPerson::getContactType, _1));
+        if (cp)
+            return cp;
+    }
+    return nullptr;
+}
+
+const ContactPerson* SAMLInternalConfig::getContactPerson(const RoleDescriptor& role) const
+{
+    for (vector<xstring>::const_iterator ctype = m_contactPriority.begin(); ctype != m_contactPriority.end(); ++ctype) {
+        const ContactPerson* cp = find_if(role.getContactPersons(), *ctype == lambda::bind(&ContactPerson::getContactType, _1));
+        if (cp)
+            return cp;
+    }
+    return getContactPerson(*(dynamic_cast<const EntityDescriptor*>(role.getParent())));
+}
+
 SignableObject::SignableObject()
 {
 }
@@ -289,8 +329,13 @@ Assertion::~Assertion()
 {
 }
 
-using namespace saml2p;
-using namespace saml2md;
+Status::Status()
+{
+}
+
+Status::~Status()
+{
+}
 
 void opensaml::annotateException(XMLToolingException* e, const EntityDescriptor* entity, const Status* status, bool rethrow)
 {
@@ -317,30 +362,32 @@ void opensaml::annotateException(XMLToolingException* e, const RoleDescriptor* r
         auto_ptr_char id(dynamic_cast<EntityDescriptor*>(role->getParent())->getEntityID());
         e->addProperty("entityID",id.get());
 
-        const vector<ContactPerson*>& contacts=role->getContactPersons();
-        for (vector<ContactPerson*>::const_iterator c=contacts.begin(); c!=contacts.end(); ++c) {
-            const XMLCh* ctype=(*c)->getContactType();
-            if (ctype && (XMLString::equals(ctype,ContactPerson::CONTACT_SUPPORT)
-                    || XMLString::equals(ctype,ContactPerson::CONTACT_TECHNICAL))) {
-                GivenName* fname=(*c)->getGivenName();
-                SurName* lname=(*c)->getSurName();
-                auto_ptr_char first(fname ? fname->getName() : nullptr);
-                auto_ptr_char last(lname ? lname->getName() : nullptr);
-                if (first.get() && last.get()) {
-                    string contact=string(first.get()) + ' ' + last.get();
-                    e->addProperty("contactName",contact.c_str());
+        const ContactPerson* cp = SAMLConfig::getConfig().getContactPerson(*role);
+        if (cp) {
+            GivenName* fname = cp->getGivenName();
+            SurName* lname = cp->getSurName();
+            auto_ptr_char first(fname ? fname->getName() : nullptr);
+            auto_ptr_char last(lname ? lname->getName() : nullptr);
+            if (first.get() && last.get()) {
+                string contact=string(first.get()) + ' ' + last.get();
+                e->addProperty("contactName", contact.c_str());
+            }
+            else if (first.get())
+                e->addProperty("contactName", first.get());
+            else if (last.get())
+                e->addProperty("contactName", last.get());
+            const vector<EmailAddress*>& emails=cp->getEmailAddresss();
+            if (!emails.empty()) {
+                auto_ptr_char email(emails.front()->getAddress());
+                if (email.get()) {
+                    if (strstr(email.get(), "mailto:") == email.get()) {
+                        e->addProperty("contactEmail", email.get());
+                    }
+                    else {
+                        string addr = string("mailto:") + email.get();
+                        e->addProperty("contactEmail", addr.c_str());
+                    }
                 }
-                else if (first.get())
-                    e->addProperty("contactName",first.get());
-                else if (last.get())
-                    e->addProperty("contactName",last.get());
-                const vector<EmailAddress*>& emails=const_cast<const ContactPerson*>(*c)->getEmailAddresss();
-                if (!emails.empty()) {
-                    auto_ptr_char email(emails.front()->getAddress());
-                    if (email.get())
-                        e->addProperty("contactEmail",email.get());
-                }
-                break;
             }
         }
 
@@ -349,18 +396,18 @@ void opensaml::annotateException(XMLToolingException* e, const RoleDescriptor* r
             e->addProperty("errorURL",eurl.get());
         }
     }
-    
+
     if (status) {
-        auto_ptr_char sc(status->getStatusCode() ? status->getStatusCode()->getValue() : nullptr);
+        auto_ptr_char sc(status->getTopStatus());
         if (sc.get() && *sc.get())
             e->addProperty("statusCode", sc.get());
-        if (status->getStatusCode()->getStatusCode()) {
-            auto_ptr_char sc2(status->getStatusCode()->getStatusCode()->getValue());
+        if (status->getSubStatus()) {
+            auto_ptr_char sc2(status->getSubStatus());
             if (sc2.get() && *sc.get())
                 e->addProperty("statusCode2", sc2.get());
         }
-        if (status->getStatusMessage()) {
-            auto_ptr_char msg(status->getStatusMessage()->getMessage());
+        if (status->getMessage()) {
+            auto_ptr_char msg(status->getMessage());
             if (msg.get() && *msg.get())
                 e->addProperty("statusMessage", msg.get());
         }

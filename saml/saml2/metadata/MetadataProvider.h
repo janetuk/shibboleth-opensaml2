@@ -31,6 +31,7 @@
 
 #include <vector>
 #include <iostream>
+#include <boost/ptr_container/ptr_vector.hpp>
 #include <xmltooling/exceptions.h>
 #include <xmltooling/security/CredentialResolver.h>
 
@@ -50,6 +51,7 @@ namespace opensaml {
         class SAML_API RoleDescriptor;
         class SAML_API MetadataCredentialResolver;
         class SAML_API MetadataFilter;
+        class SAML_API MetadataFilterContext;
 
 #if defined (_MSC_VER)
         #pragma warning( push )
@@ -118,6 +120,15 @@ namespace opensaml {
              * @return  the old filter
              */
             virtual MetadataFilter* removeMetadataFilter(MetadataFilter* oldFilter);
+
+            /**
+             * Sets a filtering context object for use by the filtering process.
+             * <p>The object's lifetime must last for the duration of the lifetime
+             * of the MetadataProvider.
+             *
+             * @param ctx   a context object
+             */
+            void setContext(const MetadataFilterContext* ctx);
 
             /**
              * Should be called after instantiating provider and adding filters, but before
@@ -250,7 +261,8 @@ namespace opensaml {
             void doFilters(xmltooling::XMLObject& xmlObject) const;
 
         private:
-            std::vector<MetadataFilter*> m_filters;
+            const MetadataFilterContext* m_filterContext;
+            boost::ptr_vector<MetadataFilter> m_filters;
         };
 
 #if defined (_MSC_VER)

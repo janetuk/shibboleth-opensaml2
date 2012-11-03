@@ -50,6 +50,7 @@
 using namespace opensaml::saml2md;
 using namespace xmltooling::logging;
 using namespace xmltooling;
+using namespace boost;
 using namespace std;
 
 #if defined (_MSC_VER)
@@ -68,7 +69,6 @@ namespace opensaml {
 
             virtual ~XMLMetadataProvider() {
                 shutdown();
-                delete m_object;
             }
 
             void init() {
@@ -124,7 +124,7 @@ namespace opensaml {
             }
 
             const XMLObject* getMetadata() const {
-                return m_object;
+                return m_object.get();
             }
 
         protected:
@@ -136,8 +136,8 @@ namespace opensaml {
             void index(time_t& validUntil);
             time_t computeNextRefresh();
 
-            XMLObject* m_object;
-            bool m_discoveryFeed;
+            scoped_ptr<XMLObject> m_object;
+            bool m_discoveryFeed,m_dropDOM;
             double m_refreshDelayFactor;
             unsigned int m_backoffFactor;
             time_t m_minRefreshDelay,m_maxRefreshDelay,m_lastValidUntil;
@@ -149,6 +149,7 @@ namespace opensaml {
         }
 
         static const XMLCh discoveryFeed[] =        UNICODE_LITERAL_13(d,i,s,c,o,v,e,r,y,F,e,e,d);
+        static const XMLCh dropDOM[] =              UNICODE_LITERAL_7(d,r,o,p,D,O,M);
         static const XMLCh minRefreshDelay[] =      UNICODE_LITERAL_15(m,i,n,R,e,f,r,e,s,h,D,e,l,a,y);
         static const XMLCh refreshDelayFactor[] =   UNICODE_LITERAL_18(r,e,f,r,e,s,h,D,e,l,a,y,F,a,c,t,o,r);
     };
@@ -161,7 +162,8 @@ namespace opensaml {
 XMLMetadataProvider::XMLMetadataProvider(const DOMElement* e)
     : MetadataProvider(e), AbstractMetadataProvider(e), DiscoverableMetadataProvider(e),
         ReloadableXMLFile(e, Category::getInstance(SAML_LOGCAT".MetadataProvider.XML"), false),
-        m_object(nullptr), m_discoveryFeed(XMLHelper::getAttrBool(e, true, discoveryFeed)),
+        m_discoveryFeed(XMLHelper::getAttrBool(e, true, discoveryFeed)),
+        m_dropDOM(XMLHelper::getAttrBool(e, true, dropDOM)),
         m_refreshDelayFactor(0.75), m_backoffFactor(1),
         m_minRefreshDelay(XMLHelper::getAttrInt(e, 600, minRefreshDelay)),
         m_maxRefreshDelay(m_reloadInterval), m_lastValidUntil(SAMLTIME_MAX)
@@ -198,7 +200,7 @@ pair<bool,DOMElement*> XMLMetadataProvider::load(bool backup)
     XercesJanitor<DOMDocument> docjanitor(raw.first ? raw.second->getOwnerDocument() : nullptr);
 
     // Unmarshall objects, binding the document.
-    auto_ptr<XMLObject> xmlObject(XMLObjectBuilder::buildOneFromElement(raw.second, true));
+    scoped_ptr<XMLObject> xmlObject(XMLObjectBuilder::buildOneFromElement(raw.second, true));
     docjanitor.release();
 
     if (!dynamic_cast<const EntitiesDescriptor*>(xmlObject.get()) && !dynamic_cast<const EntityDescriptor*>(xmlObject.get()))
@@ -210,9 +212,15 @@ pair<bool,DOMElement*> XMLMetadataProvider::load(bool backup)
     try {
         SchemaValidators.validate(xmlObject.get());
     }
-    catch (exception& ex) {
+    catch (std::exception& ex) {
         m_log.error("metadata intance failed manual validation checking: %s", ex.what());
         throw MetadataException("Metadata instance failed manual validation checking.");
+    }
+
+    const TimeBoundSAMLObject* validityCheck = dynamic_cast<TimeBoundSAMLObject*>(xmlObject.get());
+    if (!validityCheck || !validityCheck->isValid()) {
+        m_log.error("metadata instance was invalid at time of acquisition");
+        throw MetadataException("Metadata instance was invalid at time of acquisition.");
     }
 
     // This is the best place to take a backup, since it's superficially "correct" metadata.
@@ -226,16 +234,16 @@ pair<bool,DOMElement*> XMLMetadataProvider::load(bool backup)
             ofstream backer(backupKey.c_str());
             backer << *(raw.second->getOwnerDocument());
         }
-        catch (exception& ex) {
+        catch (std::exception& ex) {
             m_log.crit("exception while backing up metadata: %s", ex.what());
             backupKey.erase();
         }
     }
 
     try {
-        doFilters(*xmlObject.get());
+        doFilters(*xmlObject);
     }
-    catch (exception&) {
+    catch (std::exception&) {
         if (!backupKey.empty())
             remove(backupKey.c_str());
         throw;
@@ -250,16 +258,17 @@ pair<bool,DOMElement*> XMLMetadataProvider::load(bool backup)
         preserveCacheTag();
     }
 
-    xmlObject->releaseThisAndChildrenDOM();
-    xmlObject->setDocument(nullptr);
+    if (m_dropDOM) {
+        xmlObject->releaseThisAndChildrenDOM();
+        xmlObject->setDocument(nullptr);
+    }
 
     // Swap it in after acquiring write lock if necessary.
     if (m_lock)
         m_lock->wrlock();
     SharedLock locker(m_lock, false);
     bool changed = m_object!=nullptr;
-    delete m_object;
-    m_object = xmlObject.release();
+    m_object.swap(xmlObject);
     m_lastValidUntil = SAMLTIME_MAX;
     index(m_lastValidUntil);
     if (m_discoveryFeed)
@@ -304,14 +313,16 @@ pair<bool,DOMElement*> XMLMetadataProvider::background_load()
             return load(true);
         throw;
     }
-    catch (exception&) {
+    catch (std::exception& ex) {
         if (!m_local) {
             m_reloadInterval = m_minRefreshDelay * m_backoffFactor++;
             if (m_reloadInterval > m_maxRefreshDelay)
                 m_reloadInterval = m_maxRefreshDelay;
             m_log.warn("adjusted reload interval to %u seconds", m_reloadInterval);
-            if (!m_loaded && !m_backing.empty())
+            if (!m_loaded && !m_backing.empty()) {
+                m_log.warn("trying backup file, exception loading remote resource: %s", ex.what());
                 return load(true);
+            }
         }
         throw;
     }
@@ -328,7 +339,7 @@ time_t XMLMetadataProvider::computeNextRefresh()
     else {
         // Compute the smaller of the validUntil / cacheDuration constraints.
         time_t ret = m_lastValidUntil - now;
-        const CacheableSAMLObject* cacheable = dynamic_cast<const CacheableSAMLObject*>(m_object);
+        const CacheableSAMLObject* cacheable = dynamic_cast<const CacheableSAMLObject*>(m_object.get());
         if (cacheable && cacheable->getCacheDuration())
             ret = min(ret, cacheable->getCacheDurationEpoch());
             
@@ -348,10 +359,10 @@ time_t XMLMetadataProvider::computeNextRefresh()
 void XMLMetadataProvider::index(time_t& validUntil)
 {
     clearDescriptorIndex();
-    EntitiesDescriptor* group=dynamic_cast<EntitiesDescriptor*>(m_object);
+    EntitiesDescriptor* group = dynamic_cast<EntitiesDescriptor*>(m_object.get());
     if (group) {
         indexGroup(group, validUntil);
         return;
     }
-    indexEntity(dynamic_cast<EntityDescriptor*>(m_object), validUntil);
+    indexEntity(dynamic_cast<EntityDescriptor*>(m_object.get()), validUntil);
 }

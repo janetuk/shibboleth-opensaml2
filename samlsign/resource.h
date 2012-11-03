@@ -18,17 +18,18 @@
  * language governing permissions and limitations under the License.
  */
 
-/**
- * @file saml/Assertion.h
- * 
- * Base class for SAML assertions.
- */
+//{{NO_DEPENDENCIES}}
+// Microsoft Developer Studio generated include file.
+// Used by utility resource scripts
+//
 
-#ifndef __saml_assertion_h__
-#define __saml_assertion_h__
-
-#include <saml/RootObject.h>
-
-// Moved declaration into RootObject.h header.
-
-#endif /* __saml_assertion_h__ */
+// Next default values for new objects
+// 
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_NEXT_RESOURCE_VALUE        101
+#define _APS_NEXT_COMMAND_VALUE         40001
+#define _APS_NEXT_CONTROL_VALUE         1000
+#define _APS_NEXT_SYMED_VALUE           101
+#endif
+#endif
