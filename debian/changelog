@@ -1,3 +1,9 @@
+opensaml2 (2.5+dfsg~moonshot4-1) unstable; urgency=low
+
+  * New upstream based on the actual 2.5 release
+
+ -- Sam Hartman <hartmans@debian.org>  Sat, 03 Nov 2012 05:22:09 -0400
+
 opensaml2 (2.5+dfsg~moonshot3-1) unstable; urgency=low
 
   * new upstream
